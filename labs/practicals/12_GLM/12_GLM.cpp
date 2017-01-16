@@ -9,4 +9,14 @@
 using namespace std;
 using namespace glm;
 
-int main() {}
+int main() {
+
+	vec2 first3 (1.0f, 0.0f);
+	vec2 second2 (-1.0f, 0.0f);
+
+	vec3 first3 (1.0f, 0.0f, 1.0f);
+	vec3 second3 (-1.0f, 0.0f, -1.0f);
+
+
+	return 0;
+}
