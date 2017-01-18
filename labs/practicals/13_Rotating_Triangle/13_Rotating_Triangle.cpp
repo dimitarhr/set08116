@@ -8,7 +8,7 @@ using namespace glm;
 geometry geom;
 effect eff;
 target_camera cam;
-float theta = 0.0f;
+float theta = 90.0f;
 
 bool load_content() {
   // Create triangle data
@@ -48,7 +48,7 @@ bool render() {
   mat4 R;
   // *********************************
   // Create rotation matrix - rotate around Z axis by theta
-  R = rotate(mat4(1.0f), 90, vec3(0.0f,0.0f,1.0f));
+  R = rotate(mat4(1.0f), theta, vec3(0.0f,0.0f,1.0f));
   // *********************************
   // Create MVP matrix
   auto V = cam.get_view();
