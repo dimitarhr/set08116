@@ -18,6 +18,7 @@ int main() {
 	vec4 sum = third + fourth;
 	double magnitude = length(sum);
 	vec4 normVector = normalize(fourth);
+	mat4 T(1.0f);
 
 	///////////////////////////////////
 	// Testing Projection
@@ -40,5 +41,14 @@ int main() {
 	cout << magnitude<<endl;
 	cout << normVector.x << ", " << normVector.y << ", " << normVector.z << ", " << normVector.w << endl;
 	cout << "Projection of a onto b: "<<result.x << ", " << result.y << endl;
+	cout << "+++++++++++++++++++++++++++++++++++++++" << endl;
+
+	// Printing a matrix
+	for (int i = 0; i < T.length(); i++) {
+		for (int k = 0; k < T.length(); k++) {
+			cout << T[i][k] << " ";
+		}
+		cout << endl;
+	}
 	return 0;
 }
