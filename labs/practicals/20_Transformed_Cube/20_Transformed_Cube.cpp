@@ -12,6 +12,7 @@ float theta = 0.0f;
 float rho = 0.0f;
 vec3 pos(0.0f, 0.0f, 0.0f);
 float s = 1.0f;
+float total_time = 0.0f;
 
 bool load_content() {
   // Create cube data - twelve triangles triangles
@@ -19,24 +20,58 @@ bool load_content() {
   vector<vec3> positions{
       // *********************************
       // Add the position data for triangles here, (6 verts per side)
-      // Front
+	  // Front
+	  vec3(-1.0f, 1.0f, 0.0f),
+	  vec3(-1.0f, -1.0f, 0.0f),
+	  vec3(1.0f,-1.0f,0.0f),
 
+	  vec3(-1.0f, 1.0f, 0.0f),
+	  vec3(1.0f, -1.0f, 0.0f),
+	  vec3(1.0f, 1.0f, 0.0f),
 
-      // Back
+	  // Back
+	  vec3(-1.0f,1.0f,-2.0f),
+	  vec3(1.0f,1.0f,-2.0f),
+	  vec3(1.0f,-1.0f,-2.0f),
 
+	  vec3(-1.0f,1.0f,-2.0f),
+	  vec3(1.0f,-1.0f,-2.0f),
+	  vec3(-1.0f,-1.0f,-2.0f),
 
-      // Right
+	  // Right
+	  vec3(1.0f,1.0f,0.0f),
+	  vec3(1.0f,-1.0f,0.0f),
+	  vec3(1.0f,-1.0f,-2.0f),
 
+	  vec3(1.0f,1.0f,0.0f),
+	  vec3(1.0f,-1.0f,-2.0f),
+	  vec3(1.0f,1.0f,-2.0f),
 
-      // Left
+	  // Left
+	  vec3(-1.0f,-1.0f,0.0f),
+	  vec3(-1.0f,1.0f,0.0f),
+	  vec3(-1.0f,1.0f,-2.0f),
 
+	  vec3(-1.0f,-1.0f,0.0f),
+	  vec3(-1.0f,1.0f,-2.0f),
+	  vec3(-1.0f,-1.0f,-2.0f),
 
-      // Top
+	  // Top
+	  vec3(-1.0f,1.0f,0.0f),
+	  vec3(1.0f,1.0f,0.0f),
+	  vec3(-1.0f,1.0f,-2.0f),
 
+	  vec3(1.0f,1.0f,0.0f),
+	  vec3(1.0f,1.0f,-2.0f),
+	  vec3(-1.0f,1.0f,-2.0f),
+	  // Bottom
+	  vec3(-1.0f,-1.0f,0.0f),
+	  vec3(-1.0f,-1.0f,-2.0f),
+	  vec3(1.0f,-1.0f,-2.0f),
 
-      // Bottom
-
-
+	  vec3(1.0f,-1.0f,-2.0f),
+	  vec3(1.0f,-1.0f,0.0f),
+	  vec3(-1.0f,-1.0f,0.0f)
       // *********************************
   };
   // Colours
@@ -68,32 +103,11 @@ bool update(float delta_time) {
   // WSAD - movement
   // Cursor - rotation
   // O decrease scale, P increase scale
+	theta += pi<float>() * delta_time;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	total_time += delta_time;
+	s = 1.0f + sinf(total_time);
+	s *= 0.5f;
 
 
 
@@ -110,8 +124,9 @@ bool render() {
   mat4 T, R, S, M;
   // *********************************
   // Create transformation matrix
-
-
+  R = rotate(mat4(1.0f),theta,vec3(1.0f,0.0f,0.0f));
+  S = scale(mat4(1.0f),vec3(s,s,s));
+  M = R*S;
 
 
   // *********************************

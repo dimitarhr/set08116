@@ -8,7 +8,7 @@ using namespace glm;
 geometry geom;
 effect eff;
 target_camera cam;
-float theta = 90.0f;
+float theta = 30.0f;
 
 bool load_content() {
   // Create triangle data
