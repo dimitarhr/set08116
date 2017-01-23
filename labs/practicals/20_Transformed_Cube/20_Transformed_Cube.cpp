@@ -103,13 +103,30 @@ bool update(float delta_time) {
   // WSAD - movement
   // Cursor - rotation
   // O decrease scale, P increase scale
-	theta += pi<float>() * delta_time;
 
+  // Increment theta - half a rotation per second
+	theta += pi<float>() * delta_time;
+  
+	// Accumulate time
 	total_time += delta_time;
+	// Update the scale - base on sin wave
 	s = 1.0f + sinf(total_time);
+	// Multiply by 0.5f
 	s *= 0.5f;
 
-
+	// Check if key is pressed
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP)) {
+		pos += vec3(0.0f, 5.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN)) {
+		pos += vec3(0.0f, -5.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT)) {
+		pos += vec3(-5.0f, 0.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT)) {
+		pos += vec3(5.0f, 0.0f, 0.0f) * delta_time;
+	}
 
 
   // *********************************
@@ -124,9 +141,15 @@ bool render() {
   mat4 T, R, S, M;
   // *********************************
   // Create transformation matrix
+  // Rotation matrix
   R = rotate(mat4(1.0f),theta,vec3(1.0f,0.0f,0.0f));
+  // Scale matrix
   S = scale(mat4(1.0f),vec3(s,s,s));
-  M = R*S;
+
+  T = translate(mat4(1.0f),pos);
+  //M = T*(R*S);
+
+  M = T;
 
 
   // *********************************
