@@ -12,7 +12,6 @@ target_camera cam;
 // Helper method - adds a triangle to geometry
 void triangle(const vector<vec3> &points, vector<vec3> &positions, vector<vec4> &colours) {
   positions.insert(positions.end(), points.begin(), points.end());
-  //positions.push_back(points[0]);
   for (auto i = 0; i < 3; ++i){
     colours.push_back(vec4(1.0f, 0.0f, 0.0f, 1.0f));
   }
@@ -45,7 +44,7 @@ bool load_content() {
   // Required buffers
   vector<vec3> positions;
   vector<vec4> colours;
-  divide_triangle({vec3(1.0f, -1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f)}, 5, positions, colours);
+  divide_triangle({vec3(1.0f, -1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f)}, 2, positions, colours);
 
   // Add to the geometry
   geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);

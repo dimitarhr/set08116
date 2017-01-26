@@ -10,6 +10,7 @@ effect eff;
 target_camera cam;
 float theta = 0.0f;
 float rho = 0.0f;
+float yRotation = 0.0f;
 
 bool load_content() {
   // Create cube data - twelve triangles triangles
@@ -111,6 +112,12 @@ bool update(float delta_time) {
   if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT)) {
     rho += pi<float>() * delta_time;
   }
+  if (glfwGetKey(renderer::get_window(), 'D')) {
+	  yRotation -= pi<float>() * delta_time;
+  }
+  if (glfwGetKey(renderer::get_window(), 'A')) {
+	  yRotation += pi<float>() * delta_time;
+  }
   // Update the camera
   cam.update(delta_time);
   return true;
@@ -120,7 +127,7 @@ bool render() {
   // Bind effect
   renderer::bind(eff);
   // Create MVP matrix
-  mat4 M = eulerAngleXZ(theta, rho);
+  mat4 M = eulerAngleYXZ(yRotation, theta, rho);
   auto V = cam.get_view();
   auto P = cam.get_projection();
   auto MVP = P * V * M;
