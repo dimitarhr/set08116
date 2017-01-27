@@ -7,38 +7,52 @@ using namespace graphics_framework;
 using namespace glm;
 
 mesh m;
+mesh triangleMesh;
 effect eff;
 target_camera cam;
 texture tex;
+texture texTriangle;
 
 bool load_content() {
   // Construct geometry object
   geometry geom;
-  // Create triangle data
-  // Positions
-  vector<vec3> positions{vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f)};
-  // *********************************
-  // Define texture coordinates for triangle
 
+  geometry triangle;
+  // Create triangle data
+  // Positions for geom
+  vector<vec3> positions{vec3(-1.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f),
+						 vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f)};
+
+  vector<vec3> trianglePositions{ vec3(-1.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f)};
+  // *********************************
+  // Define texture coordinates for geom
+  vector<vec2> tex_coords{ vec2(0.0f, 1.0f), vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f,0.0f),vec2(1.0f,1.0f) };
+
+  vector<vec2> triangleTex_coords{ vec2(0.5f, 1.0f), vec2(0.0f, 0.0f), vec2(1.0f, 1.0f)};
   // *********************************
   // Add to the geometry
   geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
   // *********************************
   // Add texture coordinate buffer to geometry
-
+  geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
   // *********************************
+
+  triangle.add_buffer(trianglePositions, BUFFER_INDEXES::POSITION_BUFFER);
+  triangle.add_buffer(triangleTex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 
   // Create mesh object
   m = mesh(geom);
+  triangleMesh = mesh(triangle);
 
   // Load in texture shaders here
-  eff.add_shader("31_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
-  eff.add_shader("31_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
   // *********************************
   // Build effect
-
+  eff.build();
   // Load texture "textures/sign.jpg"
-
+  tex = texture("textures/check_6.png");
+  texTriangle = texture("textures/sign.jpg");
   // *********************************
 
   // Set camera properties
@@ -61,6 +75,7 @@ bool render() {
   renderer::bind(eff);
   // Create MVP matrix
   auto M = m.get_transform().get_transform_matrix();
+//  auto triangleM = triangleMesh.get_transform.get_transform_matrix();
   auto V = cam.get_view();
   auto P = cam.get_projection();
   auto MVP = P * V * M;
@@ -71,14 +86,25 @@ bool render() {
                      value_ptr(MVP));                 // Pointer to matrix data
 
   // *********************************
+
   // Bind texture to renderer
-
+  renderer::bind(tex, 0);
+  renderer::bind(texTriangle, 1);
   // Set the texture value for the shader here
-
+  glUniform1i(eff.get_uniform_location("tex"),0);
   // *********************************
 
   // Render the mesh
   renderer::render(m);
+
+   MVP = P * V * translate(M, vec3(2.0,0.0,-2.0));
+   glUniformMatrix4fv(eff.get_uniform_location("MVP"), // Location of uniform
+	   1,                               // Number of values - 1 mat4
+	   GL_FALSE,                        // Transpose the matrix?
+	   value_ptr(MVP));                 // Pointer to matrix data
+
+   glUniform1i(eff.get_uniform_location("tex"), 1);
+  renderer::render(triangleMesh);
 
   return true;
 }

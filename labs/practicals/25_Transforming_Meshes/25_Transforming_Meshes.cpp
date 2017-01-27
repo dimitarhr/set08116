@@ -86,7 +86,8 @@ bool update(float delta_time) {
   if (glfwGetKey(renderer::get_window(), 'O')) {
 	  m.get_transform().scale += vec3(0.1f, 0.1f, 0.1f);
   }
-  if (glfwGetKey(renderer::get_window(), 'P')) {
+  // Checking if the pressed key is 'P' and if the size is less than 0.0f
+  if ((m.get_transform().scale.x > 0.0f) && glfwGetKey(renderer::get_window(), 'P')) {
 	  m.get_transform().scale -= vec3(0.1f, 0.1f, 0.1f);
   }
   // Update the camera

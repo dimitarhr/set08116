@@ -23,8 +23,8 @@ bool load_content() {
   m = mesh(geom);
 
   // Load in colour shaders
-  eff.add_shader("29_Shaders/colour.vert", GL_VERTEX_SHADER);
-  eff.add_shader("29_Shaders/colour.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("26_Shaders/colour.vert", GL_VERTEX_SHADER);
+  eff.add_shader("26_Shaders/colour.frag", GL_FRAGMENT_SHADER);
   // *********************************
   // Build effect
   eff.build();
@@ -46,6 +46,7 @@ bool update(float delta_time) {
 }
 
 bool render() {
+
   // Bind effect
   renderer::bind(eff);
   // Create MVP matrix
@@ -61,9 +62,14 @@ bool render() {
   // *********************************
   // Set the colour value for the shader here (Hint: rep the Brand, use the NapierRed macro)
   glUniform4fv(
-	  eff.get_uniform_location("colour"),
+	  eff.get_uniform_location("colourOne"),
 	  1,
-	  value_ptr(vec4(1.0f,0.0f,0.0f,1.0f))
+	  value_ptr(vec4(NapierRed,1.0f))
+  );
+  glUniform4fv(
+	  eff.get_uniform_location("colourOne"),
+	  1,
+	  value_ptr(vec4(0.5f, 0.5f, 1.0f, 1.0f))
   );
   // *********************************
 
