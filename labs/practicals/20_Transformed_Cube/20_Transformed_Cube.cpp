@@ -105,8 +105,12 @@ bool update(float delta_time) {
   // O decrease scale, P increase scale
 
   // Increment theta - half a rotation per second
-	theta += pi<float>() * delta_time;
-  
+	if (glfwGetKey(renderer::get_window(), 'W')) {
+		theta += pi<float>() * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), 'D')) {
+		rho -= pi<float>() * delta_time;
+	}
 	// Accumulate time
 	total_time += delta_time;
 	// Update the scale - base on sin wave
@@ -143,13 +147,15 @@ bool render() {
   // Create transformation matrix
   // Rotation matrix
   R = rotate(mat4(1.0f),theta,vec3(1.0f,0.0f,0.0f));
+  mat4 rLeft = rotate(mat4(1.0f), rho, vec3(0.0f, 1.0f, 0.0f));
+  R = R*rLeft;
   // Scale matrix
   S = scale(mat4(1.0f),vec3(s,s,s));
 
   T = translate(mat4(1.0f),pos);
   //M = T*(R*S);
 
-  M = T;
+  M = T*R;
 
 
   // *********************************

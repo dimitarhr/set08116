@@ -34,8 +34,8 @@ bool load_content() {
   }
 
   // Load in texture shaders, !Note that are pulling in shader file from previous project!
-  eff.add_shader("31_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
-  eff.add_shader("31_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
 
   // Build effect
   eff.build();
@@ -49,7 +49,7 @@ bool load_content() {
   // ******************************
   texs[0] = texture("textures/checker.png", false, false);
   texs[1] = texture("textures/checker.png", false, true);
-  texs[2] = texture("textures/checker.png", true, true);
+  texs[2] = texture("textures/checker.png", true, false);
   texs[3] = texture("textures/checker.png", true, true);
 
   // Set camera properties

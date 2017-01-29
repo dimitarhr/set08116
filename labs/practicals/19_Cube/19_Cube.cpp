@@ -127,7 +127,7 @@ bool render() {
   // Bind effect
   renderer::bind(eff);
   // Create MVP matrix
-  mat4 M = eulerAngleYXZ(yRotation, theta, rho);
+  mat4 M = eulerAngleXZ(theta, rho);
   auto V = cam.get_view();
   auto P = cam.get_projection();
   auto MVP = P * V * M;
