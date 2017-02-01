@@ -48,9 +48,9 @@ bool load_content() {
 
   // Load textures
   // 0 - no mipmaps
-  texs[0] = texture("textures/checker.png", false, false);
+  texs[0] = texture("textures/sign.jpg", false, false);
   // 1 - Auto Generate mipmaps
-  texs[1] = texture("textures/checker.png", true, false);
+  texs[1] = texture("textures/sign.jpg", true, false);
   // 2 - Manual Mip Levels
   texs[2] = texture({"textures/uv_32.png", "textures/uv_16.png", "textures/uv_8.png", "textures/uv_4.png",
                      "textures/uv_2.png", "textures/uv_1.png"},
@@ -93,7 +93,7 @@ bool render() {
 
     // *********************************
     // Bind correct texture to renderer
-	renderer::bind(texs[i], i);
+	renderer::bind(texs[i], 0);
     // Set the texture value for the shader here
 	glUniform1i(eff.get_uniform_location("tex"), 0);
     // Render the mesh

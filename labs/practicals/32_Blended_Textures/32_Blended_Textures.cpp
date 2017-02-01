@@ -14,6 +14,7 @@ array<texture, 2> texs;
 texture blend_map;
 
 bool load_content() {
+
   // Construct geometry object
   geometry geom;
   geom.set_type(GL_TRIANGLE_STRIP);
@@ -33,8 +34,8 @@ bool load_content() {
   m.get_transform().scale = vec3(10.0f, 10.0f, 10.0f);
 
   // Load in blend shader
-  eff.add_shader("35_Blended_Textures/blend.vert", GL_VERTEX_SHADER);
-  eff.add_shader("35_Blended_Textures/blend.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("32_Blended_Textures/blend.vert", GL_VERTEX_SHADER);
+  eff.add_shader("32_Blended_Textures/blend.frag", GL_FRAGMENT_SHADER);
 
   // Build effect
   eff.build();
@@ -43,7 +44,7 @@ bool load_content() {
   texs[0] = texture("textures/grass.jpg");
   texs[1] = texture("textures/stonygrass.jpg");
   // Load blend map, try both blend_map1.png and blend_map2.jpg
-  blend_map = texture("textures/blend_map1.png");
+  blend_map = texture("textures/blend_map2.jpg");
 
   // Set camera properties
   cam.set_position(vec3(0.0f, 0.0f, 30.0f));
@@ -76,9 +77,9 @@ bool render() {
 
   // *********************************
   // Bind the three textures - use different index for each
-
-
-
+  renderer::bind(texs[0], 0);
+  renderer::bind(texs[1], 1);
+  renderer::bind(blend_map, 2);
   // *********************************
 
   // Set the uniform values for textures

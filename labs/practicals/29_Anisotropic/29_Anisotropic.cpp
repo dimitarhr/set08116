@@ -48,8 +48,8 @@ bool load_content() {
   // ******************************
   texs[0] = texture("textures/sign.jpg",false,false);
   texs[1] = texture("textures/sign.jpg", false, true);
-  texs[2] = texture("textures/sign.jpg", true, true);
-  texs[3] = texture("textures/sign.jpg", true, false);
+  texs[2] = texture("textures/sign.jpg", true, false);
+  texs[3] = texture("textures/sign.jpg", true, true);
   // *********************************
   // Set camera properties
   cam.set_position(vec3(10.0f, 2.0f, 200.0f));
@@ -95,10 +95,10 @@ bool render() {
     glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 
     // Bind correct texture to renderer
-    renderer::bind(texs[i], 0);
+    renderer::bind(texs[i], i);
 
     // Set the texture value for the shader here
-    glUniform1i(eff.get_uniform_location("tex"), 0);
+    glUniform1i(eff.get_uniform_location("tex"), i);
 
     // Render the mesh
     renderer::render(meshes[i]);
