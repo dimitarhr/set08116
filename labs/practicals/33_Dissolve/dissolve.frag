@@ -2,6 +2,7 @@
 
 uniform sampler2D tex;
 uniform sampler2D dissolve;
+uniform sampler2D sahara;
 
 // *********************************
 // Declare dissolve factor value
@@ -17,11 +18,18 @@ void main() {
   // *********************************
   // Get dissolve value from the dissolve texture
   vec4 dissolve_Value = texture(dissolve, tex_coord);
+
   // If r component is greater than dissolve factor, discard
-  if (dissolve_Value.r > dissolve_factor){
-	discard;
+  if (dissolve_Value.r > dissolve_factor)
+  {
+	//discard;
+	colour = texture(sahara, tex_coord);
   }
   // *********************************
+
   // Get texture colour
-  colour = texture(tex, tex_coord);
+  else
+  {
+	colour = texture(tex, tex_coord);
+  }
 }

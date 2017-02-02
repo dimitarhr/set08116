@@ -9,7 +9,7 @@ mesh m;
 effect eff;
 target_camera cam;
 // Main texture
-texture tex;
+texture tex, sahara;
 // Dissolve texture
 texture dissolve;
 // Dissolve factor to set on shader
@@ -31,6 +31,7 @@ bool load_content() {
 
   // Load in textures
   tex = texture("textures/fire.jpg");
+  sahara = texture("textures/blueFire.jpg");
   dissolve = texture("textures/blend_map2.jpg");
 
   // Set camera properties
@@ -50,7 +51,7 @@ bool update(float delta_time) {
     dissolve_factor = clamp(dissolve_factor - 0.1f * delta_time, 0.0f, 1.0f);
   // Update camera
   cam.update(delta_time);
-  uv_scroll += vec2(0, delta_time * 0.05);
+  uv_scroll += vec2(0, delta_time * 0.1);
   return true;
 }
 
@@ -76,9 +77,11 @@ bool render() {
 	  // Bind the two textures - use different index for each
 	  renderer::bind(tex, 0);
 	  renderer::bind(dissolve, 1);
+	  renderer::bind(sahara, 2);
   // Set the uniform values for textures - use correct index
 	  glUniform1i(eff.get_uniform_location("tex"),0);
 	  glUniform1i(eff.get_uniform_location("dissolve"), 1);
+	  glUniform1i(eff.get_uniform_location("sahara"), 2);
   // *********************************
 
   // Set UV_scroll uniform, adds cool movent (Protip: This is a super easy way to do fire effects;))
