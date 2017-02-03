@@ -7,60 +7,64 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-texture tex;
+texture tex, wall;
 target_camera cam;
 
 bool load_content() {
   // Create plane mesh
-  meshes["plane"] = mesh(geometry_builder::create_plane());
-
+  meshes["floorPlane"] = mesh(geometry_builder::create_plane());
+  meshes["wallPlane"] = mesh(geometry_builder::create_plane());
   // *********************************
   // box
-
+  meshes["box"] = mesh(geometry_builder::create_box());
   // Tetrahedron
-
+  meshes["tetrahedron"] = mesh(geometry_builder::create_tetrahedron());
   // Pyramid
-
+  meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
   // Disk
-
+  meshes["disk"] = mesh(geometry_builder::create_disk(20));
   // Cylinder
-
+  meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20,20,vec3(0.5f,1.0f,0.5f)));
   // Sphere
-
+  meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
   // Torus
-
+  meshes["torus"] = mesh(geometry_builder::create_torus(20,20,0.5,5));
 
   // Set the transforms for your meshes here
   // 5x scale, move(-10.0f, 2.5f, -30.0f)
-
-
+  meshes["box"].get_transform().scale *= 5;
+  meshes["box"].get_transform().position += vec3(-10.0f, 2.5f, -30.0f);
   // 4x scale, move(-30.0f, 10.0f, -10.0f)
-
-
+  meshes["tetrahedron"].get_transform().scale *= 4;
+  meshes["tetrahedron"].get_transform().position += vec3(-30.0f, 10.0f, -10.0f);
   // 5x scale, move(-10.0f, 7.5f, -30.0f)
-
-
+  meshes["pyramid"].get_transform().scale *= 5;
+  meshes["pyramid"].get_transform().position += vec3(-10.0f, 7.5f, -30.0f);
   // scale(3.0f, 1.0f, 3.0f), move(-10.0f, 11.5f, -30.0f), 180 rotate X axis
-
-
-
+  meshes["disk"].get_transform().scale *= vec3(3.0f, 1.0f, 3.0f);
+  meshes["disk"].get_transform().position += vec3(-10.0f, 11.5f, -30.0f);
+  meshes["disk"].get_transform().rotate(vec3(pi<float>()/2, 0.0f, 0.0f));
   // 5x scale, move(-25.0f, 2.5f, -25.0f)
-
-
+  meshes["cylinder"].get_transform().scale *= 5;
+  meshes["cylinder"].get_transform().position += vec3(-25.0f, 2.5f, -25.0f);
   // 2.5x scale, move(-25.0f, 10.0f, -25.0f)
-
-
+  meshes["sphere"].get_transform().scale *= 2.5f;
+  meshes["sphere"].get_transform().position += vec3(-25.0f, 10.0f, -25.0f);
   // 180 rotate X axis, move(-25.0f, 10.0f, -25.0f)
-
-
+  meshes["torus"].get_transform().position += vec3(-25.0f, 10.0f, -25.0f);
+  meshes["torus"].get_transform().rotate(vec3(pi<float>()/2, 0.0f, 0.0f));
+  // wallPlane
+  meshes["wallPlane"].get_transform().position += vec3(-50.0f, 0, 0);
+  meshes["wallPlane"].get_transform().rotate(vec3(0.0f, 0.0f, -pi<float>()/2));
   // *********************************
 
   // Load texture
   tex = texture("textures/checker.png");
+  wall = texture("textures/grass.jpg");
 
   // Load in shaders
-  eff.add_shader("31_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
-  eff.add_shader("31_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
+  eff.add_shader("27_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
 
@@ -73,12 +77,19 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
+	// Rotate
+	meshes["torus"].get_transform().rotate(vec3(-pi<float>() * delta_time, 0.0f, 0.0f));
+
   // Update the camera
   cam.update(delta_time);
   return true;
 }
 
 bool render() {
+
+	renderer::bind(tex, 0);
+	renderer::bind(wall, 1);
+
   // Render meshes
   for (auto &e : meshes) {
     auto m = e.second;
@@ -91,12 +102,17 @@ bool render() {
     auto MVP = P * V * M;
     // Set MVP matrix uniform
     glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-
     // *********************************
     // Bind texture to renderer
-
     // Set the texture value for the shader here
-
+	if (e.first == "wallPlane" || e.first == "floorPlane")
+	{
+		glUniform1i(eff.get_uniform_location("tex"), 1);
+	}
+	else 
+	{
+		glUniform1i(eff.get_uniform_location("tex"), 0);
+	}
     // *********************************
     // Render mesh
     renderer::render(m);

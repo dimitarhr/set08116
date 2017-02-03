@@ -30,8 +30,8 @@ bool load_content() {
   eff.build();
 
   // Load in textures
-  tex = texture("textures/fire.jpg");
-  sahara = texture("textures/blueFire.jpg");
+  tex = texture("textures/checker.png");
+  sahara = texture("textures/sign.jpg");
   dissolve = texture("textures/blend_map2.jpg");
 
   // Set camera properties
