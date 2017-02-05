@@ -85,6 +85,10 @@ bool load_content() {
   // Load in texture shaders here
   eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
   eff.add_shader("27_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
+<<<<<<< HEAD
+=======
+  // *********************************
+>>>>>>> ba3dfc61013ce49f340527aabf629748aa43dff2
   // Build effect
   eff.build();
   // Load texture "textures/sign.jpg"
