@@ -14,10 +14,14 @@ double cursor_y = 0.0;
 
 bool initialise() {
   // *********************************
-  // Set input mode - hide the cursor
-
-  // Capture initial mouse position
-
+	GLFWwindow *handle;
+	double *x;
+	double *y;
+	// *********************************
+	// Set input mode - hide the cursor
+	glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// Capture initial mouse position
+	glfwGetCursorPos(handle, x, y);
   // *********************************
 
   return true;

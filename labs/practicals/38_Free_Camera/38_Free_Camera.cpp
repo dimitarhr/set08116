@@ -12,12 +12,16 @@ free_camera cam;
 double cursor_x = 0.0;
 double cursor_y = 0.0;
 
+// before load_content
 bool initialise() {
+	GLFWwindow *handle;
+	double *x;
+	double *y;
   // *********************************
   // Set input mode - hide the cursor
-
+	glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   // Capture initial mouse position
-
+	glfwGetCursorPos(handle, x, y);
   // *********************************
   return true;
 }
@@ -77,21 +81,28 @@ bool update(float delta_time) {
        (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
       static_cast<float>(renderer::get_screen_height());
 
-  double current_x;
-  double current_y;
+  double *current_x = 0;
+  double *current_y = 0;
+  double *previous_x = 0;
+  double *previous_y = 0;
+  double delta_x;
+  double delta_y;
+  GLFWwindow *handle;
   // *********************************
   // Get the current cursor position
-
+  glfwGetCursorPos(handle, current_x, current_y);
   // Calculate delta of cursor positions from last frame
-
-
+  delta_x = current_x - previous_x;
+  previous_x = current_x;
+  delta_y = current_y - previous_y;
+  previous_y = current_y;
   // Multiply deltas by ratios - gets actual change in orientation
-
-
+  delta_x = delta_x * ratio_width;
+  delta_y = delta_y * ratio_height;
   // Rotate cameras by delta
   // delta_y - x-axis rotation
   // delta_x - y-axis rotation
-
+  cam.rotate(delta_x,delta_y);
   // Use keyboard to move the camera - WSAD
 
 
@@ -109,10 +120,9 @@ bool update(float delta_time) {
   // Move camera
 
   // Update the camera
-
+  cam.update(delta_time);
   // Update cursor pos
-
-
+  glfwGetCursorPos(handle, current_x, current_y);
   // *********************************
   return true;
 }
@@ -147,7 +157,7 @@ void main() {
   app application("38_Free_Camera");
   // Set load content, update and render methods
   application.set_load_content(load_content);
-  application.set_initialise(initialise);
+  //application.set_initialise(initialise);
   application.set_update(update);
   application.set_render(render);
   // Run application
