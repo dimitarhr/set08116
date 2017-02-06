@@ -14,14 +14,13 @@ double cursor_y = 0.0;
 
 // before load_content
 bool initialise() {
-	GLFWwindow *handle;
-	double *x;
-	double *y;
+	double *x = 0;
+	double *y = 0;
   // *********************************
   // Set input mode - hide the cursor
-	glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   // Capture initial mouse position
-	glfwGetCursorPos(handle, x, y);
+	glfwGetCursorPos(renderer::get_window(), x, y);
   // *********************************
   return true;
 }
@@ -81,48 +80,45 @@ bool update(float delta_time) {
        (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
       static_cast<float>(renderer::get_screen_height());
 
-  double *current_x = 0;
-  double *current_y = 0;
-  double *previous_x = 0;
-  double *previous_y = 0;
+  double current_x = 0;
+  double current_y = 0;
   double delta_x;
   double delta_y;
-  GLFWwindow *handle;
+  vec3 pos = vec3(0);
   // *********************************
   // Get the current cursor position
-  glfwGetCursorPos(handle, current_x, current_y);
+  glfwGetCursorPos(renderer::get_window(), &current_x, &current_y);
   // Calculate delta of cursor positions from last frame
-  delta_x = current_x - previous_x;
-  previous_x = current_x;
-  delta_y = current_y - previous_y;
-  previous_y = current_y;
+  delta_x = current_x - cursor_x;
+  delta_y = current_y - cursor_y;
   // Multiply deltas by ratios - gets actual change in orientation
   delta_x = delta_x * ratio_width;
   delta_y = delta_y * ratio_height;
+
   // Rotate cameras by delta
   // delta_y - x-axis rotation
   // delta_x - y-axis rotation
-  cam.rotate(delta_x,delta_y);
+  cam.rotate(delta_x*3.14f,-delta_y*3.14f);
   // Use keyboard to move the camera - WSAD
-
-
-
-
-
-
-
-
-
-
-
-
-
+  if (glfwGetKey(renderer::get_window(), 'W')) {
+	  pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
+  }
+  if (glfwGetKey(renderer::get_window(), 'S')) {
+	  pos += vec3(0.0f, 0.0f, -20.0f) * delta_time;
+  }
+  if (glfwGetKey(renderer::get_window(), 'A')) {
+	  pos += vec3(-20.0f, 0.0f, 0.0f) * delta_time;
+  }
+  if (glfwGetKey(renderer::get_window(), 'D')) {
+	  pos += vec3(20.0f, 0.0f, 0.0f) * delta_time;
+  }
   // Move camera
-
+  cam.move(pos);
   // Update the camera
   cam.update(delta_time);
   // Update cursor pos
-  glfwGetCursorPos(handle, current_x, current_y);
+  cursor_x = current_x;
+  cursor_y = current_y;
   // *********************************
   return true;
 }
@@ -157,7 +153,7 @@ void main() {
   app application("38_Free_Camera");
   // Set load content, update and render methods
   application.set_load_content(load_content);
-  //application.set_initialise(initialise);
+  application.set_initialise(initialise);
   application.set_update(update);
   application.set_render(render);
   // Run application
