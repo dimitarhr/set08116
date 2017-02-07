@@ -14,13 +14,11 @@ double cursor_y = 0.0;
 
 // before load_content
 bool initialise() {
-	double *x = 0;
-	double *y = 0;
   // *********************************
   // Set input mode - hide the cursor
 	glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   // Capture initial mouse position
-	glfwGetCursorPos(renderer::get_window(), x, y);
+	glfwGetCursorPos(renderer::get_window(), &cursor_x, &cursor_y);
   // *********************************
   return true;
 }
@@ -73,6 +71,7 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
+	std::cout << cursor_x << " " << cursor_y << endl;
   // The ratio of pixels to rotation - remember the fov
   static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
   static double ratio_height =
@@ -98,7 +97,7 @@ bool update(float delta_time) {
   // Rotate cameras by delta
   // delta_y - x-axis rotation
   // delta_x - y-axis rotation
-  cam.rotate(delta_x*3.14f,-delta_y*3.14f);
+  cam.rotate(delta_x,-delta_y);
   // Use keyboard to move the camera - WSAD
   if (glfwGetKey(renderer::get_window(), 'W')) {
 	  pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
