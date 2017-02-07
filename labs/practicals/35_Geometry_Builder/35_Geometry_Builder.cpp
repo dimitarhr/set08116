@@ -7,7 +7,7 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-texture tex, wall;
+texture tex, wall, tile;
 target_camera cam;
 
 bool load_content() {
@@ -61,6 +61,8 @@ bool load_content() {
   // Load texture
   tex = texture("textures/checker.png");
   wall = texture("textures/grass.jpg");
+  tile = texture("textures/brick_diffuse.jpg");
+
 
   // Load in shaders
   eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
@@ -89,6 +91,7 @@ bool render() {
 
 	renderer::bind(tex, 0);
 	renderer::bind(wall, 1);
+	renderer::bind(tile, 2);
 
   // Render meshes
   for (auto &e : meshes) {
@@ -108,6 +111,10 @@ bool render() {
 	if (e.first == "wallPlane" || e.first == "floorPlane")
 	{
 		glUniform1i(eff.get_uniform_location("tex"), 1);
+	}
+	if (e.first == "box")
+	{
+		glUniform1i(eff.get_uniform_location("tex"), 2);
 	}
 	else 
 	{

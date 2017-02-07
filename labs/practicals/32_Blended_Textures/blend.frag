@@ -1,7 +1,7 @@
 #version 440
 
 // Main textures
-uniform sampler2D tex[3];
+uniform sampler2D tex[2];
 // Blend map
 uniform sampler2D blend;
 
@@ -15,11 +15,11 @@ void main() {
   // Sample the two main textures
   vec4 col1 = texture(tex[0],tex_coord);
   vec4 col2 = texture(tex[1],tex_coord);
-  vec4 col3 = texture(tex[2],tex_coord);
+  //vec4 col3 = texture(tex[2],tex_coord);
   // Sample the blend texture
   vec4 blen_texture = texture(blend, tex_coord);
   // Mix the main samples using r component from blend value
-  colour = mix(col1, col2,blen_texture.g);
-  colour = mix(colour, col3,0.5f);
+  colour = mix(col1,col2,0);
+  //colour = mix(colour, col3,0.5f);
   // *********************************
 }

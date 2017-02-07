@@ -7,7 +7,7 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-texture tex;
+texture tex, tile;
 free_camera cam;
 double cursor_x = 0.0;
 double cursor_y = 0.0;
@@ -55,6 +55,7 @@ bool load_content() {
 
   // Load texture
   tex = texture("textures/checker.png");
+  tile = texture("textures/brick_diffuse.jpg");
 
   // Load in shaders
   eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
@@ -66,7 +67,8 @@ bool load_content() {
   // Set camera properties
   cam.set_position(vec3(0.0f, 10.0f, 0.0f));
   cam.set_target(vec3(0.0f, 0.0f, 0.0f));
-  cam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
+  //cam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
+  cam.set_projection(pi<float>()/2, renderer::get_screen_aspect(), 0.1f, 1000.0f);
   return true;
 }
 
@@ -123,6 +125,8 @@ bool update(float delta_time) {
 }
 
 bool render() {
+	mat4 changeIdentity = mat4(1.0f);
+	//mat4 newMatrix = mat4(vec4(0.5f,0,0,0), vec4(0, 0.5f, 0, 0), vec4(0, 0, 0, 0), vec4(0, 0, 0, 0));
   // Render meshes
   for (auto &e : meshes) {
     auto m = e.second;
@@ -132,13 +136,22 @@ bool render() {
     auto M = m.get_transform().get_transform_matrix();
     auto V = cam.get_view();
     auto P = cam.get_projection();
+	//P *= newMatrix;
     auto MVP = P * V * M;
     // Set MVP matrix uniform
     glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 
     // Bind and set texture
     renderer::bind(tex, 0);
-    glUniform1i(eff.get_uniform_location("tex"), 0);
+	renderer::bind(tile, 1);
+	if (e.first == "box")
+	{
+		glUniform1i(eff.get_uniform_location("tex"), 1);
+	}
+	else
+	{
+		glUniform1i(eff.get_uniform_location("tex"), 0);
+	}
 
     // Render mesh
     renderer::render(m);

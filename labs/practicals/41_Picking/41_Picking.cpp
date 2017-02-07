@@ -74,34 +74,35 @@ bool update(float delta_time) {
   // Update the camera
   cam.update(delta_time);
   // If mouse button pressed get ray and check for intersection
+  if (glfwGetKey(renderer::get_window(), 'I')) {
+	  // Get the mouse position
+	  glfwGetCursorPos(renderer::get_window(), &current_x, &current_y);
 
-    // Get the mouse position
-  glfwGetCursorPos(renderer::get_window(),&current_x,&current_y);
+	  // Origin and direction of the ray
+	  xx = (2 * current_x) / renderer::get_screen_width() - 1;
+	  yy = (2 * (renderer::get_screen_height() - current_y)) / (renderer::get_screen_height()) - 1;
+	  // Convert mouse position to ray
+	  vec4 ray_start_screen = vec4(xx, yy, -1, 1);
+	  vec4 ray_end_screen = vec4(xx, yy, 0, 1);
+	  auto PV = cam.get_projection()*cam.get_view();
+	  mat4 inverse_matrix = inverse(PV);
 
-    // Origin and direction of the ray
-  xx = (2 * current_x) / renderer::get_screen_width() - 1;
-  yy = (2 * (renderer::get_screen_height() - current_y)) / (renderer::get_screen_height()) - 1;
-    // Convert mouse position to ray
-  vec4 ray_start_screen = vec4(xx, yy, -1, 1);
-  vec4 ray_end_screen = vec4(xx, yy, 0, 1);
-  auto PV = cam.get_projection()*cam.get_view();
-  mat4 inverse_matrix = inverse(PV);
+	  vec4 ray_start_world = inverse_matrix * ray_start_screen;
+	  ray_start_world /= ray_start_world[3];
+	  vec4 ray_end_world = inverse_matrix * ray_end_screen;
+	  ray_end_world /= ray_end_world[3];
 
-  vec4 ray_start_world = inverse_matrix * ray_start_screen;
-  ray_start_world /= ray_start_world[3];
-  vec4 ray_end_world = inverse_matrix * ray_end_screen;
-  ray_end_world /= ray_end_world[3];
-
-  vec3 direction = normalize(ray_end_world - ray_start_world);
-  vec3 origin = ray_start_world;
-    // *********************************
-    // Check all the mehes for intersection
-    for (auto &m : meshes) {
-      float distance = 0.0f;
-      if (test_ray_oobb(origin, direction, m.second.get_minimal(), m.second.get_maximal(),
-                        m.second.get_transform().get_transform_matrix(), distance))
-        cout << m.first << " " << distance << endl;
-    }
+	  vec3 direction = normalize(ray_end_world - ray_start_world);
+	  vec3 origin = ray_start_world;
+	  // *********************************
+	  // Check all the mehes for intersection
+	  for (auto &m : meshes) {
+		  float distance = 0.0f;
+		  if (test_ray_oobb(origin, direction, m.second.get_minimal(), m.second.get_maximal(),
+			  m.second.get_transform().get_transform_matrix(), distance))
+			  cout << m.first << " " << distance << endl;
+	  }
+  }
   return true;
 }
 

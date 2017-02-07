@@ -5,6 +5,7 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+map<string, mesh> meshes;
 mesh m;
 effect eff;
 target_camera cam;
@@ -14,6 +15,13 @@ array<texture, 3> texs;
 texture blend_map;
 
 bool load_content() {
+
+	meshes["floorPlane"] = mesh(geometry_builder::create_plane());
+
+	meshes["floorPlane"].get_transform().scale = vec3(10.0f, 400.0f, 10.0f);
+	meshes["floorPlane"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
+	meshes["floorPlane"].get_transform().translate((vec3(21.0f, 0.0f, 0.0f)) - vec3(21.0f, 0.0f, 0));
+
   // Construct geometry object
   geometry geom;
   geom.set_type(GL_TRIANGLE_STRIP);
@@ -40,14 +48,14 @@ bool load_content() {
   eff.build();
 
   // Load main two textures
-  texs[0] = texture("textures/grass.jpg");
-  texs[1] = texture("textures/stonygrass.jpg");
-  texs[2] = texture("textures/checker.png");
+  texs[0] = texture("textures/brick_diffuse.jpg");
+  texs[1] = texture("textures/brick_bump.jpg");
+  //texs[2] = texture("textures/checker.png");
   // Load blend map, try both blend_map1.png and blend_map2.jpg
-  blend_map = texture("textures/blen_map_3colours.jpg");
+  blend_map = texture("textures/brick_roughness.jpg");
 
   // Set camera properties
-  cam.set_position(vec3(0.0f, 0.0f, 30.0f));
+  cam.set_position(vec3(5.0f, 0.0f, 20.0f));
   cam.set_target(vec3(0.0f, 0.0f, 0.0f));
   auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
   cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
@@ -62,6 +70,7 @@ bool update(float delta_time) {
 }
 
 bool render() {
+
   // Bind effect
   renderer::bind(eff);
   // Create MVP matrix
@@ -79,13 +88,13 @@ bool render() {
   // Bind the three textures - use different index for each
   renderer::bind(texs[0], 0);
   renderer::bind(texs[1], 1);
-  renderer::bind(texs[2], 2);
+  //renderer::bind(texs[2], 2);
   renderer::bind(blend_map, 3);
   // *********************************
 
   // Set the uniform values for textures
   static int tex_indices[] = {0, 1, 2};
-  glUniform1iv(eff.get_uniform_location("tex"), 3, tex_indices);
+  glUniform1iv(eff.get_uniform_location("tex"), 2, tex_indices);
   glUniform1i(eff.get_uniform_location("blend"), 3);
 
 

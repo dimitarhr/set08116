@@ -111,10 +111,10 @@ bool update(float delta_time) {
 	  target_mesh.get_transform().rotate(vec3(0.0f, -pi<float>() * delta_time, 0.0f));
   }
   // Use keyboard to move the target_mesh - WSAD
-  //if (glfwGetKey(renderer::get_window(), 'W')) {
-//	  target_mesh.get_transform().position += vec3(0.0f, 0.0f, -5.0f) * delta_time;
-  //}
-  target_mesh.get_transform().position += vec3(0.0f, 0.0f, -0.2f) * delta_time;
+  if (glfwGetKey(renderer::get_window(), 'W')) {
+	  target_mesh.get_transform().position += vec3(0.0f, 0.0f, -5.0f) * delta_time;
+  }
+  //target_mesh.get_transform().position += vec3(0.0f, 0.0f, -0.2f) * delta_time;
   if (glfwGetKey(renderer::get_window(), 'S')) {
 	  target_mesh.get_transform().position += vec3(0.0f, 0.0f, 5.0f) * delta_time;
   }
@@ -153,7 +153,12 @@ bool render() {
     // Bind and set texture
     renderer::bind(tex, 0);
     glUniform1i(eff.get_uniform_location("tex"), 0);
-
+	for (int i = 0; i < 4; i++) {
+		for (int c = 0; c < 4; c++) {
+			cout << P[i][c]<<" ";
+		}
+		cout << endl;
+	}
     // Render mesh
     renderer::render(m);
   }
