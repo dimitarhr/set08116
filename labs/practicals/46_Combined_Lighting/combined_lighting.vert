@@ -2,22 +2,31 @@
 
 // The model transformation
 uniform mat4 M;
+
 // The transformation matrix
 uniform mat4 MVP;
+
 // The normal matrix
 uniform mat3 N;
+
 // The ambient intensity of the scene
 uniform vec4 ambient_intensity;
+
 // The light colour of the scene
 uniform vec4 light_colour;
+
 // Direction of the light
 uniform vec3 light_dir;
+
 // The diffuse reflection colour
 uniform vec4 diffuse_reflection;
+
 // The specular reflection colour
 uniform vec4 specular_reflection;
+
 // Shininess of the object
 uniform float shininess;
+
 // Position of the camera
 uniform vec3 eye_pos;
 
@@ -30,27 +39,27 @@ layout(location = 0) out vec4 vertex_colour;
 
 void main() {
   // Calculate position
-
+     gl_Position = MVP * vec4(position, 1.0);
   // Calculate ambient component
-
+  vec4 ambient = ambient_intensity * diffuse_reflection;
   // Transform the normal
-
+  vec3 transformed_normal = N * normal;
   // Calculate k
-
+  float kDiffuse = max(dot(transformed_normal,light_dir),0);
   // Calculate diffuse
-
+  vec4 diffuse = kDiffuse * (diffuse_reflection * light_colour);
   // Calculate world position of vertex
-
+  vec4 worldPosition = M * vec4(position,1.0f);
   // Calculate view direction
-
+  vec4 view_dir = normalize(eye_pos - worldPosition);
   // Calculate half vector between view_dir and light_dir
-
+  vec4 half_vector = normalize(light_dir + view_dir);
   // Calculate k
-
+   float kSpecular = pow(max(dot(vec4(transformed_normal,1), half_vector), 0.0), shininess);
   // Calculate specular
-
+  vec4 specular = kSpecular * specular_reflection * light_colour;
   // Output combined components
-
+  vertex_colour = ambient + diffuse + specular;
   // *********************************
   // Ensure alpha is 1
   vertex_colour.a = 1.0;

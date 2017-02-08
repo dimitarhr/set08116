@@ -20,8 +20,9 @@ bool load_content() {
   meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
   meshes["disk"] = mesh(geometry_builder::create_disk(20));
   meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
-  meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
+  meshes["sphere"] = mesh(geometry_builder::create_sphere(40, 40));
   meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
+
 
   // Transform objects
   meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
@@ -61,7 +62,7 @@ bool update(float delta_time) {
     cam.set_position(vec3(-50, 10, 50));
   }
   if (glfwGetKey(renderer::get_window(), '3')) {
-    cam.set_position(vec3(-50, 10, -50));
+    cam.set_position(vec3(-25, 10, -50));
   }
   if (glfwGetKey(renderer::get_window(), '4')) {
     cam.set_position(vec3(50, 10, -50));
@@ -69,7 +70,8 @@ bool update(float delta_time) {
 
   // Rotate the sphere
   meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
-
+  meshes["pyramid"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+  meshes["torus"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f) * delta_time);
   cam.update(delta_time);
 
   return true;
@@ -87,17 +89,19 @@ bool render() {
     auto V = cam.get_view();
     auto P = cam.get_projection();
     auto MVP = P * V * M;
+
     // Set MVP matrix uniform
     glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
     // *********************************
     // Set M matrix uniform
 	glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
     // Set N matrix uniform - remember - 3x3 matrix
-	glUniformMatrix3fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(N));
+	glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
     // Set material colour - specular material is white
 	glUniform4fv(eff.get_uniform_location("material_colour"), 1, value_ptr(vec4(1.0f,1.0f,1.0f,1.0f)));
     // Set shininess - Use 50.0f
-	glUniform1f(eff.get_uniform_location("shininess"), 50.0f);
+	glUniform1f(eff.get_uniform_location("shininess"), 20.0f);
+
     // Set light colour - (1.0, 1.0, 1.0, 1.0)
 	glUniform4fv(eff.get_uniform_location("light_colour"), 1, value_ptr(vec4(1.0f, 1.0f, 1.0f, 1.0f)));
     // Set light direction- (1.0, 1.0, -1.0)
