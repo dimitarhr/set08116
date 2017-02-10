@@ -7,7 +7,7 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-texture tex, earth, bricks;
+texture tex, earth, bricks, lava;
 //target_camera cam;
 directional_light light;
 
@@ -16,6 +16,7 @@ double cursor_x = 0.0;
 double cursor_y = 0.0;
 
 vec3 bulbPos = vec3(0);
+bool up = true;
 
 // before load_content
 bool initialise() {
@@ -40,7 +41,7 @@ bool load_content() {
   meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
   meshes["sphere"] = mesh(geometry_builder::create_sphere(45, 45));
   meshes["bulb"] = mesh(geometry_builder::create_sphere(20, 20));
-  meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
+  meshes["torus"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 5.0f));
 
   // Transform objects
   meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
@@ -104,6 +105,7 @@ bool load_content() {
   tex = texture("textures/checker_White.gif");
   earth = texture("textures/earth.jpg");
   bricks = texture("textures/brick_diffuse.jpg");
+  lava = texture("textures/lavatile.jpg");
 
   // *********************************
   // Set lighting values
@@ -112,7 +114,7 @@ bool load_content() {
   // Light colour white
   light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   // Light direction (1.0, 1.0, -1.0)
-  light.set_direction(vec3(1.0f, 1.0f, -1.0f));
+  light.set_direction(vec3(-1.0f, 1.0f, -1.0f));
   // Load in shaders
   eff.add_shader("47_Gouraud_Shading/gouraud.vert",GL_VERTEX_SHADER);
   eff.add_shader("47_Gouraud_Shading/gouraud.frag", GL_FRAGMENT_SHADER);
@@ -194,16 +196,20 @@ bool update(float delta_time) {
 
   // Rotate the sphere
   meshes["sphere"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
-
-  if (bulbPos.y > 20 && bulbPos.y != 0) {
-	  cout << "1" << endl;
-	  bulbPos -= vec3(0.0f, 20.0f, 0.0f) * delta_time;
-	  meshes["bulb"].get_transform().position -= vec3(0.0f, 20.0f, 0.0f)*delta_time;
-  }
-  else if (bulbPos.y <= 20){
-	  bulbPos += vec3(0.0f, 20.0f, 0.0f) * delta_time;
-	  meshes["bulb"].get_transform().position += vec3(0.0f, 20.0f, 0.0f)*delta_time;
-  }
+	if (bulbPos.y <= 20 && up) 
+	{
+		bulbPos += vec3(0.0f, 10.0f, 0.0f) * delta_time;
+		meshes["bulb"].get_transform().position += vec3(0.0f, 10.0f, 0.0f)*delta_time;
+	}
+	else 
+	{
+	  up = false;
+	  bulbPos -= vec3(0.0f, 10.0f, 0.0f) * delta_time;
+	  meshes["bulb"].get_transform().position -= vec3(0.0f, 10.0f, 0.0f)*delta_time;
+	  if (bulbPos.y <= 0) {
+		  up = true;
+	  }
+	}
   cout << bulbPos.y << endl;
 
   cam.update(delta_time);
@@ -239,11 +245,15 @@ bool render() {
 	renderer::bind(tex, 0);
 	renderer::bind(earth, 1);
 	renderer::bind(bricks, 2);
+	renderer::bind(lava, 3);
 	if (e.first == "sphere") {
 		glUniform1i(eff.get_uniform_location("tex"), 1);
 	}
 	else if (e.first == "box") {
 		glUniform1i(eff.get_uniform_location("tex"), 2);
+	}
+	else if (e.first == "torus") {
+		glUniform1i(eff.get_uniform_location("tex"), 3);
 	}
     // Set tex uniform
 	else {
