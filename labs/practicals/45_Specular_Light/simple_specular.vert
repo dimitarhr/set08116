@@ -41,16 +41,16 @@ void main() {
     vec3 transformed_normal = N * normal;
   
   // Calculate world position
-    vec4 world_Position = M * vec4(position, 1.0);
+    vec3 world_Position = (M * vec4(position, 1.0)).xyz;
   
   // Calculate view direction
-	vec4 viewDir = normalize(eye_pos-world_Position);
+	vec3 viewDir = normalize(eye_pos-world_Position);
   
   // Calculate half vector between view_dir and light_dir
-	vec4 H = normalize(light_dir+viewDir);
+	vec3 H = normalize(light_dir+viewDir);
   
   // Calculate k
-    float k = pow(max(dot(vec4(transformed_normal,1), H), 0.0), shininess);
+    float k = pow(max(dot(transformed_normal, H), 0.0), shininess);
   
   // Calculate specular
     vec4 diffuse = k * (material_colour * light_colour);

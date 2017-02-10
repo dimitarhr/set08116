@@ -105,15 +105,20 @@ bool update(float delta_time) {
   // Also remember to translate camera
   if (glfwGetKey(renderer::get_window(), 'W')) {
   	  target_mesh.get_transform().position += vec3(0.0f, 0.0f, -5.0f) * delta_time;
+	  //cam.set_position(vec3(0.0f, 0.0f, -5.0f) * delta_time);
+	  cam.translate(vec3(0.0f, 0.0f, -5.0f) * delta_time);
   }
   if (glfwGetKey(renderer::get_window(), 'S')) {
 	  target_mesh.get_transform().position += vec3(0.0f, 0.0f, 5.0f) * delta_time;
+	  cam.translate(vec3(0.0f, 0.0f, 5.0f) * delta_time);
   }
   if (glfwGetKey(renderer::get_window(), 'A')) {
 	  target_mesh.get_transform().position += vec3(-5.0f, 0.0f, 0.0f) * delta_time;
+	  cam.translate(vec3(-5.0f, 0.0f, 0.0f) * delta_time);
   }
   if (glfwGetKey(renderer::get_window(), 'D')) {
 	  target_mesh.get_transform().position += vec3(5.0f, 0.0f, 0.0f) * delta_time;
+	  cam.translate(vec3(5.0f, 0.0f, 0.0f) * delta_time);
   }
 
   // Use UP and DOWN to change camera distance

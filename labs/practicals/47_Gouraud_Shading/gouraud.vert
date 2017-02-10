@@ -60,17 +60,17 @@ void main() {
   vec4 diffuse = diffuseK * mat.diffuse_reflection * light.light_colour;
   
   // Calculate world position of vertex
-  vec4 worldPosition = M * vec4(position,1.0f);
+  vec3 worldPosition = (M * vec4(position,1.0f)).xyz;
   
   // Calculate view direction
-  vec4 view_dir = normalize(eye_pos-worldPosition);
+  vec3 view_dir = normalize(eye_pos-worldPosition);
   
   // Calculate half vector between view_dir and light_dir
-  vec4 H = normalize(light.light_dir+view_dir);
+  vec3 H = normalize(light.light_dir+view_dir);
   
   // Calculate specular component
   // Calculate k
-  float specularK = pow(max(dot(vec4(transformed_normal,1.0f), H),0.0f),mat.shininess);
+  float specularK = pow(max(dot(transformed_normal, H),0.0f),mat.shininess);
   
   // Calculate specular
   vec4 specular = specularK * mat.specular_reflection * light.light_colour;

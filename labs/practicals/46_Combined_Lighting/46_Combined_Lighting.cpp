@@ -10,6 +10,7 @@ effect eff;
 texture tex;
 target_camera cam;
 
+
 bool load_content() {
   // Create plane mesh
   meshes["plane"] = mesh(geometry_builder::create_plane());

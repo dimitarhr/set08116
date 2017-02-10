@@ -73,7 +73,7 @@ bool load_content() {
   objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
   objectMaterial.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   objectMaterial.set_shininess(25.0f);
-  objectMaterial.set_diffuse(vec4(1.0f,1.0f,1.0f,0.0f));
+  objectMaterial.set_diffuse(vec4(0.0f,1.0f,0.0f,0.0f));
   meshes["box"].set_material(objectMaterial);
   // Green tetra
   objectMaterial.set_diffuse(vec4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -88,7 +88,7 @@ bool load_content() {
   objectMaterial.set_diffuse(vec4(1.0f, 0.0f, 1.0f, 1.0f));
   meshes["cylinder"].set_material(objectMaterial);
   // Cyan sphere
-  objectMaterial.set_shininess(100.0f);
+  objectMaterial.set_shininess(1000);
   objectMaterial.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 0.0f));
   meshes["sphere"].set_material(objectMaterial);
   // White torus
@@ -99,8 +99,11 @@ bool load_content() {
   objectMaterial.set_shininess(100.0f);
   objectMaterial.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   meshes["bulb"].set_material(objectMaterial);
+  // Plane
+  objectMaterial.set_shininess(25.0f);
+  meshes["plane"].set_material(objectMaterial);
   // *********************************
-
+  
   // Load texture
   tex = texture("textures/checker_White.gif");
   earth = texture("textures/earth.jpg");
@@ -114,7 +117,7 @@ bool load_content() {
   // Light colour white
   light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   // Light direction (1.0, 1.0, -1.0)
-  light.set_direction(vec3(-1.0f, 1.0f, -1.0f));
+  light.set_direction(vec3(1.0f, 1.0f, -1.0f));
   // Load in shaders
   eff.add_shader("47_Gouraud_Shading/gouraud.vert",GL_VERTEX_SHADER);
   eff.add_shader("47_Gouraud_Shading/gouraud.frag", GL_FRAGMENT_SHADER);
@@ -249,9 +252,9 @@ bool render() {
 	if (e.first == "sphere") {
 		glUniform1i(eff.get_uniform_location("tex"), 1);
 	}
-	else if (e.first == "box") {
+	/*else if (e.first == "box") {
 		glUniform1i(eff.get_uniform_location("tex"), 2);
-	}
+	}*/
 	else if (e.first == "torus") {
 		glUniform1i(eff.get_uniform_location("tex"), 3);
 	}
