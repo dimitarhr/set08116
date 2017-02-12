@@ -11,6 +11,7 @@ texture tex;
 target_camera cam;
 point_light light;
 
+
 bool load_content() {
   // Create plane mesh
   meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -47,56 +48,46 @@ bool load_content() {
   // - all specular is white
   // - all shininess is 25
   // Red box
-
-
-
-
+  material objectMaterial;
+  objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  objectMaterial.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  objectMaterial.set_shininess(25.0f);
+  objectMaterial.set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  meshes["box"].set_material(objectMaterial);
   // Green tetra
-
-
-
-
+  objectMaterial.set_diffuse(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+  meshes["tetra"].set_material(objectMaterial);
   // Blue pyramid
-
-
-
-
+  objectMaterial.set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+  meshes["pyramid"].set_material(objectMaterial);
   // Yellow disk
-
-
-
-
+  objectMaterial.set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+  meshes["disk"].set_material(objectMaterial);
   // Magenta cylinder
-
-
-
-
+  objectMaterial.set_diffuse(vec4(1.0f, 0.0f, 1.0f, 1.0f));
+  meshes["cylinder"].set_material(objectMaterial);
   // Cyan sphere
-
-
-
-
+  objectMaterial.set_diffuse(vec4(0.0f, 1.0f, 1.0f, 1.0f));
+  meshes["sphere"].set_material(objectMaterial);
   // White torus
-
-
-
-
+  objectMaterial.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  meshes["torus"].set_material(objectMaterial);
   // *********************************
 
   // Load texture
-  tex = texture("textures/checker.png");
+  tex = texture("textures/checker_White.gif");
   // *********************************
   // Set lighting values, Position (-25, 10, -10)
-
+  light.set_position(vec3(-25.0f,10.0f,-10.0f));
   // Light colour white
-
+  light.set_light_colour(vec4(1.0f,1.0f,1.0f,1.0f));
   // Set range to 20
-
+  light.set_range(20.0f);
   // Load in shaders
-
-
+  eff.add_shader("49_Point_Light/point.vert",GL_VERTEX_SHADER);
+  eff.add_shader("49_Point_Light/point.frag", GL_FRAGMENT_SHADER);
   // Build effect
-
+  eff.build();
   // *********************************
 
   // Set camera properties
@@ -110,38 +101,26 @@ bool update(float delta_time) {
   // Range of the point light
   static float range = 20.0f;
   // *********************************
-
-
-
-
-
-
-
-
-
-
-
-
   // WSAD to move point light
-
-
-
-
-
-
-
-
-
-
-
-
+  if (glfwGetKey(renderer::get_window(), 'W')) {
+	  light.move(vec3(0.0f, 0.0f, 20.0f) * delta_time);
+  }
+  if (glfwGetKey(renderer::get_window(), 'S')) {
+	  light.move(vec3(0.0f, 0.0f, -20.0f) * delta_time);
+  }
+  if (glfwGetKey(renderer::get_window(), 'A')) {
+	  light.move(vec3(-20.0f, 0.0f, 0.0f) * delta_time);
+  }
+  if (glfwGetKey(renderer::get_window(), 'D')) {
+	  light.move(vec3(20.0f, 0.0f, 0.0f) * delta_time);
+  }
   // O and P to change range
-
-
-
-
-
-
+  if (glfwGetKey(renderer::get_window(), 'O')) {
+	  range += 10.0f;
+  }
+  if (glfwGetKey(renderer::get_window(), 'P')) {
+	  range -= 10.0f;
+  }
   // *********************************
 
   // Set range
@@ -159,6 +138,7 @@ bool render() {
   // Render meshes
   for (auto &e : meshes) {
     auto m = e.second;
+	auto N = m.get_transform().get_normal_matrix();
     // Bind effect
     renderer::bind(eff);
     // Create MVP matrix
@@ -174,21 +154,21 @@ bool render() {
 
     // *********************************
     // Set M matrix uniform
-
+	glUniformMatrix4fv(eff.get_uniform_location("M"),1,GL_FALSE,value_ptr(M));
     // Set N matrix uniform - remember - 3x3 matrix
-
+	glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
     // Bind material
-
+	renderer::bind(m.get_material(), "mat");
     // Bind light
-
+	renderer::bind(light, "point");
     // Bind texture
-
+	renderer::bind(tex, 1);
     // Set tex uniform
-
+	glUniform1i(eff.get_uniform_location("tex"),1);
     // Set eye position- Get this from active camera
-
+	glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
     // Render mesh
-
+	renderer::render(m);
     // *********************************
   }
 

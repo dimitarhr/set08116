@@ -71,7 +71,7 @@ bool load_content() {
   objectMaterial.set_emissive(vec4(0.0f,0.0f,0.0f,1.0f));
   objectMaterial.set_specular(vec4(1.0f,1.0f,1.0f,1.0f));
   objectMaterial.set_shininess(25.0f);
-  objectMaterial.set_diffuse(vec4(1.0f,0.0f,0.0f,1.0f));
+  objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f,1.0f));
   meshes["box"].set_material(objectMaterial);
   // Green tetra
   objectMaterial.set_diffuse(vec4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -87,15 +87,15 @@ bool load_content() {
   meshes["cylinder"].set_material(objectMaterial);
   // Cyan sphere
 
-  objectMaterial.set_shininess(1.0f);
+  objectMaterial.set_shininess(35);
   objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
   meshes["sphere"].set_material(objectMaterial);
   // White torus
-  objectMaterial.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  objectMaterial.set_diffuse(vec4(0.8f, 0.8f, 0.8f, 1.0f));
   meshes["torus"].set_material(objectMaterial);
   // *********************************
   // Load texture
-  tex = texture("textures/checker.png");
+  tex = texture("textures/checker_White.gif");
   earth = texture("textures/earth.jpg");
   bricks = texture("textures/brick_diffuse.jpg");
   lava = texture("textures/lavatile.jpg");
@@ -104,7 +104,7 @@ bool load_content() {
   // ambient intensity (0.3, 0.3, 0.3)
   light.set_ambient_intensity(vec4(0.3f,0.3f,0.3f,1.0f));
   // Light colour white
-  light.set_light_colour(vec4(1.0f,1.0f,1.0f,1.0f));
+  light.set_light_colour(vec4(0.6f, 0.6f, 0.6f,1.0f));
   // Light direction (1.0, 1.0, -1.0)
   light.set_direction(vec3(1.0f,1.0f,-1.0f));
   // Load in shaders
@@ -115,7 +115,7 @@ bool load_content() {
   // *********************************
 
   // Set camera properties
-  cam.set_position(vec3(50.0f, 10.0f, 50.0f));
+  cam.set_position(vec3(-50.0f, 10.0f, -50.0f));
   cam.set_target(vec3(0.0f, 0.0f, 0.0f));
   cam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
   return true;
@@ -224,9 +224,17 @@ bool render() {
     // Bind texture
 	renderer::bind(tex,0);
 	renderer::bind(earth, 1);
+	renderer::bind(lava, 2);
+	renderer::bind(bricks, 3);
     // Set tex uniform
 	if (e.first == "sphere") {
 		glUniform1i(eff.get_uniform_location("tex"), 1);
+	}
+	else if (e.first == "torus") {
+		glUniform1i(eff.get_uniform_location("tex"), 2);
+	}
+	else if (e.first == "box") {
+		glUniform1i(eff.get_uniform_location("tex"), 3);
 	}
 	else {
 		glUniform1i(eff.get_uniform_location("tex"), 0);

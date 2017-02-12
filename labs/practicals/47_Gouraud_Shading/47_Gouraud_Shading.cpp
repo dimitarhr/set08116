@@ -88,7 +88,7 @@ bool load_content() {
   objectMaterial.set_diffuse(vec4(1.0f, 0.0f, 1.0f, 1.0f));
   meshes["cylinder"].set_material(objectMaterial);
   // Cyan sphere
-  objectMaterial.set_shininess(1000);
+  objectMaterial.set_shininess(25);
   objectMaterial.set_diffuse(vec4(1.0f, 1.0f, 1.0f, 0.0f));
   meshes["sphere"].set_material(objectMaterial);
   // White torus
