@@ -25,7 +25,7 @@ bool load_content() {
   meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
   meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
 
-  // Transform objects
+  // Transform objects 
   meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
   meshes["box"].get_transform().translate(vec3(-10.0f, 2.5f, -30.0f));
   meshes["tetra"].get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
@@ -46,7 +46,7 @@ bool load_content() {
   // Set materials
   // - all emissive is black
   // - all specular is white
-  // - all shininess is 25
+  // - all shininess is 25   
   // Red box
   material objectMaterial;
   objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -143,7 +143,7 @@ bool load_content() {
   // Blue,Direction (0, -1, 0)
   // 30 range,1.0 power
   spots[4].set_position(vec3(-17.5f, 15, -25));
-  spots[4].set_light_colour(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+  spots[4].set_light_colour(vec4(0.0f, 0.0f, 0.0f, 0.0f));
   spots[4].set_direction(normalize(vec3(0, -1, 0)));
   spots[4].set_range(30);
   spots[4].set_power(1.0f);
