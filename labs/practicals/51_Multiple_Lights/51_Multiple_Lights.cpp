@@ -143,7 +143,7 @@ bool load_content() {
   // Blue,Direction (0, -1, 0)
   // 30 range,1.0 power
   spots[4].set_position(vec3(-17.5f, 15, -25));
-  spots[4].set_light_colour(vec4(0.0f, 0.0f, 0.0f, 0.0f));
+  spots[4].set_light_colour(vec4(0.0f, 0.0f, 1.0f, 0.0f));
   spots[4].set_direction(normalize(vec3(0, -1, 0)));
   spots[4].set_range(30);
   spots[4].set_power(1.0f);

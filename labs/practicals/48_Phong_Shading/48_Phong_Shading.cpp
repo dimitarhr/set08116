@@ -14,6 +14,7 @@ directional_light light;
 free_camera cam;
 double cursor_x = 0.0;
 double cursor_y = 0.0;
+double angleLuna = 0.0f;
 
 vec3 bulbPos = vec3(0);
 bool up = true;
@@ -41,6 +42,7 @@ bool load_content() {
   meshes["disk"] = mesh(geometry_builder::create_disk(20));
   meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
   meshes["sphere"] = mesh(geometry_builder::create_sphere(80, 80));
+  meshes["luna"] = mesh(geometry_builder::create_sphere(40, 40));
   meshes["torus"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 5.0f));
 
   // Transform objects
@@ -58,6 +60,9 @@ bool load_content() {
   meshes["sphere"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
   meshes["sphere"].get_transform().translate(vec3(-25.0f, 10.0f, -25.0f));
   meshes["sphere"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
+  meshes["luna"].get_transform().scale = vec3(0.7f, 0.7f, 0.7f);
+  meshes["luna"].get_transform().translate(vec3(-25.0f, 10.0f, -29.0f));
+  meshes["luna"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
   meshes["torus"].get_transform().translate(vec3(-25.0f, 10.0f, -25.0f));
   meshes["torus"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 
@@ -122,6 +127,7 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
+	cout << "FPS: " << 1.0f / delta_time << endl;
 	/*
   if (glfwGetKey(renderer::get_window(), '1')) {
     cam.set_position(vec3(50, 10, 50));
@@ -147,6 +153,7 @@ bool update(float delta_time) {
 	double delta_x;
 	double delta_y;
 	vec3 pos = vec3(0);
+	vec3 lunaPos = vec3(0);
 
 	// *********************************
 	// Get the current cursor position
@@ -184,6 +191,10 @@ bool update(float delta_time) {
 
 	// Rotate the sphere
 	meshes["sphere"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
+	meshes["luna"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
+	lunaPos = vec3((cos(angleLuna)*5.0f),0.0f, (sin(angleLuna)*5.0f));
+	meshes["luna"].get_transform().position += lunaPos*delta_time;
+	angleLuna += 0.01f;
 	cout << bulbPos.y << endl;
 	
 	// Update the camera
