@@ -13,16 +13,16 @@ target_camera cam;
 bool load_content() {
   // *********************************
   // Load in model, models/teapot.obj
-	m = mesh((geometry("models/cola.3ds")));
+	m = mesh((geometry("models/suzanne.3ds")));
   // Load in texture, textures/checker.png
-	tex = texture("textures/checker.png");
-  // *********************************
+	tex = texture("textures/checker.png"); 
+  // *********************************  
 
-	m.get_transform().scale *= 0.5f;
+	m.get_transform().scale *= 12.5f;
 
   // Load in shaders
-  eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);
-  eff.add_shader("27_Texturing_Shader/simple_texture.frag", GL_FRAGMENT_SHADER);
+  eff.add_shader("shaders/basic.vert", GL_VERTEX_SHADER);
+  eff.add_shader("shaders/basic.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
 
@@ -53,9 +53,9 @@ bool render() {
 
   // *********************************
   // Bind texture to renderer
-  renderer::bind(tex,0);
+  //renderer::bind(tex,0);
   // Set the texture value for the shader here
-  glUniform1i(eff.get_uniform_location("tex"),0);
+  //glUniform1i(eff.get_uniform_location("tex"),0);
   // *********************************
 
   // Render mesh

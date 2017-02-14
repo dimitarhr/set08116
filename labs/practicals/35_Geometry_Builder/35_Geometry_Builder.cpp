@@ -60,8 +60,8 @@ bool load_content() {
 
   // Load texture
   tex = texture("textures/checker.png");
-  wall = texture("textures/grass.jpg");
-  tile = texture("textures/brick_diffuse.jpg");
+  //wall = texture("textures/grass.jpg");
+  //tile = texture("textures/brick_diffuse.jpg");
 
 
   // Load in shaders
