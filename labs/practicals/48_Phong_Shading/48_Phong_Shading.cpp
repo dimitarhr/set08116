@@ -100,10 +100,10 @@ bool load_content() {
   meshes["torus"].set_material(objectMaterial);
   // *********************************
   // Load texture
-  tex = texture("textures/checker_White.gif");
-  earth = texture("textures/earth.jpg");
+  tex = texture("textures/checked.gif");
+ /* earth = texture("textures/earth.jpg");
   bricks = texture("textures/brick_diffuse.jpg");
-  lava = texture("textures/lavatile.jpg");
+  lava = texture("textures/lavatile.jpg");*/
 
   // *********************************
   // ambient intensity (0.3, 0.3, 0.3)
@@ -234,9 +234,9 @@ bool render() {
 	renderer::bind(light, "light");
     // Bind texture
 	renderer::bind(tex,0);
-	renderer::bind(earth, 1);
+	/*renderer::bind(earth, 1);
 	renderer::bind(lava, 2);
-	renderer::bind(bricks, 3);
+	renderer::bind(bricks, 3);*/
     // Set tex uniform
 	if (e.first == "sphere") {
 		glUniform1i(eff.get_uniform_location("tex"), 1);

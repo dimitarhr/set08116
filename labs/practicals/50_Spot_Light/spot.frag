@@ -29,9 +29,9 @@ uniform vec3 eye_pos;
 uniform sampler2D tex;
 
 // Incoming position
-layout(location = 0) in vec3 position;
+layout(location = 0) in vec3 vertex_position;
 // Incoming normal
-layout(location = 1) in vec3 normal;
+layout(location = 1) in vec3 transformed_normal;
 // Incoming texture coordinate
 layout(location = 2) in vec2 tex_coord;
 
@@ -41,10 +41,10 @@ layout(location = 0) out vec4 colour;
 void main() {
   // *********************************
   // Calculate direction to the light
-    vec3 light_dir = normalize(spot.position - position);
+    vec3 light_dir = normalize(spot.position - vertex_position);
 
   // Calculate distance to light
-  float d = distance(spot.position,position);
+  float d = distance(spot.position,vertex_position);
 
   // Calculate attenuation value
     float attenuationFac = (spot.constant + spot.linear*d + spot.quadratic*d*d);
@@ -56,14 +56,14 @@ void main() {
     vec4 light_colour = spot.light_colour * (light_intensity / attenuationFac);
 
   // Calculate view direction
-    vec3 view_dir = normalize(eye_pos-position);
+    vec3 view_dir = normalize(eye_pos-vertex_position);
 
   // Now use standard phong shading but using calculated light colour and direction
   // - note no ambient
 
   // Calculate diffuse component
   // Calculate k
-  float diffuseK = max(dot(normal, light_dir),0.0f);
+  float diffuseK = max(dot(transformed_normal, light_dir),0.0f);
   
   // Calculate diffuse
   vec4 diffuse = diffuseK * mat.diffuse_reflection * light_colour;
@@ -73,7 +73,7 @@ void main() {
 
   // Calculate specular component
   // Calculate k
-  float specularK = pow(max(dot(normal, H),0.0f),mat.shininess);
+  float specularK = pow(max(dot(transformed_normal, H),0.0f),mat.shininess);
   
   // Calculate specular
   vec4 specular = specularK * (mat.specular_reflection * light_colour);

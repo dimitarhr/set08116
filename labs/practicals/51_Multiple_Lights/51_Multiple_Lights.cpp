@@ -74,8 +74,9 @@ bool load_content() {
   meshes["torus"].set_material(objectMaterial);
   // *********************************
 
-  // Load texture
-  tex = texture("textures/checker_White.gif");
+
+  // Load texture  
+  tex = texture("textures/checked.gif");
 
   // Set lighting values
   // *********************************
@@ -85,16 +86,16 @@ bool load_content() {
   points[0].set_light_colour(vec4(1.0f,0.0f,0.0f,1.0f));
   points[0].set_range(20.0f);
    
-  // Point 1, Position (-25, 5, -35)
+  // Point 1, Position (-25, 5, -35) 
   // Red,20 range  
   points[1].set_position(vec3(-25, 5, -35));
-  points[1].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  points[1].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
   points[1].set_range(20.0f);
-   
+    
   // Point 2,Position (-10, 5, -15)
-  // Red,20 range
+  // Red,20 range   
   points[2].set_position(vec3(-10, 5, -15));
-  points[2].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  points[2].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
   points[2].set_range(20.0f);
 
   // Point 3,Position (-10, 5, -35)
@@ -108,7 +109,7 @@ bool load_content() {
   // 20 range,0.5 power
   spots[0].set_position(vec3(-25,10,-15));
   spots[0].set_light_colour(vec4(0.0f,1.0f,0.0f,1.0f));
-  spots[0].set_direction(normalize(vec3(1,-1,-1)));
+  spots[0].set_direction(normalize(normalize(vec3(1,-1,-1))));
   spots[0].set_range(20); 
   spots[0].set_power(0.5f);  
    
@@ -123,7 +124,7 @@ bool load_content() {
 
   // Spot 2,Position (-10, 10, -15)
   // Green,Direction (-1, -1, -1) normalized
-  // 20 range,0.5 power
+  // 20 range,0.5 power          
   spots[2].set_position(vec3(-10, 10, -15));
   spots[2].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
   spots[2].set_direction(normalize(vec3(-1, -1, -1)));
@@ -140,7 +141,7 @@ bool load_content() {
   spots[3].set_power(0.5f);   
 
   // Spot 4,Position (-17.5, 15, -25)
-  // Blue,Direction (0, -1, 0)
+  // Blue,Direction (0, -1, 0) 
   // 30 range,1.0 power
   spots[4].set_position(vec3(-17.5f, 15, -25));
   spots[4].set_light_colour(vec4(0.0f, 0.0f, 1.0f, 0.0f));

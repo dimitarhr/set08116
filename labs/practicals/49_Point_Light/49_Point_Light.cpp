@@ -75,7 +75,7 @@ bool load_content() {
   // *********************************
 
   // Load texture
-  tex = texture("textures/checker_White.gif");
+  tex = texture("textures/checked.gif");
   // *********************************
   // Set lighting values, Position (-25, 10, -10)
   light.set_position(vec3(-25.0f,10.0f,-10.0f));
@@ -87,7 +87,7 @@ bool load_content() {
   eff.add_shader("49_Point_Light/point.vert",GL_VERTEX_SHADER);
   eff.add_shader("49_Point_Light/point.frag", GL_FRAGMENT_SHADER);
   // Build effect
-  eff.build();
+    eff.build();
   // *********************************
 
   // Set camera properties
@@ -98,7 +98,7 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
-  // Range of the point light
+  // Range of the point light  
   static float range = 20.0f;
   // *********************************
   // WSAD to move point light
@@ -125,7 +125,7 @@ bool update(float delta_time) {
 
   // Set range
   light.set_range(range);
-
+    
   // Rotate the sphere
   meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
 

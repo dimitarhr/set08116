@@ -10,7 +10,7 @@ effect eff;
 texture tex;
 target_camera cam;
 spot_light light; 
-
+    
 double cursor_x = 0.0;
 double cursor_y = 0.0;  
 
@@ -88,7 +88,7 @@ bool load_content() {
   // *********************************
 
   // Load texture
-  tex = texture("textures/checker_White.gif");
+  tex = texture("textures/checked.gif");
 
   // *********************************
   // Set lighting values
@@ -97,7 +97,7 @@ bool load_content() {
   // Light colour white
   light.set_light_colour(vec4(1.0f,1.0f,1.0f,1.0f));
   // Light direction to forward and down (normalized)
-  light.set_direction(vec3(0.0f,0.0f,-1.0f));
+  light.set_direction(normalize(vec3(0.0f,0.0f,-1.0f)));
   // Set range to 20
   light.set_range(20);
   // Set power to 1
@@ -170,12 +170,6 @@ bool update(float delta_time) {
   cursor_y = current_y;
   
   light.rotate(vec3(delta_x,delta_y,0.0f));
-
-
-
-
-
-
 
   // *********************************
 
