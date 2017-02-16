@@ -58,7 +58,7 @@ layout(location = 0) out vec4 colour;
 void main() {
   // *********************************
   // Calculate shade factor
-
+  float sh = calculate_shadow(shadow_map, light_space_pos);
   // Calculate view direction
 
   // Sample texture

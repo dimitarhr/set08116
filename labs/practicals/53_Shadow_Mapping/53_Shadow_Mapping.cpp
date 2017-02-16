@@ -22,8 +22,9 @@ bool load_content() {
 	meshes["teapot"] = mesh((geometry("models/teapot.obj")));
   // Need to rotate the teapot on x by negative pi/2
 	meshes["teapot"].get_transform().rotate(vec3(-half_pi<float>(),0.0f,0.0f));
+	//meshes["teapot"].get_transform().scale *= (vec3(0.1f, 0.1f, 0.1f));
   // Scale the teapot - (0.1, 0.1, 0.1)
-	//meshes["teapot"].get_transform().scale *= vec3(0.1, 0.1, 0.1);
+	meshes["teapot"].get_transform().scale *= vec3(0.1, 0.1, 0.1);
 		// ***********************
 		// Set materials
 		// - all emissive is black
@@ -108,20 +109,27 @@ bool render() {
     // View matrix taken from shadow map
 	auto V = shadow.get_view();
     // *********************************
-
     auto P = cam.get_projection();
     auto MVP = P * V * M;
     // Set MVP matrix uniform
     glUniformMatrix4fv(shadow_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Set M matrix uniform
+	/*glUniformMatrix4fv(shadow_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+	// Set N matrix uniform - remember - 3x3 matrix
+	glUniformMatrix3fv(shadow_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+	// Bind material
+	renderer::bind(m.get_material(), "mat");
+	renderer::bind(spot, "spot");
+	glUniform3fv(shadow_eff.get_uniform_location("eye_pos"), 1, value_ptr(shadow.get_view()));*/
     // Render mesh
     renderer::render(m);
   }
 
   // *********************************
   // Set render target back to the screen
-  renderer::set_render_target();
+	renderer::set_render_target();
   // Set cull face to back
-  glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
   // *********************************
 
   return true;

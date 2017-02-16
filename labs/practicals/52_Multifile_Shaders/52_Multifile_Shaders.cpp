@@ -13,7 +13,7 @@ directional_light light;
 vector<point_light> points(4);
 vector<spot_light> spots(5);
 
-bool load_content() {
+bool load_content() {  
   // Create plane mesh
   meshes["plane"] = mesh(geometry_builder::create_plane());
 
