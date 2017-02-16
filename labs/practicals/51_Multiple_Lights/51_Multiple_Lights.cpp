@@ -11,6 +11,8 @@ texture tex;
 target_camera cam;
 vector<point_light> points(4);
 vector<spot_light> spots(5);
+double angleLuna = 0.0f;
+vec3 lunaPos = vec3(0);
 
 bool load_content() {
   // Create plane mesh
@@ -47,7 +49,7 @@ bool load_content() {
   // - all emissive is black
   // - all specular is white
   // - all shininess is 25   
-  // Red box
+  // Red box      
   material objectMaterial;
   objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
   objectMaterial.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -89,13 +91,13 @@ bool load_content() {
   // Point 1, Position (-25, 5, -35) 
   // Red,20 range  
   points[1].set_position(vec3(-25, 5, -35));
-  points[1].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+  points[1].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
   points[1].set_range(20.0f);
     
   // Point 2,Position (-10, 5, -15)
   // Red,20 range   
   points[2].set_position(vec3(-10, 5, -15));
-  points[2].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+  points[2].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
   points[2].set_range(20.0f);
 
   // Point 3,Position (-10, 5, -35)
@@ -177,6 +179,19 @@ bool update(float delta_time) {
   }
   // Rotate the sphere
   meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+
+  lunaPos = vec3((cos(angleLuna)*50.0f), 0.0f, (sin(angleLuna)*50.0f));
+  
+  for (int i = 0; i < size(spots); i++) {
+	  //spots[i].rotate(vec3(half_pi<float>(), 0.0f, 0.0f)*delta_time);
+	  spots[i].move(lunaPos*delta_time);
+  }
+
+  for (int i = 0; i < size(points); i++) {
+	  //points[i].move(vec3(half_pi<float>(), 0.0f, 0.0f));
+	  points[i].move(lunaPos*delta_time);
+  }
+  angleLuna += 0.05f;
 
   cam.update(delta_time);
 

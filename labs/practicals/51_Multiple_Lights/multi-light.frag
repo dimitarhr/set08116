@@ -52,6 +52,8 @@ layout(location = 0) out vec4 colour;
 // Point light calculation
 vec4 calculate_point(in point_light point, in material mat, in vec3 vertex_position, in vec3 normal, in vec3 view_dir,
                      in vec4 tex_colour) {
+
+	vec4 newColour;
   // *********************************
   // Get distance between point light and vertex
   float d = distance(point.position,vertex_position);
@@ -96,17 +98,16 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 vertex_posit
   primary.a = 1.0f;
   secondary.a = 1.0f;
 
-  colour = primary*tex_colour + secondary;
+  newColour = primary*tex_colour + secondary;
 
-  // *********************************
-  //return vec4(1.0f,1.0f,1.0f,1.0f);
-  return colour;
+  return newColour;
   
 }
 
 // Spot light calculation
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 vertex_position, in vec3 transformed_normal, in vec3 view_dir,
                     in vec4 tex_colour) {
+	vec4 newColour;
   // *********************************
   // Calculate direction to the light
       vec3 light_dir = normalize(spot.position - vertex_position);
@@ -142,10 +143,6 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 vertex_position
   // Calculate specular
   vec4 specular = specularK * (mat.specular_reflection * light_colour);
 
-  
-  //if(dot(spot.direction,light_dir) < 0)
-  // return colour = vec4(0.0f,1.0f,0.0f,1.0f);
-
   // Calculate primary colour component
   // Set primary
   vec4 primary = mat.emissive + diffuse;
@@ -157,14 +154,11 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 vertex_position
   primary.a = 1.0f;
   secondary.a = 1.0f;
 
-  colour = primary*tex_colour + secondary;
-  // *********************************
-  return colour;
-  //return colour = vec4(0.0f,1.0f,0.0f,1.0f);
+  newColour = primary*tex_colour + secondary;
+  return newColour;
 }
 
 void main() {
-  vec4 colours[9];
   colour = vec4(0.0, 0.0, 0.0, 1.0);
   // *********************************
   // Calculate view direction
@@ -175,15 +169,11 @@ void main() {
 
   // Sum point lights
 	for (int i = 0; i < 4; ++i)
-		colours[i] = calculate_point(points[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
-	
-	//colour = calculate_point(points[0], mat, vertex_position, transformed_normal, view_dir, tex_colour) + calculate_point(points[1], mat, vertex_position, transformed_normal, view_dir, tex_colour);
-		
+		colour += calculate_point(points[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
+			
   // Sum spot lights
-  for (int i = 4; i < 9; ++i)
-		colours[i] =  calculate_spot(spots[i-4], mat, vertex_position, transformed_normal, view_dir, tex_colour);
-  // *********************************
-  for (int i = 0 ;i<9;i++)
-	colour += colours[i];
-  colour.a = 1.0f;
+  for (int i = 0; i < 5; ++i)
+		colour +=  calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
+
+	colour.a = 1.0f;
 }
