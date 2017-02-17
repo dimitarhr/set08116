@@ -8,11 +8,13 @@ using namespace glm;
 effect eff;
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
+int targetCamera = 1;
 map<string, mesh> meshes;
 texture surface, earth, lavaRing, disturb, moonSurface, box;
 mesh spikyBall;
 directional_light dirLight;
 vector<spot_light> spots(5);
+vector<point_light> points(4);
 
 double cursor_x = 0.0;
 double cursor_y = 0.0;
@@ -127,30 +129,28 @@ bool load_content() {
 	dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	// Light direction (1.0, 1.0, -1.0)
 	dirLight.set_direction(vec3(1.0f, 1.0f, 2.0f));
-	//25 12 10
-	spots[0].set_position(vec3(25, 10, 15));
+
+	points[0].set_position(vec3(25, 5, 10));
+	points[0].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	points[0].set_range(20.0f);
+
+	spots[0].set_position(vec3(20, 12, 15));
 	spots[0].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	spots[0].set_direction(normalize(vec3(1, -1, -1)));
-	spots[0].set_range(100);
+	spots[0].set_range(50);
 	spots[0].set_power(0.5f);
 
 	// Load in shaders
 	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
 	// Name of fragment shaders required
-	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag" };
+	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag" };
 	eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 	
 	// Build effect
 	eff.build();
 
-	// Set camera properties
-
-/*TARGET CAMERA*/
-	/*cam.set_position(vec3(0.0f, 10.0f, 50.0f));
-	cam.set_target(vec3(0.0f, 0.0f, -100.0f));
-	cam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);*/
-
-/*FREE CAMERA*/
+	// Set default camera properties
+	/*FREE CAMERA*/
 	cams[1]->set_position(vec3(40.0f, 10.0f, 50.0f));
 	cams[1]->set_target(vec3(0.0f, 0.0f, -100.0f));
 	cams[1]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
@@ -160,31 +160,48 @@ bool load_content() {
 
 
 bool update(float delta_time) {
-	cout << "FPS: " << 1.0f / delta_time << endl;
+	if (1.0f / delta_time < 50)
+	{
+		cout << "FPS: " << 1.0f / delta_time << endl;
+	}
 	// Update the camera
 
 	vec3 lunaPos = vec3(0);
 
+	// Set the correct camera index depending on the pressed button
 	if (glfwGetKey(renderer::get_window(), 'F')) 
 	{
 		cameraIndex = 1;
 	}
-	else if (glfwGetKey(renderer::get_window(), 'T'))
+
+	else if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))
 	{
 		cameraIndex = 0;
+		targetCamera = 1;
+	}
+	else if (glfwGetKey(renderer::get_window(), GLFW_KEY_2))
+	{
+		cameraIndex = 0;
+		targetCamera = 2;
 	}
 
-/*TARGET CAMERA*/
 	if (cameraIndex == 0)
 	{
-		cams[0]->set_position(vec3(0.0f, 10.0f, 50.0f));
-		cams[0]->set_target(vec3(0.0f, 0.0f, -100.0f));
+	/*TARGET CAMERA*/
+		if (targetCamera == 1) {
+			cams[0]->set_position(vec3(50.0f, 50.0f, 50.0f));
+			cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+		}
+		else if (targetCamera == 2) {
+			cams[0]->set_position(vec3(-50.0f, 50.0f, 50.0f));
+			cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+		}
 		cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
 		cams[0]->update(delta_time);
 	}
 	else
 	{
-		/*FREE CAMERA*/
+	/*FREE CAMERA*/
 		double current_x = 0;
 		double current_y = 0;
 		double delta_x;
@@ -240,6 +257,7 @@ bool update(float delta_time) {
 	//Rotating moon around the Earth
 	lunaPos = vec3(cos(angleLuna)*4.5f, 0.0f, sin(angleLuna)*4.5f);
 	meshes["moon"].get_transform().position = lunaPos + meshes["earth"].get_transform().position;
+	points[0].set_position(lunaPos + meshes["earth"].get_transform().position);
 	angleLuna -= 1.0 * delta_time;
 
 	return true;
@@ -282,6 +300,9 @@ bool render() {
 		
 		// Bind point lights
 		renderer::bind(dirLight, "light");
+
+		// Bind point lights
+		renderer::bind(points, "points"); 
 
 		// Bind spot lights 
 		renderer::bind(spots, "spots"); 
