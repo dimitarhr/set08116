@@ -16,6 +16,7 @@ mesh spikyBall;
 double cursor_x = 0.0;
 double cursor_y = 0.0;
 double angleLuna = 0.0f;
+double newX, newY;
 
 // before load_content
 bool initialise() {
@@ -165,7 +166,13 @@ bool update(float delta_time) {
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
 	meshes["moon"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
 	spikyBall.get_transform().rotate(vec3(0.0f, half_pi<float>() * delta_time, 0.0f));
+	// Not working
 	lunaPos = vec3((cos(angleLuna)*4.5f), 0.0f, (sin(angleLuna)*4.5f));
+	//meshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));
+	//meshes["earth"].get_transform().translate(vec3(25.0f, 10.0f, 10.0f));
+	/*newX = cos(angleLuna)*(25 - 25) - sin(angleLuna)*(18 - 10) + 25;
+	newY = sin(angleLuna)*(25 - 25) + cos(angleLuna)*(18 - 10) + 10;
+	lunaPos = vec3(newX, 0.0f, newY);*/
 	meshes["moon"].get_transform().position += lunaPos*delta_time;
 	angleLuna -= 0.01f;
 
