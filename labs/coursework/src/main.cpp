@@ -6,9 +6,8 @@ using namespace graphics_framework;
 using namespace glm;
 
 effect eff;
-//target_camera targetCam;
-//free_camera freeCamera;
 std::array<camera*, 2> cams;
+int cameraIndex = 1;
 map<string, mesh> meshes;
 texture surface, earth, lavaRing, disturb, moonSurface, box;
 mesh spikyBall;
@@ -164,57 +163,75 @@ bool update(float delta_time) {
 	cout << "FPS: " << 1.0f / delta_time << endl;
 	// Update the camera
 
-/*TARGET CAMERA*/
-	/*cam.update(delta_time);*/
-
-/*FREE CAMERA*/
-	double current_x = 0;
-	double current_y = 0;
-	double delta_x;
-	double delta_y;
-	vec3 pos = vec3(0);
 	vec3 lunaPos = vec3(0);
 
-	// The ratio of pixels to rotation - remember the fov
-	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
-	static double ratio_height = (quarter_pi<float>() *
-		(static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
-		static_cast<float>(renderer::get_screen_height());
-
-	// Get the current cursor position
-	glfwGetCursorPos(renderer::get_window(), &current_x, &current_y);
-	
-	// Calculate delta of cursor positions from last frame
-	delta_x = current_x - cursor_x;
-	delta_y = current_y - cursor_y;
-	// Multiply deltas by ratios - gets actual change in orientation
-	delta_x = delta_x * ratio_width;
-	delta_y = delta_y * ratio_height;
-	// Rotate cameras by delta
-	static_cast<free_camera*>(cams[1])->rotate(delta_x, -delta_y);
-
-	// Use keyboard to move the camera - WSAD
-	if (glfwGetKey(renderer::get_window(), 'W')) {
-		pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
+	if (glfwGetKey(renderer::get_window(), 'F')) 
+	{
+		cameraIndex = 1;
 	}
-	if (glfwGetKey(renderer::get_window(), 'S')) {
-		pos -= vec3(0.0f, 0.0f, 20.0f) * delta_time;
-	}
-	if (glfwGetKey(renderer::get_window(), 'A')) {
-		pos -= vec3(20.0f, 0.0f, 0.0f) * delta_time;
-	}
-	if (glfwGetKey(renderer::get_window(), 'D')) {
-		pos += vec3(20.0f, 0.0f, 0.0f) * delta_time;
+	else if (glfwGetKey(renderer::get_window(), 'T'))
+	{
+		cameraIndex = 0;
 	}
 
-	// Move camera
-	static_cast<free_camera*>(cams[1])->move(pos);
-	// Update the camera
-	static_cast<free_camera*>(cams[1])->update(delta_time);
+/*TARGET CAMERA*/
+	if (cameraIndex == 0)
+	{
+		cams[0]->set_position(vec3(0.0f, 10.0f, 50.0f));
+		cams[0]->set_target(vec3(0.0f, 0.0f, -100.0f));
+		cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
+		cams[0]->update(delta_time);
+	}
+	else
+	{
+		/*FREE CAMERA*/
+		double current_x = 0;
+		double current_y = 0;
+		double delta_x;
+		double delta_y;
+		vec3 pos = vec3(0);
 
-	// Update cursor pos
-	cursor_x = current_x;
-	cursor_y = current_y;
+		// The ratio of pixels to rotation - remember the fov
+		static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
+		static double ratio_height = (quarter_pi<float>() *
+			(static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
+			static_cast<float>(renderer::get_screen_height());
+
+		// Get the current cursor position
+		glfwGetCursorPos(renderer::get_window(), &current_x, &current_y);
+
+		// Calculate delta of cursor positions from last frame
+		delta_x = current_x - cursor_x;
+		delta_y = current_y - cursor_y;
+		// Multiply deltas by ratios - gets actual change in orientation
+		delta_x = delta_x * ratio_width;
+		delta_y = delta_y * ratio_height;
+		// Rotate cameras by delta
+		static_cast<free_camera*>(cams[1])->rotate(delta_x, -delta_y);
+
+		// Use keyboard to move the camera - WSAD
+		if (glfwGetKey(renderer::get_window(), 'W')) {
+			pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
+		}
+		if (glfwGetKey(renderer::get_window(), 'S')) {
+			pos -= vec3(0.0f, 0.0f, 20.0f) * delta_time;
+		}
+		if (glfwGetKey(renderer::get_window(), 'A')) {
+			pos -= vec3(20.0f, 0.0f, 0.0f) * delta_time;
+		}
+		if (glfwGetKey(renderer::get_window(), 'D')) {
+			pos += vec3(20.0f, 0.0f, 0.0f) * delta_time;
+		}
+
+		// Move camera
+		static_cast<free_camera*>(cams[1])->move(pos);
+		// Update the camera
+		static_cast<free_camera*>(cams[1])->update(delta_time);
+
+		// Update cursor pos
+		cursor_x = current_x;
+		cursor_y = current_y;
+	}
 
 	// Rotate the sphere
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
@@ -247,8 +264,8 @@ bool render() {
 		auto N = geometryItem.get_transform().get_normal_matrix();
 		// Create MVP matrix
 		auto M = geometryItem.get_transform().get_transform_matrix();
-		auto V = cams[1]->get_view();
-		auto P = cams[1]->get_projection();
+		auto V = cams[cameraIndex]->get_view();
+		auto P = cams[cameraIndex]->get_projection();
 		auto MVP = P * V * M;
 		
 		// Set MVP matrix uniform
@@ -295,7 +312,7 @@ bool render() {
 			glUniform1i(eff.get_uniform_location("tex"), 5);
 		}
 
-		glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[1]->get_position()));
+		glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
 
 		// Render geometry
 		renderer::render(geometryItem);
