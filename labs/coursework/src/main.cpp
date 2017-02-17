@@ -5,13 +5,15 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
-geometry geom;
 effect eff;
-//target_camera cam;
-free_camera freeCamera;
+//target_camera targetCam;
+//free_camera freeCamera;
+std::array<camera*, 2> cams;
 map<string, mesh> meshes;
 texture surface, earth, lavaRing, disturb, moonSurface, box;
 mesh spikyBall;
+directional_light dirLight;
+vector<spot_light> spots(5);
 
 double cursor_x = 0.0;
 double cursor_y = 0.0;
@@ -20,6 +22,8 @@ double newX, newY;
 
 // before load_content
 bool initialise() {
+	cams[0] = new target_camera();
+	cams[1] = new free_camera();
 	// Set input mode - hide the cursor
 	glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Capture initial mouse position
@@ -30,7 +34,7 @@ bool initialise() {
 bool load_content() {
 	// Create meshes
 	meshes["floorPlane"] = mesh(geometry_builder::create_plane());
-	meshes["ring"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 5.0f));
+	meshes["ring"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 6.5f));
 	meshes["earth"] = mesh(geometry_builder::create_sphere(60, 60));
 	meshes["moon"] = mesh(geometry_builder::create_sphere(30, 30));
 	meshes["ringBase"] = mesh(geometry_builder::create_pyramid());
@@ -47,13 +51,13 @@ bool load_content() {
 
 	// Transform objects
 	meshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
-	meshes["earth"].get_transform().translate(vec3(25.0f, 10.0f, 10.0f));
+	meshes["earth"].get_transform().translate(vec3(25.0f, 12.0f, 10.0f));
 	meshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
 	meshes["moon"].get_transform().scale = vec3(0.9f, 0.9f, 0.9f);
 	meshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));
 	meshes["moon"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
 	meshes["ring"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
-	meshes["ring"].get_transform().translate(vec3(25.0f, 10.0f, 10.0f));
+	meshes["ring"].get_transform().translate(vec3(25.0f, 12.0f, 10.0f));
 	meshes["ringBase"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["ringBase"].get_transform().translate(vec3(25.0f, 2.5f, 10.0f));
 	meshes["stickBoxLeft"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
@@ -75,6 +79,41 @@ bool load_content() {
 	spikyBall.get_transform().translate(vec3(-20.0f, 2.0f, 30.0f));
 	spikyBall.get_transform().rotate(vec3(0.0f, 0.0f, pi<float>()));
 
+	// Set materials
+	// - all emissive is black
+	// - all specular is white
+	// - all shininess is 25
+	// Earth
+	material objectMaterial;
+	objectMaterial.set_emissive(vec4(0.0f,0.0f,0.0f,1.0f));
+	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 0.5f));
+	objectMaterial.set_shininess(35);
+	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	meshes["earth"].set_material(objectMaterial);
+
+	// Moon
+	meshes["moon"].set_material(objectMaterial);
+
+	// Ring
+	objectMaterial.set_diffuse(vec4(0.8f, 0.8f, 0.8f, 1.0f));
+	meshes["ring"].set_material(objectMaterial);
+
+	// ringBase
+	meshes["ringBase"].set_material(objectMaterial);
+
+	meshes["stickBoxLeft"].set_material(objectMaterial);
+	meshes["smallStickBoxLeft"].set_material(objectMaterial);
+	meshes["stickBoxRight"].set_material(objectMaterial);
+	meshes["smallStickBoxRight"].set_material(objectMaterial);
+	meshes["stickBoxBack"].set_material(objectMaterial);
+	meshes["smallStickBoxBack"].set_material(objectMaterial);
+	meshes["stickBoxFront"].set_material(objectMaterial);
+	meshes["smallStickBoxFront"].set_material(objectMaterial);
+	meshes["sphereLeft"].set_material(objectMaterial);
+
+	// spikyBall
+	spikyBall.set_material(objectMaterial);
+
 	// Load texture
 	surface = texture("textures/moon_surface.jpg",true,true);
 	earth = texture("textures/earth.jpg", true, true);
@@ -83,9 +122,24 @@ bool load_content() {
 	moonSurface = texture("textures/moon_sphere.jpg", true, true);
 	box = texture("textures/moon_surface.png", true, true);
 
+	// ambient intensity (0.3, 0.3, 0.3)  
+	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	// Light colour white
+	dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	// Light direction (1.0, 1.0, -1.0)
+	dirLight.set_direction(vec3(1.0f, 1.0f, 2.0f));
+	//25 12 10
+	spots[0].set_position(vec3(25, 10, 15));
+	spots[0].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	spots[0].set_direction(normalize(vec3(1, -1, -1)));
+	spots[0].set_range(100);
+	spots[0].set_power(0.5f);
+
 	// Load in shaders
-	eff.add_shader("shaders/basic_textured.vert", GL_VERTEX_SHADER);
-	eff.add_shader("shaders/basic_textured.frag", GL_FRAGMENT_SHADER);
+	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
+	// Name of fragment shaders required
+	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag" };
+	eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 	
 	// Build effect
 	eff.build();
@@ -98,9 +152,9 @@ bool load_content() {
 	cam.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);*/
 
 /*FREE CAMERA*/
-	freeCamera.set_position(vec3(40.0f, 10.0f, 50.0f));
-	freeCamera.set_target(vec3(0.0f, 0.0f, -100.0f));
-	freeCamera.set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
+	cams[1]->set_position(vec3(40.0f, 10.0f, 50.0f));
+	cams[1]->set_target(vec3(0.0f, 0.0f, -100.0f));
+	cams[1]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
 
 	return true;
 }
@@ -137,7 +191,7 @@ bool update(float delta_time) {
 	delta_x = delta_x * ratio_width;
 	delta_y = delta_y * ratio_height;
 	// Rotate cameras by delta
-	freeCamera.rotate(delta_x, -delta_y);
+	static_cast<free_camera*>(cams[1])->rotate(delta_x, -delta_y);
 
 	// Use keyboard to move the camera - WSAD
 	if (glfwGetKey(renderer::get_window(), 'W')) {
@@ -154,9 +208,9 @@ bool update(float delta_time) {
 	}
 
 	// Move camera
-	freeCamera.move(pos);
+	static_cast<free_camera*>(cams[1])->move(pos);
 	// Update the camera
-	freeCamera.update(delta_time);
+	static_cast<free_camera*>(cams[1])->update(delta_time);
 
 	// Update cursor pos
 	cursor_x = current_x;
@@ -166,15 +220,10 @@ bool update(float delta_time) {
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
 	meshes["moon"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
 	spikyBall.get_transform().rotate(vec3(0.0f, half_pi<float>() * delta_time, 0.0f));
-	// Not working
-	lunaPos = vec3((cos(angleLuna)*4.5f), 0.0f, (sin(angleLuna)*4.5f));
-	//meshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));
-	//meshes["earth"].get_transform().translate(vec3(25.0f, 10.0f, 10.0f));
-	/*newX = cos(angleLuna)*(25 - 25) - sin(angleLuna)*(18 - 10) + 25;
-	newY = sin(angleLuna)*(25 - 25) + cos(angleLuna)*(18 - 10) + 10;
-	lunaPos = vec3(newX, 0.0f, newY);*/
-	meshes["moon"].get_transform().position += lunaPos*delta_time;
-	angleLuna -= 0.01f;
+	//Rotating moon around the Earth
+	lunaPos = vec3(cos(angleLuna)*4.5f, 0.0f, sin(angleLuna)*4.5f);
+	meshes["moon"].get_transform().position = lunaPos + meshes["earth"].get_transform().position;
+	angleLuna -= 1.0 * delta_time;
 
 	return true;
 }
@@ -194,16 +243,32 @@ bool render() {
 
 	for (auto &item : meshes) {
 		auto geometryItem = item.second;
-		
+		// Normal matrix
+		auto N = geometryItem.get_transform().get_normal_matrix();
 		// Create MVP matrix
 		auto M = geometryItem.get_transform().get_transform_matrix();
-		auto V = freeCamera.get_view();
-		auto P = freeCamera.get_projection();
+		auto V = cams[1]->get_view();
+		auto P = cams[1]->get_projection();
 		auto MVP = P * V * M;
 		
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 		
+		// Set M matrix uniform
+		glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+		
+		// Set N matrix uniform
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+
+		// Bind material
+		renderer::bind(geometryItem.get_material(), "mat");
+		
+		// Bind point lights
+		renderer::bind(dirLight, "light");
+
+		// Bind spot lights 
+		renderer::bind(spots, "spots"); 
+
 		// Set the texture value for the shader here
 		if (item.first == "earth") 
 		{
@@ -230,13 +295,15 @@ bool render() {
 			glUniform1i(eff.get_uniform_location("tex"), 5);
 		}
 
+		glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[1]->get_position()));
+
 		// Render geometry
 		renderer::render(geometryItem);
 	}
 
 /*SPIKY BALL*/
 	// Create MVP matrix
-	auto M = spikyBall.get_transform().get_transform_matrix();
+	/*auto M = spikyBall.get_transform().get_transform_matrix();
 	auto V = freeCamera.get_view();
 	auto P = freeCamera.get_projection();
 	auto MVP = P * V * M;
@@ -275,7 +342,7 @@ bool render() {
 	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 	glUniform1i(eff.get_uniform_location("tex"), 3);
 	renderer::render(spikyBall);
-
+	*/
 	return true;
 }
 

@@ -26,9 +26,9 @@ bool load_content() {
   // Scale the teapot - (0.1, 0.1, 0.1)
 	meshes["teapot"].get_transform().scale *= vec3(0.1, 0.1, 0.1);
   // *********************************
-
+	 
   // Load texture
-  tex = texture("textures/checker.png");
+  tex = texture("textures/checked.gif");
 
   // ***********************
   // Set materials
@@ -47,7 +47,7 @@ bool load_content() {
   meshes["teapot"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   meshes["teapot"].get_material().set_shininess(25.0f);
 
-  // *******************
+  // *******************  
   // Set spot properties
   // *******************
   // Pos (20, 30, 0), White
@@ -65,7 +65,7 @@ bool load_content() {
   main_eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 
   shadow_eff.add_shader("50_Spot_Light/spot.vert", GL_VERTEX_SHADER);
-  shadow_eff.add_shader("50_Spot_Light/spot.frag", GL_FRAGMENT_SHADER);
+  shadow_eff.add_shader("50_Spot_Light/spot.frag", GL_FRAGMENT_SHADER);  
 
   // Build effects
   main_eff.build();
@@ -119,7 +119,7 @@ bool render() {
     // View matrix taken from shadow map
 	auto V = shadow.get_view();
     // *********************************
-
+	  
     auto P = cam.get_projection();
     auto MVP = P * V * M;
     // Set MVP matrix uniform
@@ -160,30 +160,33 @@ bool render() {
                        value_ptr(m.get_transform().get_normal_matrix()));
     // *********************************
     // Set light transform
-
-
-
-
-
+	auto lM = m.get_transform().get_transform_matrix();
+	auto lV = shadow.get_view();
+	auto lP = cam.get_projection();
+	auto lightMVP = lP * lV * lM;
+	glUniformMatrix4fv(main_eff.get_uniform_location("lightMVP"), // Location of uniform
+					   1,                           			  // Number of values - 1 mat4
+					   GL_FALSE,								 // Transpose the matrix?
+						value_ptr(lightMVP));
     // Bind material
 	renderer::bind(m.get_material(), "mat");
     // Bind spot lights
 	renderer::bind(spot, "spots");
     // Bind texture
-	renderer::bind(tex, 0);
+	renderer::bind(tex, 0); 
     // Set tex uniform
 	glUniform1i(main_eff.get_uniform_location("tex"), 0);
     // Set eye position
 	glUniform3fv(main_eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
     // Bind shadow map texture - use texture unit 1
-	//renderer::bind(shadow.);
-
+	renderer::bind(shadow.buffer->get_depth(),1); 
+	glUniform1i(main_eff.get_uniform_location("shadow_map"), 1);
     // Render mesh
 	renderer::render(m);
     // *********************************
   }
 
-  return true;
+  return true; 
 }
 
 void main() {
