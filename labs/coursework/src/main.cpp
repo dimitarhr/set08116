@@ -83,7 +83,7 @@ bool load_content() {
 	// Set materials
 	// - all emissive is black
 	// - all specular is white
-	// - all shininess is 25
+	// - all shininess is 25 
 	// Earth
 	material objectMaterial;
 
