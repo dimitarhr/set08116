@@ -56,7 +56,7 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 position, in
                      in vec4 tex_colour);
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
                     in vec4 tex_colour);
-vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord);
+	//vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord);
 
 // Directional light information
 uniform directional_light light;
@@ -70,17 +70,21 @@ uniform material mat;
 uniform vec3 eye_pos;
 // Texture to sample from
 uniform sampler2D tex;
-// Normal map to sample from
-uniform sampler2D normal_map;
+/*
+	// Normal map to sample from
+	uniform sampler2D normal_map;
+*/
 
 // Incoming position
 layout(location = 0) in vec3 vertex_position;
 // Incoming normal
 layout(location = 1) in vec3 transformed_normal;
-// Incoming tangent
-layout(location = 3) in vec3 tangent;
-// Incoming binormal
-layout(location = 4) in vec3 binormal;
+/*
+	// Incoming tangent
+	layout(location = 3) in vec3 tangent;
+	// Incoming binormal
+	layout(location = 4) in vec3 binormal;
+*/
 // Incoming texture coordinate
 layout(location = 5) in vec2 tex_coord;
 
@@ -89,13 +93,11 @@ layout(location = 5) in vec2 tex_coord;
 layout(location = 0) out vec4 colour;
 
 void main() {
-	vec2 tex_coord2 = vec2(1.0,1.0);
   // *********************************
   // Calculate view direction
   vec3 view_dir = normalize(eye_pos-vertex_position);
   // Sample texture
-  tex_coord2 = vec2(tex_coord);
-  vec4 tex_colour = texture(tex, tex_coord2);
+  vec4 tex_colour = texture(tex, tex_coord);
   // Calculate directional light colour
   colour = calculate_direction(light, mat, transformed_normal, view_dir, tex_colour);
   colour.a = 1;

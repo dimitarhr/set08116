@@ -20,6 +20,7 @@ double cursor_x = 0.0;
 double cursor_y = 0.0;
 double angleLuna = 0.0f;
 double newX, newY;
+double sum = 0;
 
 // before load_content
 bool initialise() {
@@ -48,6 +49,7 @@ bool load_content() {
 	meshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.5f, 1.0f, 0.5f)));
 	meshes["smallStickBoxFront"] = mesh(geometry_builder::create_box(vec3(3.0f, 3.0f, 3.0f)));
 	meshes["sphereLeft"] = mesh(geometry_builder::create_sphere(30, 30));
+	meshes["wall"] = mesh(geometry_builder::create_box(vec3(1,7,32)));
 	spikyBall = mesh(geometry_builder::create_pyramid());
 
 	// Transform objects
@@ -75,6 +77,8 @@ bool load_content() {
 	meshes["smallStickBoxFront"].get_transform().translate(vec3(17.0f, 1.5f, 25.0f));
 	meshes["sphereLeft"].get_transform().translate(vec3(15.0f, 3.0f, 17.0f));
 	meshes["sphereLeft"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
+	meshes["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
+	meshes["wall"].get_transform().translate(vec3(-48.5f, 10.5f, 0.0f));
 	
 	spikyBall.get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
 	spikyBall.get_transform().translate(vec3(-20.0f, 2.0f, 30.0f));
@@ -86,9 +90,16 @@ bool load_content() {
 	// - all shininess is 25
 	// Earth
 	material objectMaterial;
-	objectMaterial.set_emissive(vec4(0.0f,0.0f,0.0f,1.0f));
-	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 0.5f));
+
+	// Floor
+	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	objectMaterial.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_shininess(35);
+	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	meshes["floorPlane"].set_material(objectMaterial);
+
+	// Earth
+	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["earth"].set_material(objectMaterial);
 
@@ -111,6 +122,7 @@ bool load_content() {
 	meshes["stickBoxFront"].set_material(objectMaterial);
 	meshes["smallStickBoxFront"].set_material(objectMaterial);
 	meshes["sphereLeft"].set_material(objectMaterial);
+	meshes["wall"].set_material(objectMaterial);
 
 	// spikyBall
 	spikyBall.set_material(objectMaterial);
@@ -122,7 +134,7 @@ bool load_content() {
 	disturb = texture("textures/disturb.jpg", true, true);
 	moonSurface = texture("textures/moon_sphere.jpg", true, true);
 	box = texture("textures/moon_surface.png", true, true);
-	earth_normal_map = texture("textures/earth_normalmap.png", true, true);
+	//earth_normal_map = texture("textures/earth_normalmap.png", true, true);
 
 	// ambient intensity (0.3, 0.3, 0.3)  
 	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -131,20 +143,29 @@ bool load_content() {
 	// Light direction (1.0, 1.0, -1.0)
 	dirLight.set_direction(vec3(1.0f, 1.0f, 2.0f));
 
-	points[0].set_position(vec3(25, 5, 10));
-	points[0].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	points[0].set_range(20.0f);
+	//25.0f, 12.0f, 10.0f
+	/*points[0].set_position(vec3(25, 6, 10));
+	points[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
+	points[0].set_range(20.0f);*/
 
-	spots[0].set_position(vec3(20, 12, 15)); 
-	spots[0].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	spots[0].set_direction(normalize(vec3(1, -1, -1)));
-	spots[0].set_range(50);
+	
+	spots[0].set_position(vec3(25, 0, 10)); 
+	spots[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
+	spots[0].set_direction(normalize(vec3(0, 1, -1)));
+	spots[0].set_range(80);
 	spots[0].set_power(0.5f);
+
+	// Spot light in front of the wall
+	spots[1].set_position(vec3(-45.5f, 10.5f, -20.0f));
+	spots[1].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	spots[1].set_direction(normalize(vec3(-1,0, 0)));
+	spots[1].set_range(100);
+	spots[1].set_power(1.0f);
 
 	// Load in shaders
 	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
 	// Name of fragment shaders required
-	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag", "shaders/part_normal_map.frag"};
+	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag"};
 	eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 	
 	// Build effect
@@ -161,10 +182,10 @@ bool load_content() {
 
 
 bool update(float delta_time) {
-	/*if (1.0f / delta_time < 50)
+	if (1.0f / delta_time < 50)
 	{
 		cout << "FPS: " << 1.0f / delta_time << endl;
-	}*/     
+	} 
 	// Update the camera
 
 	vec3 lunaPos = vec3(0);
@@ -254,18 +275,19 @@ bool update(float delta_time) {
 	// Rotate the sphere
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
 	meshes["moon"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
-	spikyBall.get_transform().rotate(vec3(0.0f, half_pi<float>() * delta_time, 0.0f));
+	//spikyBall.get_transform().rotate(vec3(0.0f, half_pi<float>() * delta_time, 0.0f));
+	
 	//Rotating moon around the Earth
 	lunaPos = vec3(cos(angleLuna)*4.5f, 0.0f, sin(angleLuna)*4.5f);
 	meshes["moon"].get_transform().position = lunaPos + meshes["earth"].get_transform().position;
-	points[0].set_position(lunaPos + meshes["earth"].get_transform().position);
+	spots[1].set_position(vec3(-25.5f, 10.5f, sin(sum) * -40));
 	angleLuna -= 1.0 * delta_time;
+	sum -= delta_time;
 
 	return true;
 }
 
 bool render() {
-
 	// Bind texture to renderer
 	renderer::bind(surface,0);
 	renderer::bind(earth, 1);
@@ -316,7 +338,7 @@ bool render() {
 			glUniform1i(eff.get_uniform_location("tex"), 1);
 			  
 			// Set normal_map uniform        
-			glUniform1i(eff.get_uniform_location("normal_map"), 6);
+			//glUniform1i(eff.get_uniform_location("normal_map"), 6);
 		}
 		else if (item.first == "ring")
 		{
