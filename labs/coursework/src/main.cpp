@@ -10,7 +10,7 @@ std::array<camera*, 2> cams;
 int cameraIndex = 1;
 int targetCamera = 1;
 map<string, mesh> meshes;
-texture surface, earth, lavaRing, disturb, moonSurface, box;
+texture surface, earth, lavaRing, disturb, moonSurface, box, earth_normal_map;
 mesh spikyBall;
 directional_light dirLight;
 vector<spot_light> spots(5);
@@ -122,6 +122,7 @@ bool load_content() {
 	disturb = texture("textures/disturb.jpg", true, true);
 	moonSurface = texture("textures/moon_sphere.jpg", true, true);
 	box = texture("textures/moon_surface.png", true, true);
+	earth_normal_map = texture("textures/earth_normalmap.png", true, true);
 
 	// ambient intensity (0.3, 0.3, 0.3)  
 	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -134,7 +135,7 @@ bool load_content() {
 	points[0].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	points[0].set_range(20.0f);
 
-	spots[0].set_position(vec3(20, 12, 15));
+	spots[0].set_position(vec3(20, 12, 15)); 
 	spots[0].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	spots[0].set_direction(normalize(vec3(1, -1, -1)));
 	spots[0].set_range(50);
@@ -143,7 +144,7 @@ bool load_content() {
 	// Load in shaders
 	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
 	// Name of fragment shaders required
-	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag" };
+	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag", "shaders/part_normal_map.frag"};
 	eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 	
 	// Build effect
@@ -160,10 +161,10 @@ bool load_content() {
 
 
 bool update(float delta_time) {
-	if (1.0f / delta_time < 50)
+	/*if (1.0f / delta_time < 50)
 	{
 		cout << "FPS: " << 1.0f / delta_time << endl;
-	}
+	}*/     
 	// Update the camera
 
 	vec3 lunaPos = vec3(0);
@@ -272,7 +273,9 @@ bool render() {
 	renderer::bind(disturb, 3);
 	renderer::bind(moonSurface, 4);
 	renderer::bind(box, 5);
-
+	// Bind normal_map
+	//renderer::bind(earth_normal_map, 6);
+	 
 	// Bind effect
 	renderer::bind(eff);
 
@@ -284,7 +287,7 @@ bool render() {
 		auto M = geometryItem.get_transform().get_transform_matrix();
 		auto V = cams[cameraIndex]->get_view();
 		auto P = cams[cameraIndex]->get_projection();
-		auto MVP = P * V * M;
+		auto MVP = P * V * M;  
 		
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
@@ -311,6 +314,9 @@ bool render() {
 		if (item.first == "earth") 
 		{
 			glUniform1i(eff.get_uniform_location("tex"), 1);
+			  
+			// Set normal_map uniform        
+			glUniform1i(eff.get_uniform_location("normal_map"), 6);
 		}
 		else if (item.first == "ring")
 		{

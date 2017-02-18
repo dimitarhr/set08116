@@ -20,7 +20,7 @@ bool load_content() {
   // Load brick.jpg texture
   tex = texture("textures/brick.jpg");
   // Load brick_normalmap.jpg texture
-  normal_map = texture("textures/brick_normalmap.jpg");
+  normal_map = texture("textures/brick_normalmap.jpg"); 
 
   // ****************************
   // Set material
@@ -89,21 +89,21 @@ bool render() {
                      value_ptr(cylinder.get_transform().get_normal_matrix()));
   // *********************************
   // Bind material
-
+  renderer::bind(cylinder.get_material(), "mat");
   // Bind light
-
+  renderer::bind(light, "light");
   // Bind texture
-
+  renderer::bind(tex, 0);
   // Set tex uniform
-
+  glUniform1i(eff.get_uniform_location("tex"),0);
   // Bind normal_map
-
+  renderer::bind(normal_map, 1);
   // Set normal_map uniform
-
+  glUniform1i(eff.get_uniform_location("normal_map"), 1);
   // Set eye position
-
+  glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
   // Render mesh
-
+  renderer::render(cylinder);
   // *********************************
   return true;
 }
