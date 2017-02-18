@@ -6,26 +6,24 @@ using namespace graphics_framework;
 using namespace glm;
 
 effect eff;
-std::array<camera*, 2> cams;
+std::array<camera*, 3> cams;
 int cameraIndex = 1;
 int targetCamera = 1;
 map<string, mesh> meshes;
-texture surface, earth, lavaRing, disturb, moonSurface, box, earth_normal_map;
-mesh spikyBall;
+map<string, texture> textures;
 directional_light dirLight;
 vector<spot_light> spots(5);
 vector<point_light> points(4);
 
 double cursor_x = 0.0;
 double cursor_y = 0.0;
-double angleLuna = 0.0f;
-double newX, newY;
-double sum = 0;
+double velocity = 0;
 
 // before load_content
 bool initialise() {
 	cams[0] = new target_camera();
 	cams[1] = new free_camera();
+	cams[2] = new chase_camera();
 	// Set input mode - hide the cursor
 	glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Capture initial mouse position
@@ -50,7 +48,7 @@ bool load_content() {
 	meshes["smallStickBoxFront"] = mesh(geometry_builder::create_box(vec3(3.0f, 3.0f, 3.0f)));
 	meshes["sphereLeft"] = mesh(geometry_builder::create_sphere(30, 30));
 	meshes["wall"] = mesh(geometry_builder::create_box(vec3(1,7,32)));
-	spikyBall = mesh(geometry_builder::create_pyramid());
+	meshes["torch"] = mesh(geometry_builder::create_cylinder());
 
 	// Transform objects
 	meshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
@@ -79,10 +77,8 @@ bool load_content() {
 	meshes["sphereLeft"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
 	meshes["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
 	meshes["wall"].get_transform().translate(vec3(-48.5f, 10.5f, 0.0f));
-	
-	spikyBall.get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
-	spikyBall.get_transform().translate(vec3(-20.0f, 2.0f, 30.0f));
-	spikyBall.get_transform().rotate(vec3(0.0f, 0.0f, pi<float>()));
+	meshes["torch"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()));
+	meshes["torch"].get_transform().translate(vec3(-15.5f, 10.5f, -40));
 
 	// Set materials
 	// - all emissive is black
@@ -98,7 +94,13 @@ bool load_content() {
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["floorPlane"].set_material(objectMaterial);
 
+	// Torch
+	objectMaterial.set_emissive(vec4(0.5f, 0.5f, 0.0f, 1.0f));
+	objectMaterial.set_diffuse(vec4(0.8f, 0.8f, 0.0f, 1.0f));
+	meshes["torch"].set_material(objectMaterial);
+
 	// Earth
+	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["earth"].set_material(objectMaterial);
@@ -124,16 +126,14 @@ bool load_content() {
 	meshes["sphereLeft"].set_material(objectMaterial);
 	meshes["wall"].set_material(objectMaterial);
 
-	// spikyBall
-	spikyBall.set_material(objectMaterial);
-
 	// Load texture
-	surface = texture("textures/moon_surface.jpg",true,true);
-	earth = texture("textures/earth.jpg", true, true);
-	lavaRing = texture("textures/lavatile.jpg", true, true);
-	disturb = texture("textures/disturb.jpg", true, true);
-	moonSurface = texture("textures/moon_sphere.jpg", true, true);
-	box = texture("textures/moon_surface.png", true, true);
+	
+	textures["surface"] = texture("textures/moon_surface.jpg",true,true);
+	textures["earth"] = texture("textures/earth.jpg", true, true);
+	textures["lavaRing"] = texture("textures/lavatile.jpg", true, true);
+	textures["disturb"] = texture("textures/disturb.jpg", true, true);
+	textures["moonSurface"] = texture("textures/moon_sphere.jpg", true, true);
+	textures["box"] = texture("textures/moon_surface.png", true, true);
 	//earth_normal_map = texture("textures/earth_normalmap.png", true, true);
 
 	// ambient intensity (0.3, 0.3, 0.3)  
@@ -145,22 +145,22 @@ bool load_content() {
 
 	//25.0f, 12.0f, 10.0f
 	/*points[0].set_position(vec3(25, 6, 10));
-	points[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
+	points[0].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	points[0].set_range(20.0f);*/
 
 	
-	spots[0].set_position(vec3(25, 0, 10)); 
+	spots[0].set_position(vec3(25.0f, 0.0f, 10.0f));
 	spots[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
 	spots[0].set_direction(normalize(vec3(0, 1, -1)));
 	spots[0].set_range(80);
 	spots[0].set_power(0.5f);
 
 	// Spot light in front of the wall
-	spots[1].set_position(vec3(-45.5f, 10.5f, -20.0f));
+	spots[1].set_position(vec3(-5.5f, 10.5f, -40));
 	spots[1].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	spots[1].set_direction(normalize(vec3(-1,0, 0)));
 	spots[1].set_range(100);
-	spots[1].set_power(1.0f);
+	spots[1].set_power(0.5f);
 
 	// Load in shaders
 	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
@@ -206,6 +206,11 @@ bool update(float delta_time) {
 		cameraIndex = 0;
 		targetCamera = 2;
 	}
+	else if (glfwGetKey(renderer::get_window(), 'T'))
+	{
+		cameraIndex = 2;
+	}
+
 
 	if (cameraIndex == 0)
 	{
@@ -221,7 +226,7 @@ bool update(float delta_time) {
 		cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
 		cams[0]->update(delta_time);
 	}
-	else
+	else if (cameraIndex == 1)
 	{
 	/*FREE CAMERA*/
 		double current_x = 0;
@@ -271,35 +276,52 @@ bool update(float delta_time) {
 		cursor_x = current_x;
 		cursor_y = current_y;
 	}
+	else
+	{
+		/*CHASE CAMERA*/
+		static_cast<chase_camera*>(cams[2])->set_pos_offset(vec3(0.0f, 2.0f, 10.0f));
+		static_cast<chase_camera*>(cams[2])->set_springiness(0.5f);
+		static_cast<chase_camera*>(cams[2])->move(meshes["moon"].get_transform().position, lunaPos);
+		cams[2]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
+		// Update the camera
+		cams[2]->update(delta_time);
+	}
 
 	// Rotate the sphere
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
 	meshes["moon"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
-	//spikyBall.get_transform().rotate(vec3(0.0f, half_pi<float>() * delta_time, 0.0f));
 	
 	//Rotating moon around the Earth
-	lunaPos = vec3(cos(angleLuna)*4.5f, 0.0f, sin(angleLuna)*4.5f);
+	lunaPos = vec3(cos(velocity)*4.5f, 0.0f, sin(velocity)*4.5f);
 	meshes["moon"].get_transform().position = lunaPos + meshes["earth"].get_transform().position;
-	spots[1].set_position(vec3(-25.5f, 10.5f, sin(sum) * -40));
-	angleLuna -= 1.0 * delta_time;
-	sum -= delta_time;
+	spots[1].set_position(vec3(-5.5f, 10.5f, sin(velocity) * -40));
+	meshes["torch"].get_transform().position = vec3(-5.5f, 10.5f, sin(velocity) * -40);
+	velocity -= delta_time;
 
 	return true;
 }
 
 bool render() {
 	// Bind texture to renderer
-	renderer::bind(surface,0);
-	renderer::bind(earth, 1);
-	renderer::bind(lavaRing, 2);
-	renderer::bind(disturb, 3);
-	renderer::bind(moonSurface, 4);
-	renderer::bind(box, 5);
+	renderer::bind(textures["surface"],0);
+	renderer::bind(textures["earth"], 1);
+	renderer::bind(textures["lavaRing"], 2);
+	renderer::bind(textures["disturb"], 3);
+	renderer::bind(textures["moonSurface"], 4);
+	renderer::bind(textures["box"], 5);
 	// Bind normal_map
 	//renderer::bind(earth_normal_map, 6);
 	 
 	// Bind effect
 	renderer::bind(eff);
+
+
+	// Bind point lights
+	renderer::bind(dirLight, "light");
+	// Bind point lights
+	renderer::bind(points, "points");
+	// Bind spot lights 
+	renderer::bind(spots, "spots");
 
 	for (auto &item : meshes) {
 		auto geometryItem = item.second;
@@ -322,15 +344,6 @@ bool render() {
 
 		// Bind material
 		renderer::bind(geometryItem.get_material(), "mat");
-		
-		// Bind point lights
-		renderer::bind(dirLight, "light");
-
-		// Bind point lights
-		renderer::bind(points, "points"); 
-
-		// Bind spot lights 
-		renderer::bind(spots, "spots"); 
 
 		// Set the texture value for the shader here
 		if (item.first == "earth") 
@@ -366,49 +379,6 @@ bool render() {
 		// Render geometry
 		renderer::render(geometryItem);
 	}
-
-/*SPIKY BALL*/
-	// Create MVP matrix
-	/*auto M = spikyBall.get_transform().get_transform_matrix();
-	auto V = freeCamera.get_view();
-	auto P = freeCamera.get_projection();
-	auto MVP = P * V * M;
-
-	// Bottom
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	glUniform1i(eff.get_uniform_location("tex"), 3);
-	renderer::render(spikyBall);
-
-	// Right
-	MVP = P * V * rotate(translate(M, vec3(-1.0f, -1.0f, 0.0f)), half_pi<float>(), vec3(0, 0, 1));
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	glUniform1i(eff.get_uniform_location("tex"), 3);
-	renderer::render(spikyBall);
-
-	// Left
-	MVP = P * V * rotate(translate(M, vec3(1.0f, -1.0f, 0.0f)), -half_pi<float>(), vec3(0, 0, 1));
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	glUniform1i(eff.get_uniform_location("tex"), 3);
-	renderer::render(spikyBall);
-
-	// Top
-	MVP = P * V * rotate(translate(M, vec3(0.0f, -2.0f, 0.0f)), pi<float>(), vec3(0, 0, 1));
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	glUniform1i(eff.get_uniform_location("tex"), 3);
-	renderer::render(spikyBall);
-
-	// Front
-	MVP = P * V * rotate(translate(M, vec3(0.0f, -1.0f, 1.0f)), half_pi<float>(), vec3(1, 0, 0));
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	glUniform1i(eff.get_uniform_location("tex"), 3);
-	renderer::render(spikyBall);
-
-	// Back
-	MVP = P * V * rotate(translate(M, vec3(0.0f, -1.0f, -1.0f)), -half_pi<float>(), vec3(1, 0, 0));
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	glUniform1i(eff.get_uniform_location("tex"), 3);
-	renderer::render(spikyBall);
-	*/
 	return true;
 }
 
