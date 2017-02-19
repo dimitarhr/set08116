@@ -6,7 +6,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 effect eff;
-std::array<camera*, 3> cams;
+std::array<camera*, 2> cams;
 int cameraIndex = 1;
 int targetCamera = 1;
 map<string, mesh> meshes;
@@ -23,7 +23,6 @@ double velocity = 0;
 bool initialise() {
 	cams[0] = new target_camera();
 	cams[1] = new free_camera();
-	cams[2] = new chase_camera();
 	// Set input mode - hide the cursor
 	glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Capture initial mouse position
@@ -134,7 +133,8 @@ bool load_content() {
 	textures["disturb"] = texture("textures/disturb.jpg", true, true);
 	textures["moonSurface"] = texture("textures/moon_sphere.jpg", true, true);
 	textures["box"] = texture("textures/moon_surface.png", true, true);
-	//earth_normal_map = texture("textures/earth_normalmap.png", true, true);
+	/*textures["earth_normal_map"] = texture("textures/earth_normalmap.png", true, true);
+	textures["rocks_normal_map"] = texture("textures/rock_norm.jpg", true, true);*/
 
 	// ambient intensity (0.3, 0.3, 0.3)  
 	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -182,11 +182,8 @@ bool load_content() {
 
 
 bool update(float delta_time) {
-	if (1.0f / delta_time < 50)
-	{
-		cout << "FPS: " << 1.0f / delta_time << endl;
-	} 
-	// Update the camera
+	// Display the FPS
+	cout << "FPS: " << 1.0f / delta_time << endl;
 
 	vec3 lunaPos = vec3(0);
 
@@ -205,10 +202,6 @@ bool update(float delta_time) {
 	{
 		cameraIndex = 0;
 		targetCamera = 2;
-	}
-	else if (glfwGetKey(renderer::get_window(), 'T'))
-	{
-		cameraIndex = 2;
 	}
 
 
@@ -276,16 +269,6 @@ bool update(float delta_time) {
 		cursor_x = current_x;
 		cursor_y = current_y;
 	}
-	else
-	{
-		/*CHASE CAMERA*/
-		static_cast<chase_camera*>(cams[2])->set_pos_offset(vec3(0.0f, 2.0f, 10.0f));
-		static_cast<chase_camera*>(cams[2])->set_springiness(0.5f);
-		static_cast<chase_camera*>(cams[2])->move(meshes["moon"].get_transform().position, lunaPos);
-		cams[2]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
-		// Update the camera
-		cams[2]->update(delta_time);
-	}
 
 	// Rotate the sphere
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
@@ -310,7 +293,8 @@ bool render() {
 	renderer::bind(textures["moonSurface"], 4);
 	renderer::bind(textures["box"], 5);
 	// Bind normal_map
-	//renderer::bind(earth_normal_map, 6);
+	/*renderer::bind(textures["earth_normal_map"], 6);
+	renderer::bind(textures["rocks_normal_map"], 7);*/
 	 
 	// Bind effect
 	renderer::bind(eff);
@@ -367,6 +351,7 @@ bool render() {
 		}
 		else if (item.first == "floorPlane")
 		{
+			//glUniform1i(eff.get_uniform_location("normal_map"), 7);
 			glUniform1i(eff.get_uniform_location("tex"), 0);
 		}
 		else

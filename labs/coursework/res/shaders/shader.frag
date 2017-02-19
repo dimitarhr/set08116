@@ -73,8 +73,8 @@ uniform sampler2D tex;
 /*
 	// Normal map to sample from
 	uniform sampler2D normal_map;
-*/
 
+*/
 // Incoming position
 layout(location = 0) in vec3 vertex_position;
 // Incoming normal
@@ -98,6 +98,10 @@ void main() {
   vec3 view_dir = normalize(eye_pos-vertex_position);
   // Sample texture
   vec4 tex_colour = texture(tex, tex_coord);
+
+  // Using normal mapping
+	//vec3 pNormal = calc_normal(transformed_normal, tangent, binormal, normal_map, tex_coord);
+
   // Calculate directional light colour
   colour = calculate_direction(light, mat, transformed_normal, view_dir, tex_colour);
   colour.a = 1;
