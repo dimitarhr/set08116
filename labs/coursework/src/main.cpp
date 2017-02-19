@@ -46,8 +46,14 @@ bool load_content() {
 	meshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.5f, 1.0f, 0.5f)));
 	meshes["smallStickBoxFront"] = mesh(geometry_builder::create_box(vec3(3.0f, 3.0f, 3.0f)));
 	meshes["sphereLeft"] = mesh(geometry_builder::create_sphere(30, 30));
+	// Under testing
 	meshes["wall"] = mesh(geometry_builder::create_box(vec3(1,7,32)));
 	meshes["torch"] = mesh(geometry_builder::create_cylinder());
+	meshes["whiteHouse"] = mesh(geometry_builder::create_cylinder());
+	meshes["sun"] = mesh(geometry_builder::create_sphere(30, 30));
+	meshes["smallTorus"] = mesh(geometry_builder::create_torus(20,20,1,2.5f));
+	meshes["mediumTorus"] = mesh(geometry_builder::create_torus(30, 30, 1,5));
+	meshes["largeTorus"] = mesh(geometry_builder::create_torus(40, 40,1,10));
 
 	// Transform objects
 	meshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
@@ -74,10 +80,15 @@ bool load_content() {
 	meshes["smallStickBoxFront"].get_transform().translate(vec3(17.0f, 1.5f, 25.0f));
 	meshes["sphereLeft"].get_transform().translate(vec3(15.0f, 3.0f, 17.0f));
 	meshes["sphereLeft"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
+	// Under testing
 	meshes["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
 	meshes["wall"].get_transform().translate(vec3(-48.5f, 10.5f, 0.0f));
 	meshes["torch"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()));
 	meshes["torch"].get_transform().translate(vec3(-15.5f, 10.5f, -40));
+	meshes["whiteHouse"].get_transform().translate(vec3(10, 0, -8));
+	meshes["smallTorus"].get_transform().translate(vec3(25.0f, 12.0f, -20.0f));
+	meshes["mediumTorus"].get_transform().translate(vec3(25.0f, 12.0f, -20.0f));
+	meshes["largeTorus"].get_transform().translate(vec3(25.0f, 12.0f, -20.0f));
 
 	// Set materials
 	// - all emissive is black
@@ -90,7 +101,7 @@ bool load_content() {
 	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_shininess(35);
-	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 	meshes["floorPlane"].set_material(objectMaterial);
 
 	// Torch
@@ -108,12 +119,16 @@ bool load_content() {
 	meshes["moon"].set_material(objectMaterial);
 
 	// Ring
-	objectMaterial.set_diffuse(vec4(0.8f, 0.8f, 0.8f, 1.0f));
+	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["ring"].set_material(objectMaterial);
+
+	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 
 	// ringBase
 	meshes["ringBase"].set_material(objectMaterial);
-
+	
+	// The rest of the surroundings
+	objectMaterial.set_shininess(65);
 	meshes["stickBoxLeft"].set_material(objectMaterial);
 	meshes["smallStickBoxLeft"].set_material(objectMaterial);
 	meshes["stickBoxRight"].set_material(objectMaterial);
@@ -126,7 +141,6 @@ bool load_content() {
 	meshes["wall"].set_material(objectMaterial);
 
 	// Load texture
-	
 	textures["surface"] = texture("textures/moon_surface.jpg",true,true);
 	textures["earth"] = texture("textures/earth.jpg", true, true);
 	textures["lavaRing"] = texture("textures/lavatile.jpg", true, true);
@@ -136,19 +150,20 @@ bool load_content() {
 	/*textures["earth_normal_map"] = texture("textures/earth_normalmap.png", true, true);
 	textures["rocks_normal_map"] = texture("textures/rock_norm.jpg", true, true);*/
 
-	// ambient intensity (0.3, 0.3, 0.3)  
-	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	// Light colour white
-	dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	// Light direction (1.0, 1.0, -1.0)
-	dirLight.set_direction(vec3(1.0f, 1.0f, 2.0f));
+	/*DIRECTIONAL LIGHT*/
+	// ambient intensity 
+	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+	// Light colour
+	dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+	// Light direction
+	dirLight.set_direction(vec3(1.0f, 1.0f, 1.0f));
 
-	//25.0f, 12.0f, 10.0f
-	/*points[0].set_position(vec3(25, 6, 10));
+	/*points[0].set_position(vec3(0, 0, -10));
 	points[0].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	points[0].set_range(20.0f);*/
-
+	points[0].set_range(200.0f);*/
 	
+	/*SPOT LIGHT*/
+	// Spot light in the torrus
 	spots[0].set_position(vec3(25.0f, 0.0f, 10.0f));
 	spots[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
 	spots[0].set_direction(normalize(vec3(0, 1, -1)));
@@ -161,6 +176,14 @@ bool load_content() {
 	spots[1].set_direction(normalize(vec3(-1,0, 0)));
 	spots[1].set_range(100);
 	spots[1].set_power(0.5f);
+	
+	// The green spot light
+	spots[2].set_position(vec3(10, 0, -8));
+	spots[2].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	spots[2].set_direction(normalize(vec3(1, 0, 1)));
+	spots[2].set_range(50);
+	spots[2].set_power(0.1f);
+
 
 	// Load in shaders
 	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
@@ -185,7 +208,8 @@ bool update(float delta_time) {
 	// Display the FPS
 	cout << "FPS: " << 1.0f / delta_time << endl;
 
-	vec3 lunaPos = vec3(0);
+	vec3 moonPos = vec3(0);
+	vec3 diagonalMovement = vec3(0);
 
 	// Set the correct camera index depending on the pressed button
 	if (glfwGetKey(renderer::get_window(), 'F')) 
@@ -203,11 +227,16 @@ bool update(float delta_time) {
 		cameraIndex = 0;
 		targetCamera = 2;
 	}
+	else if (glfwGetKey(renderer::get_window(), GLFW_KEY_3))
+	{
+		cameraIndex = 0;
+		targetCamera = 3;
+	}
 
 
 	if (cameraIndex == 0)
 	{
-	/*TARGET CAMERA*/
+	/*TARGET CAMERAS*/
 		if (targetCamera == 1) {
 			cams[0]->set_position(vec3(50.0f, 50.0f, 50.0f));
 			cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
@@ -215,6 +244,10 @@ bool update(float delta_time) {
 		else if (targetCamera == 2) {
 			cams[0]->set_position(vec3(-50.0f, 50.0f, 50.0f));
 			cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+		}
+		else if (targetCamera == 3) {
+			cams[0]->set_position(vec3(-10.0f, 100.0f, 0.0f));
+			cams[0]->set_target(vec3(0.0f, 0.0f, 0.0f));
 		}
 		cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
 		cams[0]->update(delta_time);
@@ -228,7 +261,7 @@ bool update(float delta_time) {
 		double delta_y;
 		vec3 pos = vec3(0);
 
-		// The ratio of pixels to rotation - remember the fov
+		// The ratio of pixels to rotation
 		static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
 		static double ratio_height = (quarter_pi<float>() *
 			(static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
@@ -243,10 +276,10 @@ bool update(float delta_time) {
 		// Multiply deltas by ratios - gets actual change in orientation
 		delta_x = delta_x * ratio_width;
 		delta_y = delta_y * ratio_height;
-		// Rotate cameras by delta
+		// Rotate camera by delta
 		static_cast<free_camera*>(cams[1])->rotate(delta_x, -delta_y);
 
-		// Use keyboard to move the camera - WSAD
+		// Use keyboard to move the camera
 		if (glfwGetKey(renderer::get_window(), 'W')) {
 			pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
 		}
@@ -270,15 +303,40 @@ bool update(float delta_time) {
 		cursor_y = current_y;
 	}
 
-	// Rotate the sphere
+	// Rotate the Earth and the Moon around their Z axis
 	meshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
 	meshes["moon"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
-	
+	meshes["smallTorus"].get_transform().rotate(vec3(sin(delta_time)*-0.01, 0.0f, cos(delta_time)*-0.01));
+	meshes["mediumTorus"].get_transform().rotate(vec3(cos(delta_time)*0.01, 0.0f, sin(delta_time)*0.01));
+	meshes["largeTorus"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
+
+	moonPos = vec3(cos(velocity)*4.5f, 0.0f, sin(velocity)*4.5f);
+	diagonalMovement = vec3(cos(velocity)*6.5, cos(velocity)*6.5, sin(velocity)*6.5);
 	//Rotating moon around the Earth
-	lunaPos = vec3(cos(velocity)*4.5f, 0.0f, sin(velocity)*4.5f);
-	meshes["moon"].get_transform().position = lunaPos + meshes["earth"].get_transform().position;
+	meshes["moon"].get_transform().position = moonPos + meshes["earth"].get_transform().position;
+	// Spot light in front of the wall
 	spots[1].set_position(vec3(-5.5f, 10.5f, sin(velocity) * -40));
 	meshes["torch"].get_transform().position = vec3(-5.5f, 10.5f, sin(velocity) * -40);
+	// Lights around the Earth
+	spots[2].set_position(moonPos*vec3(2));
+	// Object moving in diagonals around the Earth
+	meshes["whiteHouse"].get_transform().position = diagonalMovement + meshes["mediumTorus"].get_transform().position;
+	// Day/night loop
+	dirLight.set_direction(vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(0, 0, 2));
+	meshes["sun"].get_transform().position = vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(1, 1, 2);
+	if (meshes["sun"].get_transform().position.y < -1) 
+	{
+		// ambient intensity 
+		dirLight.set_ambient_intensity(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		// Light colour
+		dirLight.set_light_colour(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	}
+	else {
+		// ambient intensity 
+		dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+		// Light colour
+		dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+	}
 	velocity -= delta_time;
 
 	return true;
@@ -300,7 +358,7 @@ bool render() {
 	renderer::bind(eff);
 
 
-	// Bind point lights
+	// Bind direction lights
 	renderer::bind(dirLight, "light");
 	// Bind point lights
 	renderer::bind(points, "points");
