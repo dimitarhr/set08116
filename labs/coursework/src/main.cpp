@@ -100,6 +100,7 @@ bool load_content() {
 	// Floor
 	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	//objectMaterial.set_specular(vec4(0.1f, 0.1f, 0.1f, 1.0f));
 	objectMaterial.set_shininess(35);
 	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 	meshes["floorPlane"].set_material(objectMaterial);
@@ -115,16 +116,24 @@ bool load_content() {
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["earth"].set_material(objectMaterial);
 
-	// Moon
+	objectMaterial.set_specular(vec4(0.1f, 0.1f, 0.1f, 1.0f));
+	meshes["wall"].set_material(objectMaterial);
+
+	// Moon 
 	meshes["moon"].set_material(objectMaterial);
 
 	// Ring
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["ring"].set_material(objectMaterial);
 
-	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f)); 
 
 	// ringBase
+	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	objectMaterial.set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	objectMaterial.set_shininess(35);
+	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+
 	meshes["ringBase"].set_material(objectMaterial);
 	
 	// The rest of the surroundings
@@ -138,23 +147,23 @@ bool load_content() {
 	meshes["stickBoxFront"].set_material(objectMaterial);
 	meshes["smallStickBoxFront"].set_material(objectMaterial);
 	meshes["sphereLeft"].set_material(objectMaterial);
-	meshes["wall"].set_material(objectMaterial);
 
-	// Load texture
-	textures["surface"] = texture("textures/moon_surface.jpg",true,true);
+	// Load texture 
+	textures["surface"] = texture("textures/sand.jpg",true,true);
 	textures["earth"] = texture("textures/earth.jpg", true, true);
 	textures["lavaRing"] = texture("textures/lavatile.jpg", true, true);
 	textures["disturb"] = texture("textures/disturb.jpg", true, true);
 	textures["moonSurface"] = texture("textures/moon_sphere.jpg", true, true);
-	textures["box"] = texture("textures/moon_surface.png", true, true);
-	/*textures["earth_normal_map"] = texture("textures/earth_normalmap.png", true, true);
-	textures["rocks_normal_map"] = texture("textures/rock_norm.jpg", true, true);*/
+	textures["box"] = texture("textures/red_rock.jpg", true, true);
+	textures["earth_normal_map"] = texture("textures/earth_normalmap.jpg", true, true);
+	textures["rocks_normal_map"] = texture("textures/rock_norma_map.jpg", true, true);
+	textures["sand_normal-map"] = texture("textures/sand_normal-map.jpg", true, true);
 
 	/*DIRECTIONAL LIGHT*/
 	// ambient intensity 
-	dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+	dirLight.set_ambient_intensity(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	// Light colour
-	dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+	dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	// Light direction
 	dirLight.set_direction(vec3(1.0f, 1.0f, 1.0f));
 
@@ -188,7 +197,7 @@ bool load_content() {
 	// Load in shaders
 	eff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
 	// Name of fragment shaders required
-	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag"};
+	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag", "shaders/part_normal_map.frag" };
 	eff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 	
 	// Build effect
@@ -322,20 +331,20 @@ bool update(float delta_time) {
 	// Object moving in diagonals around the Earth
 	meshes["whiteHouse"].get_transform().position = diagonalMovement + meshes["mediumTorus"].get_transform().position;
 	// Day/night loop
-	dirLight.set_direction(vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(0, 0, 2));
-	meshes["sun"].get_transform().position = vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(1, 1, 2);
-	if (meshes["sun"].get_transform().position.y < -1) 
+	//dirLight.set_direction(vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(0, 0, 2));
+	//meshes["sun"].get_transform().position = vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(1, 1, 2);
+	if (glfwGetKey(renderer::get_window(), 'L'))
 	{
 		// ambient intensity 
 		dirLight.set_ambient_intensity(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 		// Light colour
-		dirLight.set_light_colour(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		dirLight.set_light_colour(vec4(0.2f, 0.2f, 0.2f, 1.0f)); 
 	}
-	else {
+	else if (glfwGetKey(renderer::get_window(), 'M')){
 		// ambient intensity 
-		dirLight.set_ambient_intensity(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+		dirLight.set_ambient_intensity(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		// Light colour
-		dirLight.set_light_colour(vec4(0.5f, 0.5f, 0.3f, 1.0f));
+		dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 	velocity -= delta_time;
 
@@ -351,12 +360,13 @@ bool render() {
 	renderer::bind(textures["moonSurface"], 4);
 	renderer::bind(textures["box"], 5);
 	// Bind normal_map
-	/*renderer::bind(textures["earth_normal_map"], 6);
-	renderer::bind(textures["rocks_normal_map"], 7);*/
+	renderer::bind(textures["earth_normal_map"], 6);
+	renderer::bind(textures["rocks_normal_map"], 7);
+	renderer::bind(textures["sand_normal-map"], 8);
 	 
 	// Bind effect
 	renderer::bind(eff);
-
+	 
 
 	// Bind direction lights
 	renderer::bind(dirLight, "light");
@@ -393,7 +403,7 @@ bool render() {
 			glUniform1i(eff.get_uniform_location("tex"), 1);
 			  
 			// Set normal_map uniform        
-			//glUniform1i(eff.get_uniform_location("normal_map"), 6);
+			glUniform1i(eff.get_uniform_location("normal_map"), 6);
 		}
 		else if (item.first == "ring")
 		{
@@ -409,12 +419,13 @@ bool render() {
 		}
 		else if (item.first == "floorPlane")
 		{
-			//glUniform1i(eff.get_uniform_location("normal_map"), 7);
+			glUniform1i(eff.get_uniform_location("normal_map"), 8);
 			glUniform1i(eff.get_uniform_location("tex"), 0);
 		}
 		else
 		{
-			glUniform1i(eff.get_uniform_location("tex"), 5);
+			glUniform1i(eff.get_uniform_location("normal_map"), 7); 
+			glUniform1i(eff.get_uniform_location("tex"), 5); 
 		}
 
 		glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
