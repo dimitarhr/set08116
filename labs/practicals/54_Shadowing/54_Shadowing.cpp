@@ -22,13 +22,13 @@ bool load_content() {
   // Create "teapot" mesh by loading in models/teapot.obj
 	meshes["teapot"] = mesh((geometry("models/teapot.obj")));
   // Need to rotate the teapot on x by negative pi/2
-	meshes["teapot"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
+	//meshes["teapot"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, 0.0f));
   // Scale the teapot - (0.1, 0.1, 0.1)
 	meshes["teapot"].get_transform().scale *= vec3(0.1, 0.1, 0.1);
   // *********************************
 	 
   // Load texture
-  tex = texture("textures/checked.gif");
+  tex = texture("textures/checked.gif"); 
 
   // ***********************
   // Set materials
@@ -56,7 +56,7 @@ bool load_content() {
   spot.set_position(vec3(30.0f, 20.0f, 0.0f));
   spot.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   spot.set_direction(normalize(vec3(-1.0f, -1.0f, 0.0f)));
-  spot.set_range(500.0f);
+  spot.set_range(50.0f);
   spot.set_power(10.0f);
 
   // Load in shaders
@@ -80,7 +80,7 @@ bool load_content() {
 
 bool update(float delta_time) {
   // Rotate the teapot
-  meshes["teapot"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()) * delta_time);
+  meshes["teapot"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f) * delta_time);
 
   // *********************************
   // Update the shadow map properties from the spot light
@@ -169,9 +169,9 @@ bool render() {
 					   GL_FALSE,								 // Transpose the matrix?
 						value_ptr(lightMVP));
     // Bind material
-	renderer::bind(m.get_material(), "mat");
+	renderer::bind(m.get_material(), "mat");      
     // Bind spot lights
-	renderer::bind(spot, "spots");
+	renderer::bind(spot, "spot");
     // Bind texture
 	renderer::bind(tex, 0); 
     // Set tex uniform

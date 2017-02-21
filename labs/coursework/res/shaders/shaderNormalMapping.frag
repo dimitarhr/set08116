@@ -112,7 +112,7 @@ void main() {
   }
   
   // Sum spot lights
-  for(int i=0;i<3;i++)
+  for(int i=0;i<5;i++)
   {
 	colour += calculate_spot(spots[i], mat, vertex_position, pNormal, view_dir, tex_colour);
   }
