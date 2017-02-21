@@ -129,7 +129,7 @@ bool render() {
   // Bind shader
   renderer::bind(shadow_eff);
   // Render meshes
-  for (auto &e : meshes) {
+  for (auto &e : meshes) { 
     auto m = e.second;
     // Create MVP matrix
     auto M = m.get_transform().get_transform_matrix();

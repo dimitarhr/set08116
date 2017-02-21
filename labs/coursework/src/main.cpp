@@ -119,11 +119,10 @@ bool load_content() {
 	meshes["ring"].set_material(objectMaterial);
 
 	// Wall
-	objectMaterial.set_diffuse(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+	objectMaterial.set_diffuse(vec4(0.53f, 0.45f, 0.37f, 1.0f));
 	shadow_geom["wall"].set_material(objectMaterial);
 
 	// ringBase
-	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	meshes["ringBase"].set_material(objectMaterial);
 	   
@@ -137,10 +136,7 @@ bool load_content() {
 	normalMapMeshes["smallStickBoxBack"].set_material(objectMaterial);
 	normalMapMeshes["smallStickBoxFront"].set_material(objectMaterial);
 	meshes["stickBoxFront"].set_material(objectMaterial); 
-
-	objectMaterial.set_specular(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
-
 
 	// Load texture 
 	textures["floorPlane"] = texture("textures/sand.jpg",true,true);
@@ -158,10 +154,9 @@ bool load_content() {
 	normal_maps["surroundings"] = texture("textures/brick_normalmap.jpg", true, true);
 	normal_maps["sphereLeft"] = texture("textures/brick_normal_map.jpg", true, true);
 
-
 	/*DIRECTIONAL LIGHT*/
 	// ambient intensity 
-	dirLight.set_ambient_intensity(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 	// Light colour
 	dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	// Light direction
@@ -183,7 +178,7 @@ bool load_content() {
 	// Spot light in front of the wall
 	spots[1].set_position(vec3(-35.5f, 10.5f, 0));
 	spots[1].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	spots[1].set_direction(normalize(vec3(-1,0, 0)));
+	spots[1].set_direction(normalize(spots[1].get_position()));
 	spots[1].set_range(200);
 	spots[1].set_power(0.1f);
 	
@@ -203,10 +198,10 @@ bool load_content() {
 
 	// Front right
 	spots[4].set_position(vec3(40, 0, 40));
-	spots[4].set_light_colour(vec4(0.0f, 1.0f, 1.0f, 1.0f));
+	spots[4].set_light_colour(vec4(0.53f, 0.45f, 0.37f, 1.0f));
 	spots[4].set_direction(normalize(vec3(-1, 0, -1)));
-	spots[4].set_range(100.0f);
-	spots[4].set_power(0.1f); 
+	spots[4].set_range(500.0f);
+	spots[4].set_power(10.0f); 
 
 
 	// Load in shaders
@@ -274,6 +269,11 @@ bool update(float delta_time) {
 		cameraIndex = 0;
 		targetCamera = 3;
 	}
+	else if (glfwGetKey(renderer::get_window(), GLFW_KEY_4))
+	{
+		cameraIndex = 0;
+		targetCamera = 4;
+	}
 
 	/*TARGET CAMERAS*/
 	if (cameraIndex == 0)
@@ -289,6 +289,10 @@ bool update(float delta_time) {
 		else if (targetCamera == 3) {
 			cams[0]->set_position(vec3(-10.0f, 100.0f, 0.0f));
 			cams[0]->set_target(vec3(0.0f, 0.0f, 0.0f));
+		}
+		else if (targetCamera == 4) {
+			cams[0]->set_position(vec3(10.0f, 10.0f, 0.0f));
+			cams[0]->set_target(vec3(-100.0f, 0.0f, 0.0f));
 		}
 		cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
 		cams[0]->update(delta_time);
@@ -344,7 +348,7 @@ bool update(float delta_time) {
 		cursor_y = current_y;
 	}
 
-	shadow_geom["stick"].get_transform().rotate(vec3(quarter_pi<float>(),0.0f, 0.0f) * delta_time);
+	//shadow_geom["stick"].get_transform().rotate(vec3(quarter_pi<float>(),0.0f, 0.0f) * delta_time);
 
 	// Rotate the Earth and the Moon around their Z axis
 	normalMapMeshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
@@ -355,8 +359,8 @@ bool update(float delta_time) {
 	//Rotating moon around the Earth
 	meshes["moon"].get_transform().position = moonPos + normalMapMeshes["earth"].get_transform().position;
 	// Spot light in front of the wall
-	//spots[1].set_position(vec3(-35.5f, 10.5f, sin(velocity) * -40));
-	//meshes["torch"].get_transform().position = vec3(-25.5f, 10.5f, sin(velocity) * -40);
+	spots[1].set_position(vec3(-35.5f, 10.5f, sin(velocity) * -40));
+	meshes["torch"].get_transform().position = vec3(-25.5f, 10.5f, sin(velocity) * -40);
 	// Day/night loop
 	//dirLight.set_direction(vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(0, 0, 2));
 	if (glfwGetKey(renderer::get_window(), 'L'))
@@ -368,7 +372,7 @@ bool update(float delta_time) {
 	}
 	else if (glfwGetKey(renderer::get_window(), 'M')){
 		// ambient intensity 
-		dirLight.set_ambient_intensity(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 		// Light colour
 		dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	}
@@ -519,6 +523,7 @@ void renderShadowMesh()
 	// Set render mode to cull face
 	glCullFace(GL_FRONT);
 	// *********************************
+	mat4 LightProjectionMat = perspective<float>(90.f, renderer::get_screen_aspect(), 0.1f, 1000.f);
 
 	// Bind shader
 	renderer::bind(basicEff);
@@ -533,8 +538,8 @@ void renderShadowMesh()
 		auto V = shadow.get_view();
 		// *********************************
 
-		auto P = cams[cameraIndex]->get_projection();
-		auto MVP = P * V * M;
+		//auto P = cams[cameraIndex]->get_projection();
+		auto MVP = LightProjectionMat * V * M;
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(basicEff.get_uniform_location("MVP"), // Location of uniform
 			1,                                      // Number of values - 1 mat4
@@ -573,8 +578,8 @@ void renderShadowMesh()
 		// Set light transform
 		auto lM = m.get_transform().get_transform_matrix();
 		auto lV = shadow.get_view();
-		auto lP = cams[cameraIndex]->get_projection();
-		auto lightMVP = lP * lV * lM;
+		//auto lP = cams[cameraIndex]->get_projection();
+		auto lightMVP = LightProjectionMat * lV * lM;
 		glUniformMatrix4fv(shadows_eff.get_uniform_location("lightMVP"), // Location of uniform
 			1,                           			  // Number of values - 1 mat4
 			GL_FALSE,								 // Transpose the matrix?

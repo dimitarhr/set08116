@@ -5,7 +5,7 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
-mesh cylinder;
+mesh cylinder;   
 effect eff;
 texture tex;
 texture normal_map;
