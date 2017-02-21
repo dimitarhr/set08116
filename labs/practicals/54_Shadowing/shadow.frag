@@ -71,6 +71,5 @@ void main() {
   // Scale colour by shade
   colour = spotLight * sh;
   colour.a = 1.0;
-
   // *********************************
 }
