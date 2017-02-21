@@ -1,7 +1,6 @@
 #version 440
 
 // This shader requires direction.frag, point.frag and spot.frag
-//		Renders meshes WITHOUT normal mapping!
 
 // Directional light structure
 #ifndef DIRECTIONAL_LIGHT
@@ -57,6 +56,7 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 position, in
                      in vec4 tex_colour);
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
                     in vec4 tex_colour);
+vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord);
 
 // Directional light information
 uniform directional_light light;
@@ -71,10 +71,20 @@ uniform vec3 eye_pos;
 // Texture to sample from
 uniform sampler2D tex;
 
+	// Normal map to sample from
+	uniform sampler2D normal_map;
+
+
 // Incoming position
 layout(location = 0) in vec3 vertex_position;
 // Incoming normal
 layout(location = 1) in vec3 transformed_normal;
+
+	// Incoming tangent
+	layout(location = 3) in vec3 tangent;
+	// Incoming binormal
+	layout(location = 4) in vec3 binormal;
+
 // Incoming texture coordinate
 layout(location = 5) in vec2 tex_coord;
 
@@ -83,23 +93,28 @@ layout(location = 5) in vec2 tex_coord;
 layout(location = 0) out vec4 colour;
 
 void main() {
+  // *********************************
   // Calculate view direction
   vec3 view_dir = normalize(eye_pos-vertex_position);
   // Sample texture
   vec4 tex_colour = texture(tex, tex_coord);
 
+  // Using normal mapping
+   vec3 pNormal = calc_normal(transformed_normal, tangent, binormal, normal_map, tex_coord);
+
   // Calculate directional light colour
-  colour = calculate_direction(light, mat, transformed_normal, view_dir, tex_colour);
+  colour = calculate_direction(light, mat, pNormal, view_dir, tex_colour);
   colour.a = 1;
   // Sum point lights
   for(int i=0;i<1;i++)
   {
-	colour += calculate_point(points[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
+	colour += calculate_point(points[i], mat, vertex_position, pNormal, view_dir, tex_colour);
   }
   
   // Sum spot lights
-  for(int i=0;i<5;i++)
+  for(int i=0;i<3;i++)
   {
-	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
+	colour += calculate_spot(spots[i], mat, vertex_position, pNormal, view_dir, tex_colour);
   }
+  // *********************************
 }

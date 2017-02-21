@@ -165,6 +165,7 @@ bool load_content() {
 }
   
 bool update(float delta_time) {
+	cout << "FPS: " << 1.0f / delta_time << endl;
   if (glfwGetKey(renderer::get_window(), '1')) {
     cam.set_position(vec3(50, 10, 50));
   }
@@ -182,15 +183,15 @@ bool update(float delta_time) {
 
   lunaPos = vec3((cos(angleLuna)*50.0f), 0.0f, (sin(angleLuna)*50.0f));
   
-  for (int i = 0; i < size(spots); i++) {
+ /* for (int i = 0; i < size(spots); i++) {
 	  //spots[i].rotate(vec3(half_pi<float>(), 0.0f, 0.0f)*delta_time);
 	  spots[i].move(lunaPos*delta_time);
-  }
+  }*/
 
-  for (int i = 0; i < size(points); i++) {
+  /*for (int i = 0; i < size(points); i++) {
 	  //points[i].move(vec3(half_pi<float>(), 0.0f, 0.0f));
 	  points[i].move(lunaPos*delta_time);
-  }
+  }*/
   angleLuna += 0.05f;
 
   cam.update(delta_time);
