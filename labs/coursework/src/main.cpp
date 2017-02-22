@@ -387,6 +387,7 @@ bool update(float delta_time) {
 
 void renderNormalMapMesh()
 {
+	//mat4 ProjectionMat = perspective<float>(80.f, renderer::get_screen_aspect(), 0.1f, 1000.f);
 	effect eff = normalMappingEff;
 	renderer::bind(eff);
 
@@ -458,6 +459,7 @@ void renderNormalMapMesh()
 
 void renderMesh()
 {
+	//mat4 ProjectionMat = perspective<float>(90.f, renderer::get_screen_aspect(), 0.1f, 1000.f);
 	effect eff = basicEff;
 	renderer::bind(eff);
 
@@ -516,6 +518,7 @@ void renderMesh()
 
 void renderShadowMesh() 
 {
+	//mat4 ProjectionMat = perspective<float>(90.f, renderer::get_screen_aspect(), 0.1f, 1000.f);
 	// Set render target to shadow map
 	renderer::set_render_target(shadow);
 	// Clear depth buffer bit
