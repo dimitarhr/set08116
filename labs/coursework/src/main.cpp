@@ -9,12 +9,12 @@ effect basicEff, normalMappingEff, shadows_eff;
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
 int targetCamera = 1;
-map<string, mesh> meshes;
 shadow_map shadow;
 map<string, mesh> normalMapMeshes;
+map<string, mesh> meshes;
+map<string, mesh> shadow_geom;
 map<string, texture> textures;
 map<string, texture> normal_maps;
-map<string, mesh> shadow_geom;
 directional_light dirLight;
 vector<spot_light> spots(5);
 vector<point_light> points(4);
@@ -137,6 +137,8 @@ bool load_content() {
 	normalMapMeshes["smallStickBoxFront"].set_material(objectMaterial);
 	meshes["stickBoxFront"].set_material(objectMaterial); 
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
+	shadow_geom["stick"].set_material(objectMaterial);
+	shadow_geom["wall"].set_material(objectMaterial);
 
 	// Load texture 
 	textures["floorPlane"] = texture("textures/sand.jpg",true,true);
@@ -207,7 +209,6 @@ bool load_content() {
 	// Load in shaders
 	/*BASIC EFFECTS*/
 	basicEff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
-	// Name of fragment shaders required
 	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", 
 								"shaders/part_point.frag"};
 	basicEff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
@@ -239,12 +240,6 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
-	// Display the FPS
-	cout << "FPS: " << 1.0f / delta_time << endl;
-	if (1.0f / delta_time < 50) {
-		cout << "Noooooooooooooooooooooooooooooooooooooooooooooooooo" << endl;
-	}
-
 	vec3 moonPos = vec3(0);
 	vec3 diagonalMovement = vec3(0);
 
@@ -614,7 +609,7 @@ bool render() {
 	// Render meshes without normal maps
 	renderMesh();
 
-	// Render meshes with shadows
+	// Render meshes with shadows 
 	renderShadowMesh();
 
 	return true;
