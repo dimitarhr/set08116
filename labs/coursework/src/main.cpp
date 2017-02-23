@@ -19,6 +19,10 @@ directional_light dirLight;
 vector<spot_light> spots(5);
 vector<point_light> points(4);
 
+mesh skybox;
+effect sky_eff;
+cubemap cube_map;
+
 double cursor_x = 0.0;
 double cursor_y = 0.0;
 double velocity = 0;
@@ -34,33 +38,55 @@ bool initialise() {
 	return true;
 }
 
-bool load_content() {
+bool load_content() { 
 	// Create shadow map
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create meshes
 	normalMapMeshes["floorPlane"] = mesh(geometry_builder::create_plane());
-	meshes["ring"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 6.5f));
 	normalMapMeshes["earth"] = mesh(geometry_builder::create_sphere(60, 60));
-	meshes["moon"] = mesh(geometry_builder::create_sphere(30, 30));
-	meshes["ringBase"] = mesh(geometry_builder::create_pyramid());
-	meshes["stickBoxLeft"] = mesh(geometry_builder::create_box(vec3(0.2f,2.0f,0.2f)));
 	normalMapMeshes["smallStickBoxLeft"] = mesh(geometry_builder::create_box(vec3(5.0f, 5.0f, 5.0f)));
-	meshes["stickBoxRight"] = mesh(geometry_builder::create_box(vec3(0.5f, 2.0f, 0.2f)));
 	normalMapMeshes["smallStickBoxRight"] = mesh(geometry_builder::create_box(vec3(4.0f, 4.0f, 4.0f)));
-	meshes["stickBoxBack"] = mesh(geometry_builder::create_box(vec3(0.2f, 4.0f, 0.2f)));
 	normalMapMeshes["smallStickBoxBack"] = mesh(geometry_builder::create_box(vec3(4.5f, 4.5f, 4.5f)));
-	meshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.5f, 1.0f, 0.5f)));
 	normalMapMeshes["smallStickBoxFront"] = mesh(geometry_builder::create_box(vec3(3.0f, 3.0f, 3.0f)));
 	normalMapMeshes["sphereLeft"] = mesh(geometry_builder::create_sphere(30, 30));
+
+	meshes["ring"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 6.5f));
+	meshes["moon"] = mesh(geometry_builder::create_sphere(30, 30));
+	meshes["ringBase"] = mesh(geometry_builder::create_pyramid());
+	meshes["stickBoxLeft"] = mesh(geometry_builder::create_box(vec3(0.2f,2.0f,0.2f)));	
+	meshes["stickBoxRight"] = mesh(geometry_builder::create_box(vec3(0.5f, 2.0f, 0.2f)));	
+	meshes["stickBoxBack"] = mesh(geometry_builder::create_box(vec3(0.2f, 4.0f, 0.2f)));	
+	meshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.5f, 1.0f, 0.5f)));
+	meshes["torch"] = mesh(geometry_builder::create_cylinder());  
+	meshes["alien"] = mesh((geometry("textures/alien.obj")));
 	// Under testing
 	shadow_geom["wall"] = mesh(geometry_builder::create_box(vec3(1,7,32)));
-	meshes["torch"] = mesh(geometry_builder::create_cylinder());
 	shadow_geom["stick"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
+	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8,100));
+	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.2f, 4.0f, 0.2f)));
 
+	// Create box geometry for skybox
+	skybox = mesh(geometry_builder::create_box());
+	// Scale box by 100
+	skybox.get_transform().scale = vec3(100);
+
+	// All sides of the skybox
+	array<string, 6> filenames = { "textures/sky_right.png", "textures/sky_left.png", "textures/sky_top.png", 
+		"textures/sky_botton.png", "textures/sky_front.png" ,  "textures/sky_back.png" };
+	// Create cube_map
+	cube_map = cubemap(filenames);
+	 
 	// Transform objects
-	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
+	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);  
 	normalMapMeshes["earth"].get_transform().translate(vec3(25.0f, 12.0f, 10.0f));
 	normalMapMeshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
+	normalMapMeshes["smallStickBoxLeft"].get_transform().translate(vec3(13.0f, 2.5f, 5.0f));
+	normalMapMeshes["smallStickBoxRight"].get_transform().translate(vec3(40.0f, 2.0f, 5.0f));
+	normalMapMeshes["smallStickBoxBack"].get_transform().translate(vec3(21.0f, 2.0f, 0.0f));
+	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(17.0f, 1.5f, 25.0f));
+	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(15.0f, 2.0f, 17.0f));
+	normalMapMeshes["sphereLeft"].get_transform().scale = vec3(3.0f, 2.5f, 3.0f);
+
 	meshes["moon"].get_transform().scale = vec3(0.9f, 0.9f, 0.9f);
 	meshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));
 	meshes["moon"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
@@ -69,25 +95,25 @@ bool load_content() {
 	meshes["ringBase"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["ringBase"].get_transform().translate(vec3(25.0f, 2.5f, 10.0f));
 	meshes["stickBoxLeft"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
-	meshes["stickBoxLeft"].get_transform().translate(vec3(13.0f, 4.0f, 10.0f));
-	normalMapMeshes["smallStickBoxLeft"].get_transform().translate(vec3(13.0f, 2.5f, 5.0f));
+	meshes["stickBoxLeft"].get_transform().translate(vec3(13.0f, 4.0f, 10.0f));	
 	meshes["stickBoxRight"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["stickBoxRight"].get_transform().translate(vec3(40.0f, 5.0f, 10.0f));
-	normalMapMeshes["smallStickBoxRight"].get_transform().translate(vec3(40.0f, 2.0f, 5.0f));
 	meshes["stickBoxBack"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["stickBoxBack"].get_transform().translate(vec3(25.0f, 9.5f, 0.0f));
-	normalMapMeshes["smallStickBoxBack"].get_transform().translate(vec3(21.0f, 2.0f, 0.0f));
 	meshes["stickBoxFront"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["stickBoxFront"].get_transform().translate(vec3(22.0f, 2.5f, 25.0f));
-	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(17.0f, 1.5f, 25.0f));
-	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(15.0f, 2.0f, 17.0f));
-	normalMapMeshes["sphereLeft"].get_transform().scale = vec3(3.0f, 2.5f, 3.0f);
-	// Under testing 
-	shadow_geom["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
-	shadow_geom["wall"].get_transform().translate(vec3(-48.5f, 10.5f, 0.0f));
-	shadow_geom["stick"].get_transform().translate(vec3(-40.5f, 10.5f, 0.0f));
 	meshes["torch"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()));
 	meshes["torch"].get_transform().translate(vec3(-25.5f, 10.5f, -40));
+	meshes["alien"].get_transform().scale = vec3(10); 
+	meshes["alien"].get_transform().translate(vec3(18.0f, 8.0f, 15.0f));         
+	meshes["alien"].get_transform().rotate(vec3(0.0f, -quarter_pi<float>(), 0.0f));
+	// Under testing 
+	shadow_geom["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
+	shadow_geom["wall"].get_transform().translate(vec3(-56.5f, 10.5f, 0.0f));
+	shadow_geom["stick"].get_transform().translate(vec3(-50.5f, 3.5f, 0.0f));
+	shadow_geom["stickBoxFront"].get_transform().translate(vec3(-50.5f, 0.5f, 20.0f));
+	shadow_geom["stickBoxFront"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
+	shadow_geom["floorPlane"].get_transform().translate(vec3(-54.0f, 0.0f, 0.0f));
 
 	// Set materials
 	// - all emissive is black
@@ -107,6 +133,7 @@ bool load_content() {
 	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	normalMapMeshes["floorPlane"].set_material(objectMaterial);
+	shadow_geom["floorPlane"].set_material(objectMaterial);
 
 	// Earth
 	normalMapMeshes["earth"].set_material(objectMaterial);
@@ -128,7 +155,8 @@ bool load_content() {
 	   
 	// The rest of the surroundings
 	objectMaterial.set_specular(vec4(0.4f, 0.4f, 0.4f, 1.0f));
-	meshes["stickBoxLeft"].set_material(objectMaterial);
+	meshes["alien"].set_material(objectMaterial);
+	meshes["stickBoxLeft"].set_material(objectMaterial); 
 	normalMapMeshes["smallStickBoxLeft"].set_material(objectMaterial);
 	meshes["stickBoxRight"].set_material(objectMaterial);
 	normalMapMeshes["smallStickBoxRight"].set_material(objectMaterial);
@@ -150,6 +178,7 @@ bool load_content() {
 	textures["surroundings"] = texture("textures/brick.jpg", true, true);
 	textures["wall"] = texture("textures/grey_rocks.jpg", true, true);
 	textures["sphereLeft"] = texture("textures/brick_diffuse.jpg", true, true);
+	textures["alien"] = texture("textures/alien.jpg", true, true);
 	normal_maps["earth"] = texture("textures/earth_normalmap.jpg", true, true);
 	normal_maps["rocks_normal_map"] = texture("textures/rock_norma_map.jpg", true, true);
 	normal_maps["floorPlane"] = texture("textures/sand_normal-map.jpg", true, true);
@@ -178,10 +207,11 @@ bool load_content() {
 	spots[0].set_power(0.5f);
 
 	// Spot light in front of the wall
-	spots[1].set_position(vec3(-35.5f, 10.5f, 0));
-	spots[1].set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	spots[1].set_direction(normalize(spots[1].get_position()));
-	spots[1].set_range(200);
+	spots[1].set_position(vec3(-15.5f, 10.5f, 0));
+	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//spots[1].set_direction(normalize(spots[1].get_position()));
+	spots[1].set_direction(normalize(vec3(-1,-1,0)));
+	spots[1].set_range(2000);
 	spots[1].set_power(0.1f);
 	
 	// The green spot light
@@ -196,7 +226,7 @@ bool load_content() {
 	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[3].set_direction(normalize(vec3(1, 0, -1)));
 	spots[3].set_range(200.0f);
-	spots[2].set_power(0.1f);
+	spots[3].set_power(10.0f);
 
 	// Front right
 	spots[4].set_position(vec3(40, 0, 40));
@@ -225,10 +255,15 @@ bool load_content() {
 		"shaders/part_point.frag", "shaders/part_shadow.frag" };
 	shadows_eff.add_shader(frag_shaders_shadows, GL_FRAGMENT_SHADER);
 
+	/*SKYBOX*/
+	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
+	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
+
 	// Build effect
 	basicEff.build();
 	normalMappingEff.build();
 	shadows_eff.build();
+	sky_eff.build();
 
 	// Set default camera properties 
 	/*FREE CAMERA*/
@@ -244,8 +279,8 @@ bool update(float delta_time) {
 	vec3 diagonalMovement = vec3(0);
 
 	// Set the correct camera index depending on the pressed button
-	if (glfwGetKey(renderer::get_window(), 'F')) 
-	{
+	if (glfwGetKey(renderer::get_window(), 'F'))  
+	{ 
 		cameraIndex = 1;
 	}
 
@@ -354,8 +389,8 @@ bool update(float delta_time) {
 	//Rotating moon around the Earth
 	meshes["moon"].get_transform().position = moonPos + normalMapMeshes["earth"].get_transform().position;
 	// Spot light in front of the wall
-	spots[1].set_position(vec3(-35.5f, 10.5f, sin(velocity) * -40));
-	meshes["torch"].get_transform().position = vec3(-25.5f, 10.5f, sin(velocity) * -40);
+	spots[1].set_position(vec3(-42.9f, 5.5f, sin(velocity) * -40));
+	meshes["torch"].get_transform().position = vec3(-42.9f, 5.5f, sin(velocity) * -40);
 	// Day/night loop
 	//dirLight.set_direction(vec3(0.0f, cos(velocity) * 5, sin(velocity)*5) + vec3(0, 0, 2));
 	if (glfwGetKey(renderer::get_window(), 'L'))
@@ -377,6 +412,9 @@ bool update(float delta_time) {
 	shadow.light_position = spots[1].get_position();
 	shadow.light_dir = spots[1].get_direction();
 
+	// Skybox
+	// Set skybox position to camera position (camera in centre of skybox)
+	skybox.get_transform().position = cams[cameraIndex]->get_position();
 	return true;
 }
 
@@ -557,6 +595,7 @@ void renderShadowMesh()
 	// Render meshes
 	for (auto &e : shadow_geom) {
 		auto m = e.second;
+		string geometryName = e.first;
 		// Create MVP matrix
 		auto M = m.get_transform().get_transform_matrix();
 		auto V = cams[cameraIndex]->get_view();
@@ -587,7 +626,14 @@ void renderShadowMesh()
 		// Bind spot lights
 		renderer::bind(spots[1], "spot");
 		// Bind texture
-		renderer::bind(textures["surroundings"], 0);
+		if (textures.find(geometryName) != textures.end())
+		{
+			renderer::bind(textures[geometryName], 0);
+		}
+		else
+		{
+			renderer::bind(textures["surroundings"], 0);
+		}
 		// Set tex uniform
 		glUniform1i(shadows_eff.get_uniform_location("tex"), 0);
 		// Set eye position
@@ -601,8 +647,38 @@ void renderShadowMesh()
 	}
 }
 
+void renderSkyBox()
+{
+	// Disable depth test,depth mask,face culling
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+	glDisable(GL_CULL_FACE);
+	// Bind skybox effect
+	renderer::bind(sky_eff);
+	// Calculate MVP for the skybox
+	auto M = skybox.get_transform().get_transform_matrix();
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto MVP = P * V * M;
+	renderer::bind(cube_map, 0);
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(basicEff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Set cubemap uniform
+	glUniform1f(basicEff.get_uniform_location("cubemap"), 0);
+
+	// Render skybox
+	renderer::render(skybox);
+	// Enable depth test,depth mask,face culling
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+}
+
 bool render() {
 	
+	// Render skybox
+	renderSkyBox();
+
 	// Render meshes with normal maps
 	renderNormalMapMesh();
 

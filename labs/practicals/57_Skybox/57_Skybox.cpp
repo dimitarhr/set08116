@@ -37,11 +37,11 @@ bool load_content() {
   skybox.get_transform().scale *= vec3(100);
   
   // Load the cubemap
-  array<string, 6> filenames = { "textures/mars_front.png", "textures/mars_back.png", "textures/mars_top.png",
-	  "textures/mars_down.png", "textures/mars_left.png", "textures/mars_right.png" };
+  array<string, 6> filenames = { "textures/sky_front.png", "textures/sky_back.png", "textures/sky_top.png",
+	  "textures/sky_botton.png", "textures/sky_left.png", "textures/sky_right.png" };
   // Create cube_map
-  cube_map = cubemap(filenames);
-
+  cube_map = cubemap(filenames); 
+   
   // *********************************
   // Load in shaders
   eff.add_shader("57_Skybox/shader.vert", GL_VERTEX_SHADER);
@@ -152,7 +152,7 @@ bool render() {
   // *********************************
 
   // Bind effect
-  renderer::bind(eff);
+  /*renderer::bind(eff);
   // Create MVP matrix
   M = sphere.get_transform().get_transform_matrix();
   V = cam.get_view();
@@ -161,7 +161,7 @@ bool render() {
   // Set MVP matrix uniform
   glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Render mesh
-  renderer::render(sphere);
+  renderer::render(sphere);*/
 
   return true;
 }
