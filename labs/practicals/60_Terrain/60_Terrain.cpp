@@ -11,8 +11,8 @@ free_camera cam;
 directional_light light;
 texture tex[4];
 
-void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth,
-                      float height_scale) {
+void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth,float height_scale)
+{
   // Contains our position data
   vector<vec3> positions;
   // Contains our normal data
@@ -44,7 +44,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
     for (int z = 0; z < height_map.get_height(); ++z) {
       // *********************************
       // Calculate z position of point
-
+		point.z = -(depth / 2) + (depth_point*z);
       // *********************************
       // Y position based on red component of height map data
       point.y = data[(z * height_map.get_width()) + x].y * height_scale;
@@ -60,8 +60,8 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
       unsigned int top_left = (y * height_map.get_width()) + x;
       unsigned int top_right = (y * height_map.get_width()) + x + 1;
       // *********************************
-
-
+	  unsigned int bottom_left = ((y + 1)*height_map.get_width()) + x;
+	  unsigned int bottom_right = ((y+1)*height_map.get_height()) + x + 1;
       // *********************************
       // Push back indices for triangle 1 (tl,br,bl)
       indices.push_back(top_left);
@@ -69,9 +69,9 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
       indices.push_back(bottom_left);
       // Push back indices for triangle 2 (tl,tr,br)
       // *********************************
-
-
-
+	  indices.push_back(top_left);
+	  indices.push_back(top_right);
+	  indices.push_back(bottom_right);
       // *********************************
     }
   }

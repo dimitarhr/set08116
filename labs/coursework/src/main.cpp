@@ -124,7 +124,7 @@ bool load_content() {
 	 
 	// Torch
 	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	objectMaterial.set_emissive(vec4(0.5f, 0.5f, 0.0f, 1.0f));
+	objectMaterial.set_emissive(vec4(1.5f, 1.5f, 0.0f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.8f, 0.8f, 0.0f, 1.0f));
 	objectMaterial.set_shininess(35);
 	meshes["torch"].set_material(objectMaterial);
@@ -662,12 +662,12 @@ void renderSkyBox()
 	auto MVP = P * V * M;
 	renderer::bind(cube_map, 0);
 	// Set MVP matrix uniform
-	glUniformMatrix4fv(basicEff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	glUniformMatrix4fv(sky_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 	// Set cubemap uniform
-	glUniform1f(basicEff.get_uniform_location("cubemap"), 0);
+	glUniform1i(sky_eff.get_uniform_location("cubemap"), 0);
 
 	// Render skybox
-	renderer::render(skybox);
+	renderer::render(skybox); 
 	// Enable depth test,depth mask,face culling
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);

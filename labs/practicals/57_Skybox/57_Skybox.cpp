@@ -137,9 +137,9 @@ bool render() {
 	auto MVP = P * V * M;
 	renderer::bind(cube_map, 0);
   // Set MVP matrix uniform
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	glUniformMatrix4fv(sky_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Set cubemap uniform
-	glUniform1f(eff.get_uniform_location("cubemap"), 0);
+	glUniform1i(sky_eff.get_uniform_location("cubemap"), 0);
 
   // Render skybox
 	renderer::render(skybox);
@@ -152,7 +152,7 @@ bool render() {
   // *********************************
 
   // Bind effect
-  /*renderer::bind(eff);
+  renderer::bind(eff);
   // Create MVP matrix
   M = sphere.get_transform().get_transform_matrix();
   V = cam.get_view();
@@ -161,7 +161,7 @@ bool render() {
   // Set MVP matrix uniform
   glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Render mesh
-  renderer::render(sphere);*/
+  renderer::render(sphere);
 
   return true;
 }
