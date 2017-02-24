@@ -13,6 +13,7 @@ shadow_map shadow;
 map<string, mesh> normalMapMeshes;
 map<string, mesh> meshes;
 map<string, mesh> shadow_geom;
+std::array<mesh, 5> hierarchicalMesh;
 map<string, texture> textures;
 map<string, texture> normal_maps;
 directional_light dirLight;
@@ -59,11 +60,22 @@ bool load_content() {
 	meshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.5f, 1.0f, 0.5f)));
 	meshes["torch"] = mesh(geometry_builder::create_cylinder());  
 	meshes["alien"] = mesh((geometry("textures/alien.obj")));
+	meshes["dragonEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
+	
 	// Under testing
-	shadow_geom["wall"] = mesh(geometry_builder::create_box(vec3(1,7,32)));
-	shadow_geom["stick"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
+	shadow_geom["wall"] = mesh(geometry_builder::create_box(vec3(3,15,96)));
+	shadow_geom["miniWall"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
 	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8,100));
-	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.2f, 4.0f, 0.2f)));
+	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(0.2f, 2.0f, 0.2f)));
+	shadow_geom["shadowBall"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
+	shadow_geom["eggShadow"] = mesh(geometry_builder::create_sphere(50, 50, vec3(2, 1, 1)));
+	
+	// Transform hierarchy meshes
+	hierarchicalMesh[0] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 10.0f));
+	hierarchicalMesh[1] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 9.0f));
+	hierarchicalMesh[2] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 8.0f));
+	hierarchicalMesh[3] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 7.0f));
+	hierarchicalMesh[4] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 6.0f));
 
 	// Create box geometry for skybox
 	skybox = mesh(geometry_builder::create_box());
@@ -87,6 +99,7 @@ bool load_content() {
 	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(15.0f, 2.0f, 17.0f));
 	normalMapMeshes["sphereLeft"].get_transform().scale = vec3(3.0f, 2.5f, 3.0f);
 
+	meshes["dragonEgg"].get_transform().translate(vec3(25.0f, 12.0f, -30.0f));
 	meshes["moon"].get_transform().scale = vec3(0.9f, 0.9f, 0.9f);
 	meshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));
 	meshes["moon"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
@@ -108,13 +121,24 @@ bool load_content() {
 	meshes["alien"].get_transform().translate(vec3(18.0f, 8.0f, 15.0f));         
 	meshes["alien"].get_transform().rotate(vec3(0.0f, -quarter_pi<float>(), 0.0f));
 	// Under testing 
-	shadow_geom["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
-	shadow_geom["wall"].get_transform().translate(vec3(-56.5f, 10.5f, 0.0f));
-	shadow_geom["stick"].get_transform().translate(vec3(-50.5f, 3.5f, 0.0f));
-	shadow_geom["stickBoxFront"].get_transform().translate(vec3(-50.5f, 0.5f, 20.0f));
+	//shadow_geom["wall"].get_transform().scale = vec3(3.0f, 3.0f, 3.0f);
+	shadow_geom["wall"].get_transform().translate(vec3(-56.5f, 7.5f, 0.0f));
+	shadow_geom["miniWall"].get_transform().translate(vec3(-50.5f, 3.5f, 0.0f));
+	shadow_geom["stickBoxFront"].get_transform().translate(vec3(-50.5f, 5.0f, 20.0f));
 	shadow_geom["stickBoxFront"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	shadow_geom["floorPlane"].get_transform().translate(vec3(-54.0f, 0.0f, 0.0f));
+	shadow_geom["shadowBall"].get_transform().translate(vec3(-50.5f, 1.5f, -15.0f));
+	shadow_geom["shadowBall"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f));
+	shadow_geom["eggShadow"].get_transform().translate(vec3(-48.5f, 3.5f, 0.0f));
+	shadow_geom["eggShadow"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f));
 
+	// Transform hierarchy meshes
+	hierarchicalMesh[0].get_transform().translate(vec3(25.0f, 12.0f, -30.0f));
+	hierarchicalMesh[0].get_transform().rotate(vec3(half_pi<float>(),0.0f,0.0f));
+	hierarchicalMesh[1].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+	hierarchicalMesh[2].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+	hierarchicalMesh[3].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+	hierarchicalMesh[4].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	// Set materials
 	// - all emissive is black
 	// - all specular is white
@@ -124,10 +148,19 @@ bool load_content() {
 	 
 	// Torch
 	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	objectMaterial.set_emissive(vec4(1.5f, 1.5f, 0.0f, 1.0f));
+	objectMaterial.set_emissive(vec4(0.5f, 0.5f, 0.0f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.8f, 0.8f, 0.0f, 1.0f));
 	objectMaterial.set_shininess(35);
 	meshes["torch"].set_material(objectMaterial);
+
+	// Egg protectors
+	objectMaterial.set_emissive(vec4(0.1f, 0.1f, 0.0f, 1.0f));
+	hierarchicalMesh[0].set_material(objectMaterial);
+	hierarchicalMesh[1].set_material(objectMaterial);
+	hierarchicalMesh[2].set_material(objectMaterial);
+	hierarchicalMesh[3].set_material(objectMaterial);
+	hierarchicalMesh[4].set_material(objectMaterial);
+	meshes["alien"].set_material(objectMaterial);
 
 	// Floor
 	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -137,6 +170,7 @@ bool load_content() {
 
 	// Earth
 	normalMapMeshes["earth"].set_material(objectMaterial);
+	meshes["dragonEgg"].set_material(objectMaterial);
 	
 	// Moon 
 	meshes["moon"].set_material(objectMaterial);
@@ -145,14 +179,11 @@ bool load_content() {
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.0f, 1.0f));
 	meshes["ring"].set_material(objectMaterial);
 
-	// Wall
-	objectMaterial.set_diffuse(vec4(0.53f, 0.45f, 0.37f, 1.0f));
-	shadow_geom["wall"].set_material(objectMaterial);
-
 	// ringBase
 	objectMaterial.set_specular(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	objectMaterial.set_diffuse(vec4(0.53f, 0.45f, 0.37f, 1.0f));
 	meshes["ringBase"].set_material(objectMaterial);
-	   
+	    
 	// The rest of the surroundings
 	objectMaterial.set_specular(vec4(0.4f, 0.4f, 0.4f, 1.0f));
 	meshes["alien"].set_material(objectMaterial);
@@ -165,8 +196,11 @@ bool load_content() {
 	normalMapMeshes["smallStickBoxFront"].set_material(objectMaterial);
 	meshes["stickBoxFront"].set_material(objectMaterial); 
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
-	shadow_geom["stick"].set_material(objectMaterial);
+	shadow_geom["miniWall"].set_material(objectMaterial);
 	shadow_geom["wall"].set_material(objectMaterial);
+	shadow_geom["stickBoxFront"].set_material(objectMaterial);
+	shadow_geom["shadowBall"].set_material(objectMaterial);
+	shadow_geom["eggShadow"].set_material(objectMaterial);
 
 	// Load texture 
 	textures["floorPlane"] = texture("textures/sand.jpg",true,true);
@@ -178,7 +212,8 @@ bool load_content() {
 	textures["surroundings"] = texture("textures/brick.jpg", true, true);
 	textures["wall"] = texture("textures/grey_rocks.jpg", true, true);
 	textures["sphereLeft"] = texture("textures/brick_diffuse.jpg", true, true);
-	textures["alien"] = texture("textures/alien.jpg", true, true);
+	textures["alien"] = texture("textures/alien.jpg", true, true); 
+	textures["dragonEgg"] = texture("textures/dragonEgg.jpg", true, true);
 	normal_maps["earth"] = texture("textures/earth_normalmap.jpg", true, true);
 	normal_maps["rocks_normal_map"] = texture("textures/rock_norma_map.jpg", true, true);
 	normal_maps["floorPlane"] = texture("textures/sand_normal-map.jpg", true, true);
@@ -378,14 +413,12 @@ bool update(float delta_time) {
 		cursor_y = current_y;
 	}
 
-	//shadow_geom["stick"].get_transform().rotate(vec3(quarter_pi<float>(),0.0f, 0.0f) * delta_time);
-
 	// Rotate the Earth and the Moon around their Z axis
 	normalMapMeshes["earth"].get_transform().rotate(vec3(0.0f, 0.0f, quarter_pi<float>()) * delta_time);
 	meshes["moon"].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
 
 	moonPos = vec3(cos(velocity)*4.5f, 0.0f, sin(velocity)*4.5f);
-	diagonalMovement = vec3(cos(velocity)*6.5, cos(velocity)*6.5, sin(velocity)*6.5);
+	diagonalMovement = vec3(0.0f, cos(velocity)*1.5f, 0.0f);
 	//Rotating moon around the Earth
 	meshes["moon"].get_transform().position = moonPos + normalMapMeshes["earth"].get_transform().position;
 	// Spot light in front of the wall
@@ -415,6 +448,18 @@ bool update(float delta_time) {
 	// Skybox
 	// Set skybox position to camera position (camera in centre of skybox)
 	skybox.get_transform().position = cams[cameraIndex]->get_position();
+
+	// Transform hierarchy meshes
+	hierarchicalMesh[0].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
+	hierarchicalMesh[1].get_transform().rotate(vec3(quarter_pi<float>(),0.0f, 0.0f) * delta_time);
+	hierarchicalMesh[2].get_transform().rotate(vec3(0.0f, quarter_pi<float>(), 0.0f) * delta_time);
+	hierarchicalMesh[3].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
+	hierarchicalMesh[4].get_transform().rotate(vec3(quarter_pi<float>(), 0.0f, 0.0f) * delta_time);
+
+	// Levitating egg and protectors
+	meshes["dragonEgg"].get_transform().position = vec3(25.0f, 12.0f, -30.0f) + diagonalMovement;
+	hierarchicalMesh[0].get_transform().position = vec3(25.0f, 12.0f, -30.0f) + diagonalMovement;
+
 	return true;
 }
 
@@ -573,15 +618,10 @@ void renderShadowMesh()
 		// View matrix taken from shadow map
 		auto V = shadow.get_view();
 		// *********************************
-
-		//auto P = cams[cameraIndex]->get_projection();
 		auto MVP = LightProjectionMat * V * M;
 		// Set MVP matrix uniform
-		glUniformMatrix4fv(basicEff.get_uniform_location("MVP"), // Location of uniform
-			1,                                      // Number of values - 1 mat4
-			GL_FALSE,                               // Transpose the matrix?
-			value_ptr(MVP));                        // Pointer to matrix data
-													// Render mesh
+		glUniformMatrix4fv(basicEff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));		
+		// Render mesh
 		renderer::render(m);
 	}
 	// Set render target back to the screen
@@ -674,6 +714,52 @@ void renderSkyBox()
 	glEnable(GL_CULL_FACE);
 }
 
+void renderHierarchicalMeshes() 
+{
+	renderer::bind(basicEff);
+	// Bind direction lights
+	renderer::bind(dirLight, "light");
+	// Bind point lights
+	renderer::bind(points, "points");
+	// Bind spot lights 
+	renderer::bind(spots, "spots");
+
+	// Get PV
+	const auto PV = cams[cameraIndex]->get_projection() * cams[cameraIndex]->get_view();
+	// Set the texture value for the shader here
+	glUniform1i(basicEff.get_uniform_location("tex"), 0);
+	// Find the lcoation for the MVP uniform
+	const auto loc = basicEff.get_uniform_location("MVP");
+
+	// Render meshes
+	for (size_t i = 0; i < hierarchicalMesh.size(); i++) {
+		// Normal matrix
+		auto N = hierarchicalMesh[i].get_transform().get_normal_matrix();
+		// *********************************
+		// SET M to be the usual mesh  transform matrix
+		auto M = hierarchicalMesh[i].get_transform().get_transform_matrix();
+		// *********************************
+		// Set M matrix uniform
+		glUniformMatrix4fv(basicEff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+
+		// Set N matrix uniform
+		glUniformMatrix3fv(basicEff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+		// Apply the heirarchy chain
+		for (size_t j = i; j > 0; j--) {
+			M = hierarchicalMesh[j - 1].get_transform().get_transform_matrix() * M;
+		}
+		// Bind material
+		renderer::bind(hierarchicalMesh[i].get_material(), "mat");
+
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(loc, 1, GL_FALSE, value_ptr(PV * M));
+		// Bind texture to renderer
+		renderer::bind(textures["ring"], 0);
+		// Render mesh
+		renderer::render(hierarchicalMesh[i]);
+	}
+}
+
 bool render() {
 	
 	// Render skybox
@@ -687,6 +773,9 @@ bool render() {
 
 	// Render meshes with shadows 
 	renderShadowMesh();
+
+	// Render hierarchical meshes
+	renderHierarchicalMeshes();
 
 	return true;
 }
