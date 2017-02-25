@@ -44,58 +44,20 @@ bool initialise() {
 	return true;
 }
 
-// Load content
-bool load_content() { 
-	// Create shadow map
-	shadowMap = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
-	
-	/*CREATE MESHES*/
-	// Meshes with normal maps
+void createNormalMapMeshes()
+{
+	// Create meshes
 	normalMapMeshes["floorPlane"] = mesh(geometry_builder::create_plane());
 	normalMapMeshes["earth"] = mesh(geometry_builder::create_sphere(60, 60));
 	normalMapMeshes["smallStickBoxLeft"] = mesh(geometry_builder::create_box(vec3(5.0f, 5.0f, 5.0f)));
 	normalMapMeshes["smallStickBoxRight"] = mesh(geometry_builder::create_box(vec3(4.0f, 4.0f, 4.0f)));
 	normalMapMeshes["smallStickBoxBack"] = mesh(geometry_builder::create_box(vec3(4.5f, 4.5f, 4.5f)));
 	normalMapMeshes["smallStickBoxFront"] = mesh(geometry_builder::create_box(vec3(3.0f, 3.0f, 3.0f)));
-	normalMapMeshes["sphereLeft"] = mesh(geometry_builder::create_sphere(30, 30,vec3(2.5f, 2.5f, 3.0f)));
+	normalMapMeshes["sphereLeft"] = mesh(geometry_builder::create_sphere(30, 30, vec3(2.5f, 2.5f, 3.0f)));
 	normalMapMeshes["dragonEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
 
-	// Basic meshes
-	basicMeshes["ring"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 6.5f));
-	basicMeshes["moon"] = mesh(geometry_builder::create_sphere(30, 30));
-	basicMeshes["ringBase"] = mesh(geometry_builder::create_pyramid());
-	basicMeshes["stickBoxLeft"] = mesh(geometry_builder::create_box(vec3(1.0f,10.0f,1.0f)));
-	basicMeshes["stickBoxRight"] = mesh(geometry_builder::create_box(vec3(2.5f, 10.0f, 1.0f)));
-	basicMeshes["stickBoxBack"] = mesh(geometry_builder::create_box(vec3(1.0f, 20.0f, 1.0f)));
-	basicMeshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(2.5f, 5.0f, 2.5f)));
-	basicMeshes["torch"] = mesh(geometry_builder::create_cylinder());
-	basicMeshes["dragon"] = mesh((geometry("textures/dragon.obj")));
-	
-	// Meshes with shadows
-	shadow_geom["shadowWall"] = mesh(geometry_builder::create_box(vec3(3,15,96)));
-	shadow_geom["miniWall"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
-	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8,100));
-	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(1.0f, 10.0f, 1.0f)));
-	shadow_geom["bigEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
-	shadow_geom["smallEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(2, 1, 1)));
-	
-	// Transform hierarchy meshes (From outter most to center)
-	hierarchicalMesh[0] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 10.0f));
-	hierarchicalMesh[1] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 9.0f));
-	hierarchicalMesh[2] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 8.0f));
-	hierarchicalMesh[3] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 7.0f));
-	hierarchicalMesh[4] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 6.0f));
-
-	// Skybox
-	skybox = mesh(geometry_builder::create_box());
-	skybox.get_transform().scale = vec3(100);
-	// All sides of the skybox
-	array<string, 6> filenames = { "textures/sky_right.png", "textures/sky_left.png", "textures/sky_top.png", 
-								   "textures/sky_botton.png", "textures/sky_front.png" ,  "textures/sky_back.png" };
-	cube_map = cubemap(filenames);
-	 
-	/*TRANSFORM MESHES*/
-	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);  
+	// Transform meshes
+	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
 	normalMapMeshes["earth"].get_transform().translate(vec3(25.0f, 12.0f, 10.0f));
 	normalMapMeshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
 	normalMapMeshes["smallStickBoxLeft"].get_transform().translate(vec3(13.0f, 2.5f, 5.0f));
@@ -104,7 +66,22 @@ bool load_content() {
 	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(17.0f, 1.5f, 25.0f));
 	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(15.0f, 2.0f, 17.0f));
 	normalMapMeshes["dragonEgg"].get_transform().translate(vec3(25.0f, 12.0f, -30.0f));
+}
 
+void createBasicMeshes()
+{
+	// Create meshes
+	basicMeshes["ring"] = mesh(geometry_builder::create_torus(45, 45, 1.0f, 6.5f));
+	basicMeshes["moon"] = mesh(geometry_builder::create_sphere(30, 30));
+	basicMeshes["ringBase"] = mesh(geometry_builder::create_pyramid());
+	basicMeshes["stickBoxLeft"] = mesh(geometry_builder::create_box(vec3(1.0f, 10.0f, 1.0f)));
+	basicMeshes["stickBoxRight"] = mesh(geometry_builder::create_box(vec3(2.5f, 10.0f, 1.0f)));
+	basicMeshes["stickBoxBack"] = mesh(geometry_builder::create_box(vec3(1.0f, 20.0f, 1.0f)));
+	basicMeshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(2.5f, 5.0f, 2.5f)));
+	basicMeshes["torch"] = mesh(geometry_builder::create_cylinder());
+	basicMeshes["dragon"] = mesh((geometry("textures/dragon.obj")));
+
+	// Transform meshes
 	basicMeshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));
 	basicMeshes["moon"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
 	basicMeshes["ring"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
@@ -119,7 +96,19 @@ bool load_content() {
 	basicMeshes["dragon"].get_transform().scale = vec3(10);
 	basicMeshes["dragon"].get_transform().translate(vec3(18.0f, 8.0f, 15.0f));
 	basicMeshes["dragon"].get_transform().rotate(vec3(0.0f, -quarter_pi<float>(), 0.0f));
-	 
+}
+
+void createShadowMeshes()
+{	
+	// Create meshes
+	shadow_geom["shadowWall"] = mesh(geometry_builder::create_box(vec3(3, 15, 96)));
+	shadow_geom["miniWall"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
+	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8, 100));
+	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(1.0f, 10.0f, 1.0f)));
+	shadow_geom["bigEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
+	shadow_geom["smallEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(2, 1, 1)));
+
+	// Transform meshes
 	shadow_geom["shadowWall"].get_transform().translate(vec3(-56.5f, 7.5f, 0.0f));
 	shadow_geom["miniWall"].get_transform().translate(vec3(-50.5f, 3.5f, 0.0f));
 	shadow_geom["stickBoxFront"].get_transform().translate(vec3(-50.5f, 5.0f, 20.0f));
@@ -128,13 +117,138 @@ bool load_content() {
 	shadow_geom["bigEgg"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f));
 	shadow_geom["smallEgg"].get_transform().translate(vec3(-48.5f, 3.5f, 0.0f));
 	shadow_geom["smallEgg"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f));
+}
 
+void createHierarchicalMeshes()
+{
+	// Create meshes (From outter most to center)
+	hierarchicalMesh[0] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 10.0f));
+	hierarchicalMesh[1] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 9.0f));
+	hierarchicalMesh[2] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 8.0f));
+	hierarchicalMesh[3] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 7.0f));
+	hierarchicalMesh[4] = mesh(geometry_builder::create_torus(20, 20, 0.5f, 6.0f));
+
+	// Transform meshes
 	hierarchicalMesh[0].get_transform().translate(vec3(25.0f, 12.0f, -30.0f));
-	hierarchicalMesh[0].get_transform().rotate(vec3(half_pi<float>(),0.0f,0.0f));
+	hierarchicalMesh[0].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	hierarchicalMesh[1].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	hierarchicalMesh[2].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	hierarchicalMesh[3].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	hierarchicalMesh[4].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+}
+
+void loadTexturesAndNormalMaps()
+{
+	textures["floorPlane"] = texture("textures/sand.jpg", true, true);
+	textures["earth"] = texture("textures/earth.jpg", true, true);
+	textures["ring"] = texture("textures/lavatile.jpg", true, true);
+	textures["ringBase"] = texture("textures/disturb.jpg", true, true);
+	textures["moon"] = texture("textures/moon_sphere.jpg", true, true);
+	textures["surroundings"] = texture("textures/brick.jpg", true, true);
+	textures["shadowWall"] = texture("textures/grey_rocks.jpg", true, true);
+	textures["sphereLeft"] = texture("textures/grey_Sphere.jpg", true, true);
+	textures["dragon"] = texture("textures/dragon.jpg", true, true);
+	textures["dragonEgg"] = texture("textures/dragonEgg.jpg", true, true);
+	normal_maps["earth"] = texture("textures/earth_normalmap.jpg", true, true);
+	normal_maps["floorPlane"] = texture("textures/sand_normal-map.jpg", true, true);
+	normal_maps["surroundings"] = texture("textures/brick_normalmap.jpg", true, true);
+	normal_maps["sphereLeft"] = texture("textures/brick_normal_map.jpg", true, true);
+	normal_maps["dragonEgg"] = texture("textures/brick_normal_map.jpg", true, true);
+}
+
+void setSpotLights()
+{
+	// Spot light in the torrus, below the earth
+	spots[0].set_position(vec3(25.0f, 0.0f, 10.0f));
+	spots[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
+	spots[0].set_direction(normalize(vec3(0, 1, -1)));
+	spots[0].set_range(80);
+	spots[0].set_power(0.5f);
+
+	// Spot light in front of the wall
+	spots[1].set_position(vec3(-15.5f, 10.5f, 0));
+	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	spots[1].set_direction(normalize(vec3(-1, -1, 0)));
+	spots[1].set_range(2000);
+	spots[1].set_power(0.1f);
+
+	// The green spot light, behind the earth
+	spots[2].set_position(vec3(10, 0, -8));
+	spots[2].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	spots[2].set_direction(normalize(vec3(1, 1, -1)));
+	spots[2].set_range(50);
+	spots[2].set_power(0.1f);
+
+	// In front of the earth - left
+	spots[3].set_position(vec3(0, 0, 40));
+	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	spots[3].set_direction(normalize(vec3(1, 0, -1)));
+	spots[3].set_range(200.0f);
+	spots[3].set_power(10.0f);
+
+	// In front of the earth - right
+	spots[4].set_position(vec3(40, 0, 40));
+	spots[4].set_light_colour(vec4(0.53f, 0.45f, 0.37f, 1.0f));
+	spots[4].set_direction(normalize(vec3(-1, 0, -1)));
+	spots[4].set_range(500.0f);
+	spots[4].set_power(10.0f);
+}
+
+void setShaders()
+{
+	/*BASIC EFFECTS*/
+	basicEff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
+	vector<string> frag_shaders{ "shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
+		"shaders/part_point.frag" };
+	basicEff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
+
+	/*NORMAL MAPPING*/
+	normalMappingEff.add_shader("shaders/shaderNormapMapping.vert", GL_VERTEX_SHADER);
+	vector<string> frag_shaders_normals{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
+		"shaders/part_point.frag", "shaders/part_normal_map.frag" };
+	normalMappingEff.add_shader(frag_shaders_normals, GL_FRAGMENT_SHADER);
+
+	/*SHADOWS*/
+	shadows_eff.add_shader("shaders/shadow.vert", GL_VERTEX_SHADER);
+	vector<string> frag_shaders_shadows{ "shaders/shadow.frag", "shaders/part_spot.frag", "shaders/part_shadow.frag" };
+	shadows_eff.add_shader(frag_shaders_shadows, GL_FRAGMENT_SHADER);
+
+	/*SKYBOX*/
+	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
+	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
+
+	// Build effect
+	basicEff.build();
+	normalMappingEff.build();
+	shadows_eff.build();
+	sky_eff.build();
+}
+
+// Load content
+bool load_content() { 
+	// Create shadow map
+	shadowMap = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
+	
+	/*CREATE MESHES*/
+	// Meshes with normal maps
+	createNormalMapMeshes();
+
+	// Basic meshes
+	createBasicMeshes();
+	
+	// Meshes with shadows
+	createShadowMeshes();
+	
+	// Transform hierarchy meshes 
+	createHierarchicalMeshes();
+
+	// Skybox
+	skybox = mesh(geometry_builder::create_box());
+	skybox.get_transform().scale = vec3(100);
+	// All sides of the skybox
+	array<string, 6> filenames = { "textures/sky_right.png", "textures/sky_left.png", "textures/sky_top.png", 
+								   "textures/sky_botton.png", "textures/sky_front.png" ,  "textures/sky_back.png" };
+	cube_map = cubemap(filenames);	
 	
 	/*SET MATERIAL*/
 	material objectMaterial;
@@ -199,21 +313,7 @@ bool load_content() {
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
 
 	/*LOAD TEXTURES and NORMAL MAPS*/
-	textures["floorPlane"] = texture("textures/sand.jpg",true,true);
-	textures["earth"] = texture("textures/earth.jpg", true, true);
-	textures["ring"] = texture("textures/lavatile.jpg", true, true); 
-	textures["ringBase"] = texture("textures/disturb.jpg", true, true);
-	textures["moon"] = texture("textures/moon_sphere.jpg", true, true);
-	textures["surroundings"] = texture("textures/brick.jpg", true, true);
-	textures["shadowWall"] = texture("textures/grey_rocks.jpg", true, true);
-	textures["sphereLeft"] = texture("textures/grey_Sphere.jpg", true, true);
-	textures["dragon"] = texture("textures/dragon.jpg", true, true); 
-	textures["dragonEgg"] = texture("textures/dragonEgg.jpg", true, true);
-	normal_maps["earth"] = texture("textures/earth_normalmap.jpg", true, true);
-	normal_maps["floorPlane"] = texture("textures/sand_normal-map.jpg", true, true);
-	normal_maps["surroundings"] = texture("textures/brick_normalmap.jpg", true, true);
-	normal_maps["sphereLeft"] = texture("textures/brick_normal_map.jpg", true, true);
-	normal_maps["dragonEgg"] = texture("textures/brick_normal_map.jpg", true, true);
+	loadTexturesAndNormalMaps();
 
 	/*DIRECTIONAL LIGHT*/
 	dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -226,69 +326,10 @@ bool load_content() {
 	pointLight.set_range(20.0f);
 	  
 	/*SPOT LIGHT*/ 
-	// Spot light in the torrus, below the earth
-	spots[0].set_position(vec3(25.0f, 0.0f, 10.0f));
-	spots[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
-	spots[0].set_direction(normalize(vec3(0, 1, -1)));
-	spots[0].set_range(80);
-	spots[0].set_power(0.5f);
-
-	// Spot light in front of the wall
-	spots[1].set_position(vec3(-15.5f, 10.5f, 0));
-	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[1].set_direction(normalize(vec3(-1,-1,0)));
-	spots[1].set_range(2000);
-	spots[1].set_power(0.1f);
-	
-	// The green spot light, behind the earth
-	spots[2].set_position(vec3(10, 0, -8));
-	spots[2].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	spots[2].set_direction(normalize(vec3(1, 1, -1)));
-	spots[2].set_range(50);
-	spots[2].set_power(0.1f);
-
-	// In front of the earth - left
-	spots[3].set_position(vec3(0, 0, 40)); 
-	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[3].set_direction(normalize(vec3(1, 0, -1)));
-	spots[3].set_range(200.0f);
-	spots[3].set_power(10.0f);
-
-	// In front of the earth - right
-	spots[4].set_position(vec3(40, 0, 40));
-	spots[4].set_light_colour(vec4(0.53f, 0.45f, 0.37f, 1.0f));
-	spots[4].set_direction(normalize(vec3(-1, 0, -1)));
-	spots[4].set_range(500.0f);
-	spots[4].set_power(10.0f); 
-
+	setSpotLights();
 
 	/*SHADERS*/
-	/*BASIC EFFECTS*/
-	basicEff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders{"shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", 
-								"shaders/part_point.frag"};
-	basicEff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
-	
-	/*NORMAL MAPPING*/
-	normalMappingEff.add_shader("shaders/shaderNormapMapping.vert", GL_VERTEX_SHADER); 
-	vector<string> frag_shaders_normals{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
-									     "shaders/part_point.frag", "shaders/part_normal_map.frag" };
-	normalMappingEff.add_shader(frag_shaders_normals, GL_FRAGMENT_SHADER);
-	 
-	/*SHADOWS*/
-	shadows_eff.add_shader("shaders/shadow.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders_shadows{ "shaders/shadow.frag", "shaders/part_spot.frag", "shaders/part_shadow.frag" };
-	shadows_eff.add_shader(frag_shaders_shadows, GL_FRAGMENT_SHADER);
-
-	/*SKYBOX*/
-	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
-	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
-
-	// Build effect
-	basicEff.build();
-	normalMappingEff.build();
-	shadows_eff.build();
-	sky_eff.build();
+	setShaders();
 
 	// Set default camera properties 
 	/*FREE CAMERA*/
@@ -299,14 +340,10 @@ bool load_content() {
 	return true;
 }
 
-// Update every frame
-bool update(float delta_time) {
-	vec3 moonPos = vec3(0);
-	vec3 levitatingRange = vec3(0);
-
-	// Set the correct camera index depending on the pressed button
-	if (glfwGetKey(renderer::get_window(), 'F'))  
-	{ 
+void checkPressedButton()
+{
+	if (glfwGetKey(renderer::get_window(), 'F'))
+	{
 		cameraIndex = 1;
 	}
 
@@ -331,77 +368,120 @@ bool update(float delta_time) {
 		targetCamera = 4;
 	}
 
+	// Turn on/off the direct light
+	if (glfwGetKey(renderer::get_window(), 'L'))
+	{
+		// Directional light OFF
+		dirLight.set_ambient_intensity(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		dirLight.set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	}
+	else if (glfwGetKey(renderer::get_window(), 'M'))
+	{
+		// Directional light ON
+		dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+		dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+}
+
+void setTargetCamera(float delta_time)
+{
+	if (targetCamera == 1) {
+		cams[0]->set_position(vec3(50.0f, 50.0f, 50.0f));
+		cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+	}
+	else if (targetCamera == 2) {
+		cams[0]->set_position(vec3(-50.0f, 50.0f, 50.0f));
+		cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+	}
+	else if (targetCamera == 3) {
+		cams[0]->set_position(vec3(-10.0f, 100.0f, 0.0f));
+		cams[0]->set_target(vec3(0.0f, 0.0f, 0.0f));
+	}
+	else if (targetCamera == 4) {
+		cams[0]->set_position(vec3(10.0f, 10.0f, 0.0f));
+		cams[0]->set_target(vec3(-100.0f, 0.0f, 0.0f));
+	}
+	cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
+	cams[0]->update(delta_time);
+}
+
+void setFreeCamera(float delta_time)
+{
+	double current_x = 0;
+	double current_y = 0;
+	double delta_x;
+	double delta_y;
+	vec3 pos = vec3(0);
+
+	// The ratio of pixels to rotation
+	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
+	static double ratio_height = (quarter_pi<float>() *
+		(static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
+		static_cast<float>(renderer::get_screen_height());
+
+	// Get the current cursor position
+	glfwGetCursorPos(renderer::get_window(), &current_x, &current_y);
+
+	// Calculate delta of cursor positions from last frame
+	delta_x = current_x - cursor_x;
+	delta_y = current_y - cursor_y;
+	// Multiply deltas by ratios - gets actual change in orientation
+	delta_x = delta_x * ratio_width;
+	delta_y = delta_y * ratio_height;
+	// Rotate camera by delta
+	static_cast<free_camera*>(cams[1])->rotate(delta_x, -delta_y);
+
+	// Use keyboard to move the camera
+	if (glfwGetKey(renderer::get_window(), 'W')) {
+		pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), 'S')) {
+		pos -= vec3(0.0f, 0.0f, 20.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), 'A')) {
+		pos -= vec3(20.0f, 0.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), 'D')) {
+		pos += vec3(20.0f, 0.0f, 0.0f) * delta_time;
+	}
+
+	// Move camera
+	static_cast<free_camera*>(cams[1])->move(pos);
+	// Update the camera
+	static_cast<free_camera*>(cams[1])->update(delta_time);
+
+	// Update cursor pos
+	cursor_x = current_x;
+	cursor_y = current_y;
+}
+
+void rotateHierarchicalMeshes(float delta_time)
+{
+	hierarchicalMesh[0].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
+	hierarchicalMesh[1].get_transform().rotate(vec3(quarter_pi<float>(), 0.0f, 0.0f) * delta_time);
+	hierarchicalMesh[2].get_transform().rotate(vec3(0.0f, quarter_pi<float>(), 0.0f) * delta_time);
+	hierarchicalMesh[3].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
+	hierarchicalMesh[4].get_transform().rotate(vec3(quarter_pi<float>(), 0.0f, 0.0f) * delta_time);
+}
+
+// Update every frame
+bool update(float delta_time) {
+	vec3 moonPos = vec3(0);
+	vec3 levitatingRange = vec3(0);
+
+	// Set the correct camera index depending on the pressed button
+	// Checks if the direct light is ON or OFF
+	checkPressedButton();
+
 	/*TARGET CAMERAS*/
 	if (cameraIndex == 0)
 	{
-		if (targetCamera == 1) {
-			cams[0]->set_position(vec3(50.0f, 50.0f, 50.0f));
-			cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
-		}
-		else if (targetCamera == 2) {
-			cams[0]->set_position(vec3(-50.0f, 50.0f, 50.0f));
-			cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
-		}
-		else if (targetCamera == 3) {
-			cams[0]->set_position(vec3(-10.0f, 100.0f, 0.0f));
-			cams[0]->set_target(vec3(0.0f, 0.0f, 0.0f));
-		}
-		else if (targetCamera == 4) {
-			cams[0]->set_position(vec3(10.0f, 10.0f, 0.0f));
-			cams[0]->set_target(vec3(-100.0f, 0.0f, 0.0f));
-		}
-		cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
-		cams[0]->update(delta_time);
+		setTargetCamera(delta_time);
 	}
 	/*FREE CAMERA*/
 	else if (cameraIndex == 1)
 	{
-		double current_x = 0;
-		double current_y = 0;
-		double delta_x;
-		double delta_y;
-		vec3 pos = vec3(0);
-
-		// The ratio of pixels to rotation
-		static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
-		static double ratio_height = (quarter_pi<float>() *
-			(static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) /
-			static_cast<float>(renderer::get_screen_height());
-
-		// Get the current cursor position
-		glfwGetCursorPos(renderer::get_window(), &current_x, &current_y);
-
-		// Calculate delta of cursor positions from last frame
-		delta_x = current_x - cursor_x;
-		delta_y = current_y - cursor_y;
-		// Multiply deltas by ratios - gets actual change in orientation
-		delta_x = delta_x * ratio_width;
-		delta_y = delta_y * ratio_height;
-		// Rotate camera by delta
-		static_cast<free_camera*>(cams[1])->rotate(delta_x, -delta_y);
-
-		// Use keyboard to move the camera
-		if (glfwGetKey(renderer::get_window(), 'W')) {
-			pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
-		}
-		if (glfwGetKey(renderer::get_window(), 'S')) {
-			pos -= vec3(0.0f, 0.0f, 20.0f) * delta_time;
-		}
-		if (glfwGetKey(renderer::get_window(), 'A')) {
-			pos -= vec3(20.0f, 0.0f, 0.0f) * delta_time;
-		}
-		if (glfwGetKey(renderer::get_window(), 'D')) {
-			pos += vec3(20.0f, 0.0f, 0.0f) * delta_time;
-		}
-
-		// Move camera
-		static_cast<free_camera*>(cams[1])->move(pos);
-		// Update the camera
-		static_cast<free_camera*>(cams[1])->update(delta_time);
-
-		// Update cursor pos
-		cursor_x = current_x;
-		cursor_y = current_y;
+		setFreeCamera(delta_time);
 	}
 
 	// Rotate the Earth and the Moon around their Z axis
@@ -418,20 +498,6 @@ bool update(float delta_time) {
 	// Move the spot light in front of the wall
 	spots[1].set_position(vec3(-42.9f, 5.5f, sin(velocity) * -40));
 	basicMeshes["torch"].get_transform().position = vec3(-38.0f, 5.5f, sin(velocity) * -40);
-	
-	// Turn on/off the direct light
-	if (glfwGetKey(renderer::get_window(), 'L'))
-	{
-		// Directional light OFF
-		dirLight.set_ambient_intensity(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		dirLight.set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f)); 
-	}
-	else if (glfwGetKey(renderer::get_window(), 'M'))
-	{	
-		// Directional light ON
-		dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
-		dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	}
 
 	// Accumulating velocity used for the movements
 	velocity -= delta_time;
@@ -444,11 +510,7 @@ bool update(float delta_time) {
 	skybox.get_transform().position = cams[cameraIndex]->get_position();
 
 	// Transform hierarchy meshes
-	hierarchicalMesh[0].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
-	hierarchicalMesh[1].get_transform().rotate(vec3(quarter_pi<float>(),0.0f, 0.0f) * delta_time);
-	hierarchicalMesh[2].get_transform().rotate(vec3(0.0f, quarter_pi<float>(), 0.0f) * delta_time);
-	hierarchicalMesh[3].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
-	hierarchicalMesh[4].get_transform().rotate(vec3(quarter_pi<float>(), 0.0f, 0.0f) * delta_time);
+	rotateHierarchicalMeshes(delta_time);
 
 	// Levitating egg and protectors
 	normalMapMeshes["dragonEgg"].get_transform().position = vec3(25.0f, 12.0f, -30.0f) + levitatingRange;
