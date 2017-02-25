@@ -61,7 +61,7 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in ve
 // Directional light information
 uniform directional_light light;
 // Point lights being used in the scene
-uniform point_light points[4];
+uniform point_light pointLight;
 // Spot lights being used in the scene
 uniform spot_light spots[5];
 // Material of the object being rendered
@@ -91,11 +91,9 @@ void main() {
   // Calculate directional light colour
   colour = calculate_direction(light, mat, transformed_normal, view_dir, tex_colour);
   colour.a = 1;
+
   // Sum point lights
-  for(int i=0;i<1;i++)
-  {
-	colour += calculate_point(points[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
-  }
+	colour += calculate_point(pointLight, mat, vertex_position, transformed_normal, view_dir, tex_colour);
   
   // Sum spot lights
   for(int i=0;i<5;i++)
