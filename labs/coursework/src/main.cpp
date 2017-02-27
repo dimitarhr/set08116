@@ -1,5 +1,7 @@
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
+#include "../createMeshes.h"
+#include "../main.h"
 
 using namespace std;
 using namespace graphics_framework;
@@ -44,7 +46,8 @@ bool initialise() {
 	return true;
 }
 
-void createNormalMapMeshes()
+/*LOAD CONTENT FUNCTIONS*/
+/*void createNormalMapMeshes()
 {
 	// Create meshes
 	normalMapMeshes["floorPlane"] = mesh(geometry_builder::create_plane());
@@ -66,7 +69,7 @@ void createNormalMapMeshes()
 	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(17.0f, 1.5f, 25.0f));
 	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(15.0f, 2.0f, 17.0f));
 	normalMapMeshes["dragonEgg"].get_transform().translate(vec3(25.0f, 12.0f, -30.0f));
-}
+}*/
 
 void createBasicMeshes()
 {
@@ -194,35 +197,35 @@ void setSpotLights()
 	spots[4].set_power(10.0f);
 }
 
-void setShaders()
-{
-	/*BASIC EFFECTS*/
-	basicEff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders{ "shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
-		"shaders/part_point.frag" };
-	basicEff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
-
-	/*NORMAL MAPPING*/
-	normalMappingEff.add_shader("shaders/shaderNormapMapping.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders_normals{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
-		"shaders/part_point.frag", "shaders/part_normal_map.frag" };
-	normalMappingEff.add_shader(frag_shaders_normals, GL_FRAGMENT_SHADER);
-
-	/*SHADOWS*/
-	shadows_eff.add_shader("shaders/shadow.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders_shadows{ "shaders/shadow.frag", "shaders/part_spot.frag", "shaders/part_shadow.frag" };
-	shadows_eff.add_shader(frag_shaders_shadows, GL_FRAGMENT_SHADER);
-
-	/*SKYBOX*/
-	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
-	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
-
-	// Build effect
-	basicEff.build();
-	normalMappingEff.build();
-	shadows_eff.build();
-	sky_eff.build();
-}
+//void setShaders()
+//{
+//	/*BASIC EFFECTS*/
+//	basicEff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
+//	vector<string> frag_shaders{ "shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
+//		"shaders/part_point.frag" };
+//	basicEff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
+//
+//	/*NORMAL MAPPING*/
+//	normalMappingEff.add_shader("shaders/shaderNormapMapping.vert", GL_VERTEX_SHADER);
+//	vector<string> frag_shaders_normals{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
+//		"shaders/part_point.frag", "shaders/part_normal_map.frag" };
+//	normalMappingEff.add_shader(frag_shaders_normals, GL_FRAGMENT_SHADER);
+//
+//	/*SHADOWS*/
+//	shadows_eff.add_shader("shaders/shadow.vert", GL_VERTEX_SHADER);
+//	vector<string> frag_shaders_shadows{ "shaders/shadow.frag", "shaders/part_spot.frag", "shaders/part_shadow.frag" };
+//	shadows_eff.add_shader(frag_shaders_shadows, GL_FRAGMENT_SHADER);
+//
+//	/*SKYBOX*/
+//	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
+//	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
+//
+//	// Build effect
+//	basicEff.build();
+//	normalMappingEff.build();
+//	shadows_eff.build();
+//	sky_eff.build();
+//}
 
 // Load content
 bool load_content() { 
@@ -340,6 +343,7 @@ bool load_content() {
 	return true;
 }
 
+/*UPDATE FUNCTIONS*/
 void checkPressedButton()
 {
 	if (glfwGetKey(renderer::get_window(), 'F'))
@@ -519,6 +523,7 @@ bool update(float delta_time) {
 	return true;
 }
 
+/*RENDER FUNCTIONS*/
 // Render meshes with normal maps
 void renderNormalMapMesh()
 {
@@ -841,4 +846,7 @@ void main() {
 	application.set_render(render);
 	// Run application
 	application.run();
+
+	delete cams[0];
+	delete cams[1];
 }
