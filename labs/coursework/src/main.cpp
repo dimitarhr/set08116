@@ -20,13 +20,11 @@ int targetCamera = 1;
 
 shadow_map shadowMap;
 
-map<string, mesh> normalMapMeshes;
-map<string, mesh> basicMeshes;
-map<string, mesh> shadow_geom;
+map<string, mesh> normalMapMeshes, basicMeshes, shadow_geom;
 std::array<mesh, 5> hierarchicalMesh;
 
-map<string, texture> textures;
-map<string, texture> normal_maps;
+map<string, texture> textures, normal_maps;
+
 directional_light dirLight;
 vector<spot_light> spots(5);
 point_light pointLight;
@@ -112,7 +110,7 @@ bool initialise() {
 //	// Create meshes
 //	shadow_geom["shadowWall"] = mesh(geometry_builder::create_box(vec3(3, 15, 96)));
 //	shadow_geom["miniWall"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
-//	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8, 100));
+//	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8, 100, true));
 //	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(1.0f, 10.0f, 1.0f)));
 //	shadow_geom["bigEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
 //	shadow_geom["smallEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(2, 1, 1)));

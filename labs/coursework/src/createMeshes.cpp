@@ -66,7 +66,7 @@ void createShadowMeshes()
 	// Create meshes
 	shadow_geom["shadowWall"] = mesh(geometry_builder::create_box(vec3(3, 15, 96)));
 	shadow_geom["miniWall"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
-	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8, 100));
+	shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8,100,true));
 	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(1.0f, 10.0f, 1.0f)));
 	shadow_geom["bigEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
 	shadow_geom["smallEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(2, 1, 1)));
@@ -75,7 +75,7 @@ void createShadowMeshes()
 	shadow_geom["shadowWall"].get_transform().translate(vec3(-56.5f, 7.5f, 0.0f));
 	shadow_geom["miniWall"].get_transform().translate(vec3(-50.5f, 3.5f, 0.0f));
 	shadow_geom["stickBoxFront"].get_transform().translate(vec3(-50.5f, 5.0f, 20.0f));
-	shadow_geom["floorPlane"].get_transform().translate(vec3(-54.0f, 0.0f, 0.0f));
+	shadow_geom["floorPlane"].get_transform().translate(vec3(-56.0f, 0.0f, 48.0f));
 	shadow_geom["bigEgg"].get_transform().translate(vec3(-50.5f, 1.5f, -15.0f));
 	shadow_geom["bigEgg"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f));
 	shadow_geom["smallEgg"].get_transform().translate(vec3(-48.5f, 3.5f, 0.0f));
