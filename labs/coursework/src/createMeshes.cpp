@@ -10,7 +10,7 @@ using namespace glm;
 void createNormalMapMeshes()
 {
 	// Create meshes
-	normalMapMeshes["floorPlane"] = mesh(geometry_builder::create_plane());
+	normalMapMeshes["floorPlane"] = mesh(geometry_builder::create_plane(100,100,true));
 	normalMapMeshes["earth"] = mesh(geometry_builder::create_sphere(60, 60));
 	normalMapMeshes["smallStickBoxLeft"] = mesh(geometry_builder::create_box(vec3(5.0f, 5.0f, 5.0f)));
 	normalMapMeshes["smallStickBoxRight"] = mesh(geometry_builder::create_box(vec3(4.0f, 4.0f, 4.0f)));
@@ -20,6 +20,7 @@ void createNormalMapMeshes()
 	normalMapMeshes["dragonEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
 
 	// Transform meshes
+	normalMapMeshes["floorPlane"].get_transform().translate(vec3(-25.0f, 0.0f, 25.0f));
 	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
 	normalMapMeshes["earth"].get_transform().translate(vec3(25.0f, 12.0f, 10.0f));
 	normalMapMeshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
@@ -42,7 +43,7 @@ void createBasicMeshes()
 	basicMeshes["stickBoxBack"] = mesh(geometry_builder::create_box(vec3(1.0f, 20.0f, 1.0f)));
 	basicMeshes["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(2.5f, 5.0f, 2.5f)));
 	basicMeshes["torch"] = mesh(geometry_builder::create_cylinder());
-	basicMeshes["dragon"] = mesh((geometry("textures/dragon.obj")));
+	basicMeshes["dragon"] = mesh(geometry("textures/dragon.obj"));
 
 	// Transform meshes
 	basicMeshes["moon"].get_transform().translate(vec3(25.0f, 10.0f, 18.0f));

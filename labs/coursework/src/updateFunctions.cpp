@@ -10,9 +10,11 @@ using namespace glm;
 void updateMeshesTransformations(float delta_time)
 {
 	// Using the cos and sin functions to calculate the range of movement
+	// velocity is a global variable accumulated in the update function in 'main.cpp'
 	vec3 moonPos = vec3(cos(velocity)*4.5f, 0.0f, sin(velocity)*4.5f);
 	vec3 levitatingRange = vec3(0.0f, cos(velocity)*1.5f, 0.0f);
 
+	// Perform hierarchical transformations
 	hierarchicalMesh[0].get_transform().rotate(vec3(0.0f, 0.0f, -quarter_pi<float>()) * delta_time);
 	hierarchicalMesh[1].get_transform().rotate(vec3(quarter_pi<float>(), 0.0f, 0.0f) * delta_time);
 	hierarchicalMesh[2].get_transform().rotate(vec3(0.0f, quarter_pi<float>(), 0.0f) * delta_time);
@@ -37,11 +39,13 @@ void updateMeshesTransformations(float delta_time)
 
 void checkPressedButton()
 {
+	// Free camera
 	if (glfwGetKey(renderer::get_window(), 'F'))
 	{
 		cameraIndex = 1;
 	}
 
+	// Target cameras
 	else if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))
 	{
 		cameraIndex = 0;

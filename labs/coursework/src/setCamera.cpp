@@ -26,7 +26,6 @@ void setTargetCamera(float delta_time)
 		cams[0]->set_target(vec3(-100.0f, 0.0f, 0.0f));
 	}
 	cams[0]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 2.414f, 1000.0f);
-	cams[0]->update(delta_time);
 }
 
 void setFreeCamera(float delta_time)
@@ -71,10 +70,8 @@ void setFreeCamera(float delta_time)
 
 	// Move camera
 	static_cast<free_camera*>(cams[1])->move(pos);
-	// Update the camera
-	static_cast<free_camera*>(cams[1])->update(delta_time);
 
-	// Update cursor pos
+	// Update cursor positions
 	cursor_x = current_x;
 	cursor_y = current_y;
 }
