@@ -1,3 +1,8 @@
+/* createMeshes.cpp
+*  Consists of the functions that are required to create the meshes.
+*  The global variables in 'main.h' are used.
+*  Dimitar Hristov, 40201757, Computer Graphics(SET08116)
+*/
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
 #include "createMeshes.h"

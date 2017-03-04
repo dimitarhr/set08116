@@ -1,3 +1,8 @@
+/* updateFunctions.cpp
+*  Consists of the functions that update the meshes and change between the cameras.
+*  The global variables in 'main.h' are used.
+*  Dimitar Hristov, 40201757, Computer Graphics(SET08116)
+*/
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
 #include "updateFunctions.h"

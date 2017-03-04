@@ -1,3 +1,8 @@
+/* setLightAndMaterial.cpp
+*  Consists of the functions that are required to set the lights and the materials for the different meshes.
+*  The global variables in 'main.h' are used.
+*  Dimitar Hristov, 40201757, Computer Graphics(SET08116)
+*/
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
 #include "setLightAndMaterial.h"

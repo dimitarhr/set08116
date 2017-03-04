@@ -1,3 +1,13 @@
+/* main.cpp
+*  Consists of the main functions
+*		- load_content()
+*		- update()
+*		- render()
+*		- main()
+*  that are required to render the scene.
+*  There are also glabal variables definitions.
+*  Dimitar Hristov, 40201757, Computer Graphics(SET08116)
+*/
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
 #include "createMeshes.h"

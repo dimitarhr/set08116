@@ -1,3 +1,8 @@
+/* texturesAndNormalMaps.cpp
+*  Consists of the function that loads the textures and the normal maps.
+*  The global variables in 'main.h' are used.
+*  Dimitar Hristov, 40201757, Computer Graphics(SET08116)
+*/
 #include <glm\glm.hpp>
 #include <graphics_framework.h>
 #include "texturesAndNormalMaps.h"
