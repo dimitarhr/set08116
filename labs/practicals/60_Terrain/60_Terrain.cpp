@@ -5,11 +5,13 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
-mesh terr;
+map<string, mesh> meshes;
+//mesh terr;
 effect eff;
 free_camera cam;
 directional_light light;
 texture tex[4];
+texture waterTexture;
 
 void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth,float height_scale)
 {
@@ -60,7 +62,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
       unsigned int top_left = (y * height_map.get_width()) + x;
       unsigned int top_right = (y * height_map.get_width()) + x + 1;
       // *********************************
-	  unsigned int bottom_left = ((y + 1)*height_map.get_width()) + x;
+	  unsigned int bottom_left = ((y+1)*height_map.get_width()) + x;
 	  unsigned int bottom_right = ((y+1)*height_map.get_height()) + x + 1;
       // *********************************
       // Push back indices for triangle 1 (tl,br,bl)
@@ -150,14 +152,16 @@ bool load_content() {
   // Geometry to load into
   geometry geom;
 
-  // Load height map
-  texture height_map("textures/heightmap.jpg");
+  // Load height map 
+  texture height_map("textures/mountain_map3.jpg");
 
   // Generate terrain
-  generate_terrain(geom, height_map, 20, 20, 2.0f);
+  generate_terrain(geom, height_map, 80, 80, 20.0f);
 
   // Use geometry to create terrain mesh
-  terr = mesh(geom);
+  meshes["terr"] = mesh(geom);
+  meshes["water"] = mesh(geometry_builder::create_plane(100,100,true));
+  meshes["water"].get_transform().translate(vec3(0,2,0));
 
   // Load in necessary shaders
   eff.add_shader("60_Terrain/terrain.vert", GL_VERTEX_SHADER);
@@ -171,16 +175,17 @@ bool load_content() {
   light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
   light.set_light_colour(vec4(0.9f, 0.9f, 0.9f, 1.0f));
   light.set_direction(normalize(vec3(1.0f, 1.0f, 1.0f)));
-  terr.get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-  terr.get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-  terr.get_material().set_shininess(20.0f);
-  terr.get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  meshes["terr"].get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+  meshes["terr"].get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  meshes["terr"].get_material().set_shininess(20.0f);
+  meshes["terr"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
   // terrian trextures
   tex[0] = texture("textures/sand.jpg");
   tex[1] = texture("textures/grass.jpg");
   tex[2] = texture("textures/stone.jpg");
   tex[3] = texture("textures/snow.jpg");
+  waterTexture = texture("textures/checked.gif");
    
   // Set camera properties
   cam.set_position(vec3(0.0f, 5.0f, 10.0f));
@@ -236,41 +241,54 @@ bool update(float delta_time) {
 bool render() {
   // Bind effect
   renderer::bind(eff);
-  // Create MVP matrix
-  auto M = terr.get_transform().get_transform_matrix();
-  auto V = cam.get_view();
-  auto P = cam.get_projection();
-  auto MVP = P * V * M;
-  // Set MVP matrix uniform
-  glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-  // Set M matrix uniform
-  glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
-  // Set N matrix uniform
-  glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(terr.get_transform().get_normal_matrix()));
-  // *********************************
-  // Set eye_pos uniform to camera position
-  glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
-  // *********************************
-   //Bind Terrian Material
-  renderer::bind(terr.get_material(), "mat");
-  // Bind Light
-  renderer::bind(light, "light");
-  // Bind Tex[0] to TU 0, set uniform
-  renderer::bind(tex[0], 0);
-  glUniform1i(eff.get_uniform_location("tex[0]"), 0);
-  // *********************************
-   //Bind Tex[1] to TU 1, set uniform
-  renderer::bind(tex[1], 1);
-  glUniform1i(eff.get_uniform_location("tex[1]"), 1);
-  // Bind Tex[2] to TU 2, set uniform
-  renderer::bind(tex[2], 2);
-  glUniform1i(eff.get_uniform_location("tex[2]"), 2);
-  // Bind Tex[3] to TU 3, set uniform
-  renderer::bind(tex[3], 3);
-  glUniform1i(eff.get_uniform_location("tex[3]"), 3);
-  // *********************************
-  // Render terrain
-  renderer::render(terr);
+  for (auto item : meshes)
+  {
+	  mesh m = item.second;
+	  // Create MVP matrix
+	  auto M = m.get_transform().get_transform_matrix();
+	  auto V = cam.get_view();
+	  auto P = cam.get_projection();
+	  auto MVP = P * V * M;
+	  // Set MVP matrix uniform
+	  glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	  // Set M matrix uniform
+	  glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+	  // Set N matrix uniform
+	  glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
+	  // *********************************
+	  // Set eye_pos uniform to camera position
+	  glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
+	  // *********************************
+	   //Bind Terrian Material
+	  renderer::bind(m.get_material(), "mat");
+	  // Bind Light
+	  renderer::bind(light, "light");
+	  if (item.first == "water")
+	  {
+		  renderer::bind(waterTexture, 0);
+		  glUniform1i(eff.get_uniform_location("tex[0]"), 0);
+		  cout << "Hell" << endl;
+	  }
+	  else
+	  {
+		  // Bind Tex[0] to TU 0, set uniform
+		  renderer::bind(tex[0], 0);
+		  glUniform1i(eff.get_uniform_location("tex[0]"), 0);
+		  // *********************************
+		   //Bind Tex[1] to TU 1, set uniform
+		  renderer::bind(tex[1], 1);
+		  glUniform1i(eff.get_uniform_location("tex[1]"), 1);
+		  // Bind Tex[2] to TU 2, set uniform
+		  renderer::bind(tex[2], 2);
+		  glUniform1i(eff.get_uniform_location("tex[2]"), 2);
+		  // Bind Tex[3] to TU 3, set uniform
+		  renderer::bind(tex[3], 3);
+		  glUniform1i(eff.get_uniform_location("tex[3]"), 3);
+	  }
+	  // *********************************
+	  // Render terrain
+	  renderer::render(m);
+  }
 
   return true;
 }

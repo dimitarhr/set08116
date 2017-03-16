@@ -12,7 +12,7 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-texture tex;
+texture tex;  
 target_camera cam;
 directional_light light;
 
