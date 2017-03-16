@@ -44,7 +44,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
     for (int z = 0; z < height_map.get_height(); ++z) {
       // *********************************
       // Calculate z position of point
-		point.z = -(depth / 2) + (depth_point*z);
+		point.z = -(depth / 2.0f) + (depth_point*static_cast<float>(z));
       // *********************************
       // Y position based on red component of height map data
       point.y = data[(z * height_map.get_width()) + x].y * height_scale;
@@ -92,19 +92,19 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 
     // Normal is normal(cross product) of these two sides
     // *********************************
-
+	vec3 n = normalize(cross(side2,side1));
 
     // Add to normals in the normal buffer using the indices for the triangle
-
-
-
+	normals[idx1] = normals[idx1] + n;
+	normals[idx2] = normals[idx2] + n;
+	normals[idx3] = normals[idx3] + n;
     // *********************************
   }
 
   // Normalize all the normals
   for (auto &n : normals) {
     // *********************************
-
+	 n = normalize(n);
     // *********************************
   }
 
@@ -126,13 +126,13 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 
       // *********************************
       // Sum the components of the vector
-
+	  double total = tex_weight.x + tex_weight.y + tex_weight.z + tex_weight.w;
       // Divide weight by sum
-
+	  tex_weight /= total;
       // Add tex weight to weights
-
+	  tex_weights.push_back(tex_weight);
       // *********************************
-    }
+    } 
   }
 
   // Add necessary buffers to the geometry
@@ -181,7 +181,7 @@ bool load_content() {
   tex[1] = texture("textures/grass.jpg");
   tex[2] = texture("textures/stone.jpg");
   tex[3] = texture("textures/snow.jpg");
-
+   
   // Set camera properties
   cam.set_position(vec3(0.0f, 5.0f, 10.0f));
   cam.set_target(vec3(0.0f, 0.0f, 0.0f));
@@ -249,7 +249,7 @@ bool render() {
   glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(terr.get_transform().get_normal_matrix()));
   // *********************************
   // Set eye_pos uniform to camera position
-
+  glUniform3fv(eff.get_uniform_location("eye_pos"), 1, value_ptr(cam.get_position()));
   // *********************************
    //Bind Terrian Material
   renderer::bind(terr.get_material(), "mat");
@@ -260,14 +260,14 @@ bool render() {
   glUniform1i(eff.get_uniform_location("tex[0]"), 0);
   // *********************************
    //Bind Tex[1] to TU 1, set uniform
-
-
+  renderer::bind(tex[1], 1);
+  glUniform1i(eff.get_uniform_location("tex[1]"), 1);
   // Bind Tex[2] to TU 2, set uniform
-
-
+  renderer::bind(tex[2], 2);
+  glUniform1i(eff.get_uniform_location("tex[2]"), 2);
   // Bind Tex[3] to TU 3, set uniform
-
-
+  renderer::bind(tex[3], 3);
+  glUniform1i(eff.get_uniform_location("tex[3]"), 3);
   // *********************************
   // Render terrain
   renderer::render(terr);

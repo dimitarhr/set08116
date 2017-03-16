@@ -18,7 +18,7 @@ float calculate_fog(in float fog_coord, in vec4 fog_colour, in float fog_start, 
   } else if (fog_type == FOG_EXP) {
     // *********************************
     // Exponential fog
-
+	result = (exp(-fog_density*fog_coord));
     // *********************************
   } else if (fog_type == FOG_EXP2) {
     // *********************************
@@ -28,7 +28,7 @@ float calculate_fog(in float fog_coord, in vec4 fog_colour, in float fog_start, 
   }
   // *********************************
   // Result is 1 minus result clamped to 1.0 to 0.0
-
+  result = result - 1.0;
   // *********************************
   return result;
 }
