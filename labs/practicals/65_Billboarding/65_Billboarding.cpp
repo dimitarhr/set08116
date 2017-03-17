@@ -17,13 +17,13 @@ bool initialise() {
   glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   glfwGetCursorPos(renderer::get_window(), &cursor_x, &cursor_y);
-
+   
   return true;
 }
 
 bool load_content() {
   // Vector we will use to store randomly generated points
-  vector<vec3> positions;
+  vector<vec3> positions; 
 
   // Allows creation of random points.  Note range
   default_random_engine e;

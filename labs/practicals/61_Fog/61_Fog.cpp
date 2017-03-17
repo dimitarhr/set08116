@@ -6,6 +6,8 @@
 #define FOG_EXP 1
 #define FOG_EXP2 2
 
+int fogIndex = 0;
+
 using namespace std;
 using namespace graphics_framework;
 using namespace glm;
@@ -19,7 +21,7 @@ directional_light light;
 bool load_content() {
   // Create plane mesh
   meshes["plane"] = mesh(geometry_builder::create_plane());
-
+  
   // Create scene
   meshes["box"] = mesh(geometry_builder::create_box());
   meshes["tetra"] = mesh(geometry_builder::create_tetrahedron());
@@ -122,6 +124,15 @@ bool update(float delta_time) {
   if (glfwGetKey(renderer::get_window(), '4')) {
     cam.set_position(vec3(50, 10, -50));
   }
+  if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_0)) {
+	  fogIndex = 0;
+  }
+  if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_1)) {
+	  fogIndex = 1;
+  }
+  if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_2)) {
+	  fogIndex = 2;
+  }
 
   // Rotate the sphere
   meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
@@ -168,12 +179,12 @@ bool render() {
 	glUniform4fv(eff.get_uniform_location("fog_colour"), 1, value_ptr(vec4(0.5f, 0.5f, 0.5f, 1.0f)));
     // Set fog start:  5.0f
 	glUniform1f(eff.get_uniform_location("fog_start"), 5.0f);
-    // Set fog end:  100.0f
+    // Set fog end:  100.0f   
 	glUniform1f(eff.get_uniform_location("fog_end"), 100.0f);
     // Set fog density: 0.04f
-	glUniform1f(eff.get_uniform_location("fog_density"), 0.04f);
+	glUniform1f(eff.get_uniform_location("fog_density"), 0.01f);
     // Set fog type: FOG_EXP2
-	glUniform1i(eff.get_uniform_location("fog_type"), FOG_LINEAR); 
+	glUniform1i(eff.get_uniform_location("fog_type"), fogIndex); 
     // *********************************
 
     // Render mesh 

@@ -13,6 +13,7 @@ directional_light light;
 texture tex[4];
 texture waterTexture;
 
+
 void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth,float height_scale)
 {
   // Contains our position data
@@ -38,6 +39,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
   // Point to work on
   vec3 point;
 
+  // Create all the points and scale them properly
   // Part 1 - Iterate through each point, calculate vertex and add to vector
   for (int x = 0; x < height_map.get_width(); ++x) {
     // Calculate x position of point
@@ -55,6 +57,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
     }
   }
 
+  // Create the triangles from all the points by using the indices
   // Part 1 - Add index data
   for (unsigned int x = 0; x < height_map.get_width() - 1; ++x) {
     for (unsigned int y = 0; y < height_map.get_height() - 1; ++y) {
@@ -81,6 +84,8 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
   // Resize the normals buffer
   normals.resize(positions.size());
 
+  // Take the three sides of every triangle and calculate the sides
+  // Then with the cross product get the normal for this triangle (sides)
   // Part 2 - Calculate normals for the height map
   for (unsigned int i = 0; i < indices.size() / 3; ++i) {
     // Get indices for the triangle
@@ -97,9 +102,9 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 	vec3 n = normalize(cross(side2,side1));
 
     // Add to normals in the normal buffer using the indices for the triangle
-	normals[idx1] = normals[idx1] + n;
-	normals[idx2] = normals[idx2] + n;
-	normals[idx3] = normals[idx3] + n;
+	normals[idx1] = n;
+	normals[idx2] = n;
+	normals[idx3] = n;
     // *********************************
   }
 
@@ -117,6 +122,9 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
     }
   }
 
+  // Calculate the weight from the y data
+  // 0.25 - four weights/textures
+  // 0.0,0.15,0.5,0.9 - arbitrary points
   // Part 4 - Calculate texture weights for each vertex
   for (unsigned int x = 0; x < height_map.get_width(); ++x) {
     for (unsigned int z = 0; z < height_map.get_height(); ++z) {
@@ -160,6 +168,7 @@ bool load_content() {
 
   // Use geometry to create terrain mesh
   meshes["terr"] = mesh(geom);
+  // To get the water, you have to render the water plane separately
   meshes["water"] = mesh(geometry_builder::create_plane(100,100,true));
   meshes["water"].get_transform().translate(vec3(0,2,0));
 
@@ -179,6 +188,11 @@ bool load_content() {
   meshes["terr"].get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
   meshes["terr"].get_material().set_shininess(20.0f);
   meshes["terr"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+  meshes["water"].get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+  meshes["water"].get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  meshes["water"].get_material().set_shininess(20.0f);
+  meshes["water"].get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
   // terrian trextures
   tex[0] = texture("textures/sand.jpg");
@@ -267,7 +281,6 @@ bool render() {
 	  {
 		  renderer::bind(waterTexture, 0);
 		  glUniform1i(eff.get_uniform_location("tex[0]"), 0);
-		  cout << "Hell" << endl;
 	  }
 	  else
 	  {

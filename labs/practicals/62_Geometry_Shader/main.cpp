@@ -75,7 +75,7 @@ bool render()
         GL_FALSE, // Transpose the matrix?
         value_ptr(MVP)); // Pointer to matrix data
 
-    // **********
+    // ********** 
     // Set offset
     // **********
     glUniform3fv(eff.get_uniform_location("offset"), 1, value_ptr(vec3(5.0f, 0.0f, 0.0f)));

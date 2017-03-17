@@ -7,14 +7,14 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-effect debug_eff;
+effect debug_eff; 
 texture tex;
 target_camera cam;
 directional_light light;
 
 bool load_content() {
   // Create plane mesh
-  meshes["plane"] = mesh(geometry_builder::create_plane());
+  meshes["plane"] = mesh(geometry_builder::create_plane(100,100,true));
 
   // Create scene
   meshes["box"] = mesh(geometry_builder::create_box());
@@ -82,17 +82,17 @@ bool load_content() {
   // Load texture
   tex = texture("textures/checker.png");
 
-  // Set lighting values
+  // Set lighting values 
   light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
   light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   light.set_direction(vec3(1.0f, 1.0f, -1.0f));
-
+     
   // Load in shaders
   eff.add_shader("48_Phong_Shading/phong.vert", GL_VERTEX_SHADER);
   eff.add_shader("48_Phong_Shading/phong.frag", GL_FRAGMENT_SHADER);
   // Build effect
   eff.build();
-
+         
   // Load in debug effect
   debug_eff.add_shader("64_Showing_Normals/shader.vert", GL_VERTEX_SHADER);
   debug_eff.add_shader("64_Showing_Normals/shader.frag", GL_FRAGMENT_SHADER);
