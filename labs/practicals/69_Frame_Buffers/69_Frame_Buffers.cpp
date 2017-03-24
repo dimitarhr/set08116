@@ -90,7 +90,7 @@ bool load_content() {
   meshes["torus"].get_material().set_shininess(25.0f);
 
   // Load texture
-  tex = texture("textures/checked.gif");
+  tex = texture("textures/checked.gif",true,true);
 
   // Set lighting values
   light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -158,11 +158,11 @@ bool update(float delta_time) {
 bool render() {
   // *********************************
   // Set render target to frame buffer
-
+	renderer::set_render_target(frame);
   // Set clear colour to white
-
+	renderer::setClearColour(1.0f,1.0f,1.0f);
   // Clear frame
-
+	renderer::clear();
   // *********************************
   // Render meshes
   for (auto &e : meshes) {
@@ -198,29 +198,29 @@ bool render() {
     // Render mesh
     renderer::render(m);
   }
-
+  
   // Return clear colour to cyan
   renderer::setClearColour(0.0f, 1.0f, 1.0f);
   // *********************************
   // Set render target back to the screen
-
+  renderer::set_render_target();
   // bind the tex effect
-
+  renderer::bind(tex_eff);
   // Get M from render_cube
-
+  auto M = render_cube.get_transform().get_transform_matrix();
   // get V and P from Cam 2
-
-
+  auto V = cam2.get_view();
+  auto P = cam2.get_projection();
   // Build MVP
-
+  auto MVP = P * V * M;
   // Set MVP matrix uniform
-
+  glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Bind texture from frame buffer
-
+  renderer::bind(frame.get_frame(), 1);
   // Set the tex uniform
-
+  glUniform1i(tex_eff.get_uniform_location("tex"), 1);
   // Render the render cube
-
+  renderer::render(render_cube);
   // *********************************
   return true;
 }
