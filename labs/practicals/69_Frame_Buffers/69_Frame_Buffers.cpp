@@ -97,7 +97,7 @@ bool load_content() {
   light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
   light.set_direction(vec3(1.0f, 1.0f, -1.0f));
 
-  // Load in shaders
+  // Load in shaders  
   eff.add_shader("48_Phong_Shading/phong.vert", GL_VERTEX_SHADER);
   eff.add_shader("48_Phong_Shading/phong.frag", GL_FRAGMENT_SHADER);
   tex_eff.add_shader("27_Texturing_Shader/simple_texture.vert", GL_VERTEX_SHADER);

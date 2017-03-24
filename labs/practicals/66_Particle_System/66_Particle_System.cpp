@@ -154,6 +154,8 @@ void render_feeback() {
 bool render() {
   render_feeback();
 
+  glPointSize(10.0f);
+
   // Bind the effect
   renderer::bind(eff);
   // Set the MVP matrix
@@ -180,8 +182,8 @@ bool render() {
   // Swap front and back buffers
   // Bind the back particle buffer for rendering
   glBindBuffer(GL_ARRAY_BUFFER, particle_buffers_vbo[back_buf]);
-  /*front_buf = back_buf;
-  back_buf = (back_buf + 1) % 2;*/
+  front_buf = back_buf;
+  back_buf = (back_buf + 1) % 2;
   // *********************************
   return true;
 }

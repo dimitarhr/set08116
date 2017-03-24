@@ -284,18 +284,16 @@ bool render() {
 
   // Set render target back to the screen
   renderer::set_render_target();
+  // Clear frame
   renderer::bind(tex_eff);
   // Set MVP matrix uniform
-  auto M = meshes["chaser"].get_transform().get_transform_matrix();
-  auto V = cam.get_view();
-  auto P = cam.get_projection();
-  auto MVP = P * V * M;
+  glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Bind texture from frame buffer
-
+  renderer::bind(frames[current_frame].get_frame(),3);
   // Set the uniform
-
+  glUniform1i(tex_eff.get_uniform_location("tex"), 3);
   // Render the screen quad
-
+  renderer::render(screen_quad);
   // *********************************
   return true;
 }

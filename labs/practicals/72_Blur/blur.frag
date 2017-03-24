@@ -37,14 +37,14 @@ void main() {
   // Start with colour as black
   colour = vec4(0.0f,0.0f,0.0f,1.0f);
   // Loop through each sample vector
-  /*for (int i = 0; i < 5; i++)
+ /* for (int i = 0; i < 5; i++)
   {
     // Calculate tex coord to sample
-	vec2 uv = tex_coord + vec2(samplesSharpEdge[i].x * inverse_width, samplesSharpEdge[i].y * inverse_height);
+	vec2 uv = tex_coord + vec2(samplesEdge[i].x * inverse_width, samplesEdge[i].y * inverse_height);
     // Sample the texture and scale appropriately
     // - scale factor stored in w component
 	vec4 tempColour = texture(tex,uv);
-	tempColour *= samplesSharpEdge[i].w;
+	tempColour *= samplesEdge[i].w;
 	colour += tempColour;
 	}*/
 
@@ -62,7 +62,7 @@ void main() {
 	for (int i = 0; i < 7; i++)
 	{
 		// Calculate tex coord to sample
-		vec2 uv = tex_coord + vec2(samplesGaussianTwo[i].x * inverse_width, samplesGaussianTwo[i].y * inverse_height);
+		vec2 uv = tex_coord + vec2(samplesGaussianTwo[i].y * inverse_height , samplesGaussianTwo[i].x * inverse_width);
 		// Sample the texture and scale appropriately
 		// - scale factor stored in w component
 		vec4 tempColour = texture(tex,uv);

@@ -202,13 +202,13 @@ bool render() {
   // Set inverse height Uniform
   glUniform1f(tex_eff.get_uniform_location("inverse_height"), 1.0f / renderer::get_screen_height());
   // Render the screen quad    
-  renderer::render(screen_quad); 
+  renderer::render(screen_quad);   
   // *********************************
 
-  return true;
+  return true; 
 }
 
-void main() {
+void main() { 
   // Create application
   app application("72_Blur");
   // Set load content, update and render methods

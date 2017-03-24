@@ -21,7 +21,7 @@ void main() {
     // Transform vertex into screen space
     gl_Position = MVP * gl_in[i].gl_Position;
     // Starting quad is red
-    colour_out = vec4(1.0, 0.0, 0.0, 1.0);
+    colour_out = vec4(i/3.0, 0.0, 0.0, 1.0);
     // Emit the vertex
     EmitVertex();
   }

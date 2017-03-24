@@ -35,23 +35,23 @@ void main() {
   EmitVertex();
   // *********************************
    //point VB (0.5, -0.5)
-
-
-
-
-
+  vec2 br = position.xy + vec2(0.5, -0.5) * point_size;
+  gl_Position = P * vec4(br, position.zw);
+  tex_coord = vec2(1.0, 0.0);
+  colour = fire_colour;
+  EmitVertex();
   // point VD (-0.5, -0.5)
-
-
-
-
-
+  vec2 tl = position.xy + vec2(-0.5, 0.5) * point_size;
+  gl_Position = P * vec4(tl, position.zw);
+  tex_coord = vec2(0.0, 1.0);
+  colour = fire_colour;
+  EmitVertex();
   // point VC (0.5, -0.5)
-
-
-
-
-
+  vec2 tr = position.xy + vec2(0.5, 0.5) * point_size;
+  gl_Position = P * vec4(tr, position.zw);
+  tex_coord = vec2(1.0, 1.0);
+  colour = fire_colour;
+  EmitVertex();
   // *********************************
 
   EndPrimitive();
