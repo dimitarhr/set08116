@@ -10,6 +10,7 @@ effect eff;
 texture tex;
 arc_ball_camera cam;
 
+
 double cursor_x = 0.0;
 double cursor_y = 0.0;
 
