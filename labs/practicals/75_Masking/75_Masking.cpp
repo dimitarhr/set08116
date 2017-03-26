@@ -98,7 +98,7 @@ bool load_content() {
   meshes["torus"].get_material().set_shininess(25.0f);
 
   // Load texture
-  tex = texture("textures/checked.gif");
+  tex = texture("textures/checked.gif",true,true);
   // *****************
   // Load in alpha map
   // *****************
