@@ -161,16 +161,16 @@ bool load_content() {
   geometry geom;
 
   // Load height map 
-  texture height_map("textures/mountain_map3.jpg");
+  texture height_map("textures/mountain_map.png");  
 
   // Generate terrain
-  generate_terrain(geom, height_map, 80, 80, 20.0f);
+  generate_terrain(geom, height_map, 128, 128, 24.0f);
 
   // Use geometry to create terrain mesh
   meshes["terr"] = mesh(geom);
   // To get the water, you have to render the water plane separately
-  meshes["water"] = mesh(geometry_builder::create_plane(100,100,true));
-  meshes["water"].get_transform().translate(vec3(0,2,0));
+  meshes["water"] = mesh(geometry_builder::create_plane(1000,1000,false));
+  meshes["water"].get_transform().translate(vec3(-10,3,0));
 
   // Load in necessary shaders
   eff.add_shader("60_Terrain/terrain.vert", GL_VERTEX_SHADER);
