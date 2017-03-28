@@ -85,4 +85,49 @@ void checkPressedButton()
 		dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 		dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	}
+
+	int state = glfwGetMouseButton(renderer::get_window(), GLFW_MOUSE_BUTTON_RIGHT);
+	// Zoom in
+	if (state == GLFW_PRESS)
+	{
+		cams[cameraIndex]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
+		screenMode = 1;
+	}
+
+	// Zoom out
+	else
+	{
+		cams[cameraIndex]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
+		screenMode = 0;
+	}
+
+	// Edge detection ON
+	if (glfwGetKey(renderer::get_window(), 'E'))
+	{
+		if (sepia != 1)
+		{
+			edgeDetection = 1;
+		}
+	}
+
+	// Edge detection OFF
+	if (glfwGetKey(renderer::get_window(), 'R'))
+	{
+		edgeDetection = 0;
+	}
+
+	// Sepia ON
+	if (glfwGetKey(renderer::get_window(), 'Z'))
+	{
+		if (edgeDetection != 1)
+		{
+			sepia = 1;
+		}
+	}
+
+	// Sepia OFF
+	if (glfwGetKey(renderer::get_window(), 'X'))
+	{
+		sepia = 0;
+	}
 }

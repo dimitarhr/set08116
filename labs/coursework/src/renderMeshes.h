@@ -12,3 +12,6 @@ void renderBasicMesh();
 void renderShadowMesh();
 void renderSkyBox();
 void renderHierarchicalMeshes();
+void renderMask();
+void renderEdges();
+void renderSepia();

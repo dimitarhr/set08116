@@ -29,4 +29,6 @@ void loadTexturesAndNormalMaps()
 	normal_maps["surroundings"] = texture("textures/brick_normalmap.jpg", true, true);
 	normal_maps["sphereLeft"] = texture("textures/buble_normal_map.jpg", true, true);
 	normal_maps["dragonEgg"] = texture("textures/buble_normal_map.jpg", true, true);
+	alpha_map = texture("textures/happymask.png");
+	originalMap = texture("textures/whitescreen.jpg");
 }

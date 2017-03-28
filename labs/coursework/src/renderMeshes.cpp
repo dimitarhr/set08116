@@ -166,8 +166,10 @@ void renderShadowMesh()
 		// Render mesh
 		renderer::render(m);
 	}
-	// Set render target back to the screen
-	renderer::set_render_target();
+
+	// Set render target to frame buffer
+	renderer::set_render_target(frame);
+
 	// Set cull face to back
 	glCullFace(GL_BACK);
 
@@ -296,4 +298,87 @@ void renderHierarchicalMeshes()
 		// Render mesh
 		renderer::render(hierarchicalMesh[i]);
 	}
+}
+
+void renderEdges()
+{
+	// Set render target to the edge frame
+	renderer::set_render_target(edgeFrame);
+	// Clear frame
+	renderer::clear();
+	// Bind Tex effect
+	renderer::bind(edge_eff);
+	// MVP is now the identity matrix
+	auto MVP = mat4(1);
+	glUniformMatrix4fv(edge_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Bind texture from frame buffer
+	renderer::bind(frame.get_frame(), 1);
+	// Set the tex uniform
+	glUniform1i(edge_eff.get_uniform_location("tex"), 1);
+	// Set inverse width Uniform
+	glUniform1f(edge_eff.get_uniform_location("screen_width"), renderer::get_screen_width());
+	// Set inverse height Uniform
+	glUniform1f(edge_eff.get_uniform_location("screen_height"), renderer::get_screen_height());
+	// Render the screen quad    
+	renderer::render(screen_quad);
+}
+
+void renderSepia()
+{
+	// Set render target to the edge frame
+	renderer::set_render_target(edgeFrame);
+	// Clear frame
+	renderer::clear();
+	// Bind Tex effect
+	renderer::bind(sepia_eff);
+	// MVP is now the identity matrix
+	auto MVP = mat4(1);
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(sepia_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Bind texture from frame buffer
+	renderer::bind(frame.get_frame(), 1);
+	// Set the tex uniform
+	glUniform1i(sepia_eff.get_uniform_location("tex"), 1);
+	// Render the screen quad
+	renderer::render(screen_quad);
+}
+
+void renderMask()
+{
+	// Set render target back to the screen
+	renderer::set_render_target();
+	// Bind Tex effect
+	renderer::bind(mask_eff);
+	// MVP is now the identity matrix
+	auto MVP = mat4(1);
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(mask_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	if (edgeDetection == 1 || sepia == 1)
+	{
+		// Bind texture from frame buffer to TU 0
+		renderer::bind(edgeFrame.get_frame(), 0);
+	}
+	else
+	{
+		// Bind texture from frame buffer to TU 0
+		renderer::bind(frame.get_frame(), 0);
+	}
+	// Set the tex uniform, 0
+	glUniform1i(mask_eff.get_uniform_location("tex"), 0);
+	if (screenMode == 0)
+	{
+		// Bind alpha texture to TU, 1
+		renderer::bind(originalMap, 1);
+		// Set the tex uniform, 1
+		glUniform1i(mask_eff.get_uniform_location("alpha_map"), 1);
+	}
+	else
+	{
+		// Bind alpha texture to TU, 1
+		renderer::bind(alpha_map, 1);
+		// Set the tex uniform, 1
+		glUniform1i(mask_eff.get_uniform_location("alpha_map"), 1);
+	}
+	// Render the screen quad
+	renderer::render(screen_quad);
 }

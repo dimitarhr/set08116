@@ -24,7 +24,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 /*GLOBAL VARIABLES*/
-effect basicEff, normalMappingEff, shadows_eff;
+effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff;
 
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
@@ -37,6 +37,10 @@ std::array<mesh, 5> hierarchicalMesh;
 
 map<string, texture> textures, normal_maps;
 
+texture alpha_map;
+texture originalMap;
+
+
 directional_light dirLight;
 vector<spot_light> spots(5); 
 point_light pointLight;
@@ -48,6 +52,14 @@ cubemap cube_map;
 double cursor_x = 0.0;
 double cursor_y = 0.0;
 double velocity = 0;
+
+frame_buffer frame;
+frame_buffer edgeFrame;
+geometry screen_quad; 
+geometry screen_quad_edge;
+int screenMode = 0;
+int edgeDetection = 0;
+int sepia = 0;
  
 // Create camera objects and sets the cursor settings
 bool initialise() {
@@ -57,6 +69,7 @@ bool initialise() {
 	shadowMap = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 	// Set input mode - hide the cursor
 	glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(renderer::get_window(), GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 	// Capture initial mouse position
 	glfwGetCursorPos(renderer::get_window(), &cursor_x, &cursor_y);
 	return true;
@@ -64,6 +77,21 @@ bool initialise() {
 
 // Load content
 bool load_content() { 
+
+	// Create frame buffer - use screen width and height
+	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	edgeFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	// Create screen quad
+	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f) };
+	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
+	// *********************************
+	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad.set_type(GL_TRIANGLE_STRIP);
+
+	screen_quad_edge.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad_edge.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad_edge.set_type(GL_TRIANGLE_STRIP);
 
 	/*CREATE MESHES*/
 	// Meshes with normal maps - Defined in 'createMeshes.cpp'
@@ -109,7 +137,7 @@ bool load_content() {
 	cams[1]->set_position(vec3(40.0f, 10.0f, 50.0f));
 	cams[1]->set_target(vec3(0.0f, 0.0f, -100.0f));
 	cams[1]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
-
+	
 	return true;
 }
 
@@ -156,6 +184,11 @@ bool update(float delta_time) {
 
 bool render() {
 	
+	// Set render target to frame buffer
+	renderer::set_render_target(frame);
+	// Clear frame
+	renderer::clear();
+
 	// Render skybox
 	// Defined in 'renderMeshes.cpp' 
 	renderSkyBox();
@@ -175,6 +208,21 @@ bool render() {
 	// Render hierarchical meshes
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
+
+	if (edgeDetection == 1)
+	{
+		sepia = 0;
+		renderEdges();
+	}
+	if (sepia == 1)
+	{
+		edgeDetection = 0;
+		renderSepia();
+	}
+	
+	// Render the post-processing effect - MASK
+	// Defined in 'renderMeshes.cpp' 
+	renderMask();
 
 	return true;
 }

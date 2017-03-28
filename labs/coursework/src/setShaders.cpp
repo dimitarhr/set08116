@@ -35,9 +35,24 @@ void setShaders()
 	sky_eff.add_shader("shaders/skybox.vert", GL_VERTEX_SHADER);
 	sky_eff.add_shader("shaders/skybox.frag", GL_FRAGMENT_SHADER);
 
+	/*MASK*/
+	mask_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
+	mask_eff.add_shader("shaders/mask.frag", GL_FRAGMENT_SHADER);
+
+	/*EDGE DETECTION*/
+	edge_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
+	edge_eff.add_shader("shaders/edge.frag", GL_FRAGMENT_SHADER);
+
+	/*SEPIA*/
+	sepia_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
+	sepia_eff.add_shader("shaders/greyscale.frag", GL_FRAGMENT_SHADER);
+
 	// Build effect
 	basicEff.build();
 	normalMappingEff.build();
 	shadows_eff.build();
 	sky_eff.build();
+	mask_eff.build();
+	edge_eff.build();
+	sepia_eff.build();
 }

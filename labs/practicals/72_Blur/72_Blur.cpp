@@ -40,7 +40,7 @@ bool load_content() {
   meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
   meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
 
-  // Transform objects
+  // Transform objects    
   meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
   meshes["box"].get_transform().translate(vec3(-10.0f, 2.5f, -30.0f));
   meshes["tetra"].get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
@@ -184,7 +184,7 @@ bool render() {
     // Render mesh
     renderer::render(m);
   }
-
+       
   // *********************************
   // Set render target back to the screen
   renderer::set_render_target();
@@ -198,9 +198,9 @@ bool render() {
   // Set the tex uniform
   glUniform1i(tex_eff.get_uniform_location("tex"), 1);
   // Set inverse width Uniform
-  glUniform1f(tex_eff.get_uniform_location("inverse_width"), 1.0f/renderer::get_screen_width());
+  glUniform1f(tex_eff.get_uniform_location("inverse_width"), renderer::get_screen_width());
   // Set inverse height Uniform
-  glUniform1f(tex_eff.get_uniform_location("inverse_height"), 1.0f / renderer::get_screen_height());
+  glUniform1f(tex_eff.get_uniform_location("inverse_height"), renderer::get_screen_height());
   // Render the screen quad    
   renderer::render(screen_quad);   
   // *********************************
