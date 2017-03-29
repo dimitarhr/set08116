@@ -46,7 +46,7 @@ extern shadow_map shadowMap;
 extern cubemap cube_map;
 
 extern frame_buffer frame;
-extern frame_buffer edgeFrame;
+extern frame_buffer temp_frame;
 extern geometry screen_quad;
 extern int screenMode;
 extern int edgeDetection;

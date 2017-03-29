@@ -40,7 +40,6 @@ map<string, texture> textures, normal_maps;
 texture alpha_map;
 texture originalMap;
 
-
 directional_light dirLight;
 vector<spot_light> spots(5); 
 point_light pointLight;
@@ -54,7 +53,7 @@ double cursor_y = 0.0;
 double velocity = 0;
 
 frame_buffer frame;
-frame_buffer edgeFrame;
+frame_buffer temp_frame;
 frame_buffer frames[2];
 unsigned int current_frame = 0;
 geometry screen_quad; 
@@ -85,7 +84,7 @@ bool load_content() {
 	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create frame buffer - use screen width and height
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	edgeFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create screen quad
 	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f) };
 	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
@@ -221,19 +220,19 @@ bool render() {
 	{
 		//sepia = 0;
 		//motionBlur = 0;
-		renderEdges();
+		renderEdges();  
 	}
 	if (sepia == 1)
 	{
 		//edgeDetection = 0;
 		renderSepia();
-	}
+	} 
 
 	if (motionBlur == 1) 
 	{
 		renderMotionBlur();
 	}
-	
+	 	
 	// Render the post-processing effect - MASK
 	// Defined in 'renderMeshes.cpp' 
 	renderMask();

@@ -50,7 +50,7 @@ void setShaders()
 	/*MOTION BLUR*/
 	motion_blur_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	motion_blur_eff.add_shader("shaders/motion_blur.frag", GL_FRAGMENT_SHADER);
-
+	
 	// Build effect
 	basicEff.build();
 	normalMappingEff.build();

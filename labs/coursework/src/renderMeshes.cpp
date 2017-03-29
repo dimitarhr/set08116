@@ -303,7 +303,7 @@ void renderHierarchicalMeshes()
 void renderEdges()
 {
 	// Set render target to the edge frame
-	renderer::set_render_target(edgeFrame);
+	renderer::set_render_target(temp_frame);
 	// Clear frame
 	renderer::clear();
 	// Bind Tex effect
@@ -326,7 +326,7 @@ void renderEdges()
 void renderSepia()
 {
 	// Set render target to the edge frame
-	renderer::set_render_target(edgeFrame);
+	renderer::set_render_target(temp_frame);
 	// Clear frame
 	renderer::clear();
 	// Bind Tex effect
@@ -368,10 +368,10 @@ void renderMotionBlur()
 	renderer::render(screen_quad);
 }
 
-void renderMask()
+void renderMask()  
 {
-	// Set render target back to the screen
-	renderer::set_render_target();
+	// Set render target back to the screen 
+	renderer::set_render_target(); 
 	// Bind Tex effect
 	renderer::bind(mask_eff);
 	// MVP is now the identity matrix
@@ -381,7 +381,7 @@ void renderMask()
 	if (edgeDetection == 1 || sepia == 1)
 	{
 		// Bind texture from frame buffer to TU 0
-		renderer::bind(edgeFrame.get_frame(), 0);
+		renderer::bind(temp_frame.get_frame(), 0);
 	}
 	else
 	{
