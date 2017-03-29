@@ -15,3 +15,4 @@ void renderHierarchicalMeshes();
 void renderMask();
 void renderEdges();
 void renderSepia();
+void renderMotionBlur();

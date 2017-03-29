@@ -343,6 +343,31 @@ void renderSepia()
 	renderer::render(screen_quad);
 }
 
+void renderMotionBlur()
+{
+	// Set render target to current frame
+	renderer::set_render_target(frames[current_frame]);
+	// Clear frame
+	renderer::clear();
+	// Bind motion blur effect
+	renderer::bind(motion_blur_eff);
+	// MVP is now the identity matrix
+	auto MVP = mat4(1.0);
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(motion_blur_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Bind tempframe to TU 0.
+	renderer::bind(frame.get_frame(), 0);
+	// Bind frames[(current_frame + 1) % 2] to TU 1.
+	renderer::bind(frames[(current_frame + 1) % 2].get_frame(), 1);
+	// Set tex uniforms
+	glUniform1i(motion_blur_eff.get_uniform_location("tex"), 0);
+	glUniform1i(motion_blur_eff.get_uniform_location("previous_frame"), 1);
+	// Set blend factor (0.9f)
+	glUniform1f(motion_blur_eff.get_uniform_location("blend_factor"), 0.9f);
+	// Render screen quad
+	renderer::render(screen_quad);
+}
+
 void renderMask()
 {
 	// Set render target back to the screen
@@ -361,7 +386,14 @@ void renderMask()
 	else
 	{
 		// Bind texture from frame buffer to TU 0
-		renderer::bind(frame.get_frame(), 0);
+		if (motionBlur == 1)
+		{
+			renderer::bind(frames[current_frame].get_frame(), 0);
+		}
+		else
+		{
+			renderer::bind(frame.get_frame(), 0);
+		}
 	}
 	// Set the tex uniform, 0
 	glUniform1i(mask_eff.get_uniform_location("tex"), 0);

@@ -24,7 +24,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 /*GLOBAL VARIABLES*/
-effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff;
+effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff;
 
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
@@ -55,11 +55,14 @@ double velocity = 0;
 
 frame_buffer frame;
 frame_buffer edgeFrame;
+frame_buffer frames[2];
+unsigned int current_frame = 0;
 geometry screen_quad; 
 geometry screen_quad_edge;
 int screenMode = 0;
 int edgeDetection = 0;
 int sepia = 0;
+int motionBlur = 0;
  
 // Create camera objects and sets the cursor settings
 bool initialise() {
@@ -77,7 +80,9 @@ bool initialise() {
 
 // Load content
 bool load_content() { 
-
+	// Create 2 frame buffers - use screen width and height
+	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create frame buffer - use screen width and height
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	edgeFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
@@ -143,6 +148,9 @@ bool load_content() {
 
 // Update every frame
 bool update(float delta_time) {
+
+	// Flip frame
+	current_frame = (current_frame + 1) % 2;
 
 	// Set the correct camera index depending on the pressed button
 	// Checks if the direct light is ON or OFF
@@ -211,13 +219,19 @@ bool render() {
 
 	if (edgeDetection == 1)
 	{
-		sepia = 0;
+		//sepia = 0;
+		//motionBlur = 0;
 		renderEdges();
 	}
 	if (sepia == 1)
 	{
-		edgeDetection = 0;
+		//edgeDetection = 0;
 		renderSepia();
+	}
+
+	if (motionBlur == 1) 
+	{
+		renderMotionBlur();
 	}
 	
 	// Render the post-processing effect - MASK

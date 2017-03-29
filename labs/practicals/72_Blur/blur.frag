@@ -32,23 +32,23 @@ layout(location = 0) in vec2 tex_coord;
 // Outgoing colour
 layout(location = 0) out vec4 colour;
 
-/*void main() {
+void main() {
   // *********************************
   // Start with colour as black
   colour = vec4(0.0f,0.0f,0.0f,1.0f);
   // Loop through each sample vector
-  for (int i = 0; i < 5; i++)
-  {
-    // Calculate tex coord to sample
-	vec2 uv = tex_coord + vec2(samplesEdge[i].x * inverse_width, samplesEdge[i].y * inverse_height);
-    // Sample the texture and scale appropriately
-    // - scale factor stored in w component
-	vec4 tempColour = texture(tex,uv);
-	tempColour *= samplesEdge[i].w;
-	colour += tempColour;
+	for (int i = 0; i < 6; i++)
+	{
+		// Calculate tex coord to sample
+		vec2 uv = tex_coord + vec2(samplesSharpEdge[i].x * inverse_width, samplesSharpEdge[i].y * inverse_height);
+		// Sample the texture and scale appropriately
+		// - scale factor stored in w component
+		vec4 tempColour = texture(tex,uv);
+		tempColour *= samplesSharpEdge[i].w;
+		colour += tempColour;
 	}
 
-	for (int i = 0; i < 7; i++)
+	/*for (int i = 0; i < 7; i++)
 	{
 		// Calculate tex coord to sample
 		vec2 uv = tex_coord + vec2(samplesGaussianOne[i].x * inverse_width, samplesGaussianOne[i].y * inverse_height);
@@ -68,13 +68,13 @@ layout(location = 0) out vec4 colour;
 		vec4 tempColour = texture(tex,uv);
 		tempColour *= samplesGaussianTwo[i].w;
 		colour += tempColour;
-	}
+	}*/
 
   // Ensure alpha is 1.0
   colour.a = 1.0;
   // *********************************
-}*/
-
+}
+/*
 float threshold(in float thr1, in float thr2 , in float val) {
  if (val < thr1) {return 0.0;}
  if (val > thr2) {return 1.0;}
@@ -92,8 +92,8 @@ vec4 get_pixel(in vec2 coords, in float dx, in float dy) {
 
 // returns pixel color
 float IsEdge(in vec2 coords){
-  float dxtex = 1.0 / inverse_width /*image width*/;
-  float dytex = 1.0 / inverse_height /*image height*/;
+  float dxtex = 1.0 / inverse_width image width;
+  float dytex = 1.0 / inverse_height image height;
   float pix[9];
   int k = 0;
   float delta;
@@ -118,4 +118,4 @@ void main()
   vec4 color = vec4(0.0,0.0,0.0,1.0);
   color.b = IsEdge(tex_coord);
   colour = color;
-}
+}*/

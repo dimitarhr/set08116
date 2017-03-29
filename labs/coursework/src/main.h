@@ -9,7 +9,7 @@ using namespace glm;
 
 /*GLOBAL VARIABLES*/
 // Effects
-extern effect basicEff, normalMappingEff, shadows_eff, sky_eff, mask_eff, edge_eff, sepia_eff;
+extern effect basicEff, normalMappingEff, shadows_eff, sky_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff;
 
 // Meshes
 extern map<string, mesh> normalMapMeshes, basicMeshes, shadow_geom;
@@ -51,3 +51,7 @@ extern geometry screen_quad;
 extern int screenMode;
 extern int edgeDetection;
 extern int sepia;
+extern int motionBlur;
+
+extern frame_buffer frames[2];
+extern unsigned int current_frame;

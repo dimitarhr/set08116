@@ -193,15 +193,15 @@ bool render() {
   // MVP is now the identity matrix
   auto MVP = mat4(1);
   glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-  // Bind texture from frame buffer
+  // Bind texture from frame buffer  
   renderer::bind(frame.get_frame(), 1);
   // Set the tex uniform
   glUniform1i(tex_eff.get_uniform_location("tex"), 1);
   // Set inverse width Uniform
-  glUniform1f(tex_eff.get_uniform_location("inverse_width"), renderer::get_screen_width());
+  glUniform1f(tex_eff.get_uniform_location("inverse_width"), 1.0f / renderer::get_screen_width());
   // Set inverse height Uniform
-  glUniform1f(tex_eff.get_uniform_location("inverse_height"), renderer::get_screen_height());
-  // Render the screen quad    
+  glUniform1f(tex_eff.get_uniform_location("inverse_height"), 1.0f / renderer::get_screen_height());
+  // Render the screen quad     
   renderer::render(screen_quad);   
   // *********************************
 

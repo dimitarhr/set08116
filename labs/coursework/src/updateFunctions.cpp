@@ -79,7 +79,7 @@ void checkPressedButton()
 		dirLight.set_ambient_intensity(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 		dirLight.set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
-	else if (glfwGetKey(renderer::get_window(), 'M'))
+	else if (glfwGetKey(renderer::get_window(), 'K'))
 	{
 		// Directional light ON
 		dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -104,7 +104,7 @@ void checkPressedButton()
 	// Edge detection ON
 	if (glfwGetKey(renderer::get_window(), 'E'))
 	{
-		if (sepia != 1)
+		if (sepia != 1 && motionBlur != 1)
 		{
 			edgeDetection = 1;
 		}
@@ -119,7 +119,7 @@ void checkPressedButton()
 	// Sepia ON
 	if (glfwGetKey(renderer::get_window(), 'Z'))
 	{
-		if (edgeDetection != 1)
+		if (edgeDetection != 1 && motionBlur != 1)
 		{
 			sepia = 1;
 		}
@@ -129,5 +129,19 @@ void checkPressedButton()
 	if (glfwGetKey(renderer::get_window(), 'X'))
 	{
 		sepia = 0;
+	}
+	// Motion Blur ON
+	if (glfwGetKey(renderer::get_window(), 'M'))
+	{
+		if (edgeDetection != 1 && sepia != 1)
+		{
+			motionBlur = 1;
+		}
+	}
+
+	// Motion Blur OFF
+	if (glfwGetKey(renderer::get_window(), 'N'))
+	{
+		motionBlur = 0;
 	}
 }
