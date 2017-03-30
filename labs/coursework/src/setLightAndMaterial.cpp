@@ -22,7 +22,7 @@ void setSpotLights()
 	spots[0].set_power(0.5f);
 
 	// Spot light in front of the wall
-	spots[1].set_position(vec3(-15.5f, 10.5f, 0));
+	spots[1].set_position(vec3(-15.5f, 10.5f, 15));
 	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[1].set_direction(normalize(vec3(-1, -1, 0)));
 	spots[1].set_range(2000);
@@ -86,7 +86,7 @@ void setMeshesMaterial()
 	// Floor
 	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	normalMapMeshes["floorPlane"].set_material(objectMaterial);
+	//normalMapMeshes["floorPlane"].set_material(objectMaterial);
 	shadow_geom["floorPlane"].set_material(objectMaterial);
 
 	// Earth and Moon
@@ -121,6 +121,7 @@ void setMeshesMaterial()
 	basicMeshes["stickBoxRight"].set_material(objectMaterial);
 	basicMeshes["stickBoxBack"].set_material(objectMaterial);
 	basicMeshes["stickBoxFront"].set_material(objectMaterial);
+	basicMeshes["stickBoxSupport"].set_material(objectMaterial);
 	normalMapMeshes["smallStickBoxLeft"].set_material(objectMaterial);
 	normalMapMeshes["smallStickBoxRight"].set_material(objectMaterial);
 	normalMapMeshes["smallStickBoxBack"].set_material(objectMaterial);

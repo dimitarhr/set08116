@@ -300,6 +300,45 @@ void renderHierarchicalMeshes()
 	}
 }
 
+void renderTerrain()
+{
+	renderer::bind(terrain_eff);
+	auto M = terrainMesh.get_transform().get_transform_matrix();
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto MVP = P * V * M;
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(terrain_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	// Set M matrix uniform
+	glUniformMatrix4fv(terrain_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+	// Set N matrix uniform
+	glUniformMatrix3fv(terrain_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(terrainMesh.get_transform().get_normal_matrix()));
+	// *********************************
+	// Set eye_pos uniform to camera position
+	glUniform3fv(terrain_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+	// *********************************
+	//Bind Terrian Material
+	renderer::bind(terrainMesh.get_material(), "mat");
+	// Bind Light
+	renderer::bind(dirLight, "light");
+		// Bind Tex[0] to TU 0, set uniform
+		renderer::bind(terrainTex[0], 0);
+		glUniform1i(terrain_eff.get_uniform_location("tex[0]"), 0);
+		// *********************************
+		//Bind Tex[1] to TU 1, set uniform
+		renderer::bind(terrainTex[1], 1);
+		glUniform1i(terrain_eff.get_uniform_location("tex[1]"), 1);
+		// Bind Tex[2] to TU 2, set uniform
+		renderer::bind(terrainTex[2], 2);
+		glUniform1i(terrain_eff.get_uniform_location("tex[2]"), 2);
+		// Bind Tex[3] to TU 3, set uniform
+		renderer::bind(terrainTex[3], 3);
+		glUniform1i(terrain_eff.get_uniform_location("tex[3]"), 3);
+	// *********************************
+	// Render terrain
+	renderer::render(terrainMesh);
+}
+
 void renderEdges()
 {
 	// Set render target to the edge frame

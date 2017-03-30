@@ -27,7 +27,7 @@ bool load_content() {
   // Initilise particles
   for (unsigned int i = 0; i < MAX_PARTICLES; ++i) {
     positions[i] = vec4(((14.0f * dist(rand)) - 7.0f), 8.0f * dist(rand), 0.0f, 0.0f);
-    velocitys[i] = vec4(0.0f, 0.1f + (2.0f * dist(rand)), 0.0f, 0.0f);
+    //velocitys[i] = vec4(0.0f, 0.1f + (2.0f * dist(rand)), 0.0f, 0.0f);
   }
 
   // Load in shaders

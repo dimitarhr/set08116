@@ -14,7 +14,7 @@ using namespace glm;
 
 void loadTexturesAndNormalMaps()
 {
-	textures["floorPlane"] = texture("textures/sand.jpg", true, true);
+	textures["floorPlane"] = texture("textures/stone.jpg", true, true);
 	textures["earth"] = texture("textures/earth.jpg", true, true);
 	textures["ring"] = texture("textures/lavatile.jpg", true, true);
 	textures["ringBase"] = texture("textures/disturb.jpg", true, true);
@@ -24,6 +24,7 @@ void loadTexturesAndNormalMaps()
 	textures["sphereLeft"] = texture("textures/grey_Sphere.jpg", true, true);
 	textures["dragon"] = texture("textures/dragon.jpg", true, true);
 	textures["dragonEgg"] = texture("textures/dragonEgg.jpg", true, true);
+	textures["stickBoxSupport"] = texture("textures/mossy_rock.jpg", true, true);
 	normal_maps["earth"] = texture("textures/earth_normalmap.jpg", true, true);
 	normal_maps["floorPlane"] = texture("textures/sand_normal-map.jpg", true, true);
 	normal_maps["surroundings"] = texture("textures/brick_normalmap.jpg", true, true);

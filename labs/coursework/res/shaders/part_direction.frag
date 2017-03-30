@@ -28,14 +28,14 @@ vec4 calculate_direction(in directional_light light, in material mat, in vec3 no
 	vec4 ambient = mat.diffuse_reflection * light.ambient_intensity;
 	
 	// Calculate diffuse component
-	float diffuseK = max(dot(normal, light.light_dir),0.0f);
+	float diffuseK = max(dot(normal, light.light_dir),0.0);
 	vec4 diffuse = diffuseK * mat.diffuse_reflection * light.light_colour;
 	
 	// Calculate normalized half vector 
 	vec3 H = normalize(light.light_dir+view_dir);
 	
 	// Calculate specular component
-	float specularK = pow(max(dot(normal, H),0.0f),mat.shininess);
+	float specularK = pow(max(dot(normal, H),0.0),mat.shininess);
 	vec4 specular = specularK * (mat.specular_reflection * light.light_colour);
 
 	// Calculate colour to return

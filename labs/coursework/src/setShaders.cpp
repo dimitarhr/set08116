@@ -16,14 +16,12 @@ void setShaders()
 {
 	/*BASIC EFFECTS*/
 	basicEff.add_shader("shaders/shader.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders{ "shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
-								 "shaders/part_point.frag" };
+	vector<string> frag_shaders{ "shaders/shader.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag" };
 	basicEff.add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 
 	/*NORMAL MAPPING*/
 	normalMappingEff.add_shader("shaders/shaderNormapMapping.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders_normals{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag",
-										 "shaders/part_point.frag", "shaders/part_normal_map.frag" };
+	vector<string> frag_shaders_normals{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag", "shaders/part_normal_map.frag" };
 	normalMappingEff.add_shader(frag_shaders_normals, GL_FRAGMENT_SHADER);
 
 	/*SHADOWS*/
@@ -51,6 +49,12 @@ void setShaders()
 	motion_blur_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	motion_blur_eff.add_shader("shaders/motion_blur.frag", GL_FRAGMENT_SHADER);
 	
+	/*TERRAIN*/
+	terrain_eff.add_shader("shaders/terrain.vert", GL_VERTEX_SHADER);
+	terrain_eff.add_shader("shaders/terrain.frag", GL_FRAGMENT_SHADER);
+	terrain_eff.add_shader("shaders/part_direction.frag", GL_FRAGMENT_SHADER);
+	terrain_eff.add_shader("shaders/part_weighted_texture_4.frag", GL_FRAGMENT_SHADER);
+
 	// Build effect
 	basicEff.build();
 	normalMappingEff.build();
@@ -60,4 +64,5 @@ void setShaders()
 	edge_eff.build();
 	sepia_eff.build();
 	motion_blur_eff.build();
+	terrain_eff.build();
 }

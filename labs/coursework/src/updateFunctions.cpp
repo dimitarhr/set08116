@@ -34,12 +34,12 @@ void updateMeshesTransformations(float delta_time)
 	basicMeshes["moon"].get_transform().position = moonPos + normalMapMeshes["earth"].get_transform().position;
 
 	// Move the spot light in front of the wall
-	spots[1].set_position(vec3(-42.9f, 5.5f, sin(velocity) * -40));
-	basicMeshes["torch"].get_transform().position = vec3(-38.0f, 5.5f, sin(velocity) * -40);
+	spots[1].set_position(vec3(-32.9f, 48.5f, sin(velocity) * -38+20));
+	basicMeshes["torch"].get_transform().position = vec3(-38.0f, 48.5f, sin(velocity) * -38+20);
 
 	// Levitating egg and protectors
-	normalMapMeshes["dragonEgg"].get_transform().position = vec3(25.0f, 12.0f, -30.0f) + levitatingRange;
-	hierarchicalMesh[0].get_transform().position = vec3(25.0f, 12.0f, -30.0f) + levitatingRange;
+	normalMapMeshes["dragonEgg"].get_transform().position = vec3(35.0f, 67.0f, -30.0f) + levitatingRange;
+	hierarchicalMesh[0].get_transform().position = vec3(35.0f, 67.0f, -30.0f) + levitatingRange;
 }
 
 void checkPressedButton()

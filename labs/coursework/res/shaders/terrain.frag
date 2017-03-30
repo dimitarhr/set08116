@@ -54,7 +54,7 @@ void main() {
   vec4 specular = (mat.specular_reflection * light.light_colour) * pow(max(dot(normal, half_vector), 0), mat.shininess);
 
   // Get tex colour
-  vec4 tex_colour = weighted_texture(tex, tex_coord, tex_weight);
+  vec4 tex_colour = weighted_texture(tex, tex_coord*0.03, tex_weight);
 
   // Calculate primary colour component
   vec4 primary = mat.emissive + ambient + diffuse;

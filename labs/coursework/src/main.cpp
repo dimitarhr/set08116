@@ -24,7 +24,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 /*GLOBAL VARIABLES*/
-effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff;
+effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff;
 
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
@@ -59,9 +59,12 @@ unsigned int current_frame = 0;
 geometry screen_quad; 
 geometry screen_quad_edge;
 int screenMode = 0;
-int edgeDetection = 0;
+int edgeDetection = 0; 
 int sepia = 0;
 int motionBlur = 0;
+texture terrainTex[4];
+
+mesh terrainMesh;
  
 // Create camera objects and sets the cursor settings
 bool initialise() {
@@ -79,6 +82,28 @@ bool initialise() {
 
 // Load content
 bool load_content() { 
+	//////////////////////////////////////////////////////
+	// Geometry to load into
+	geometry geom;
+
+	// Load height map 
+	texture height_map("textures/mountain_map.png");
+
+	// Generate terrain
+	generate_terrain(geom, height_map, 800, 800, 100.0f);
+
+	// Use geometry to create terrain mesh
+	terrainMesh = mesh(geom);
+
+	terrainMesh.get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	terrainMesh.get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	terrainMesh.get_material().set_shininess(20.0f);
+	terrainMesh.get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	terrainTex[0] = texture("textures/sand.jpg");
+	terrainTex[1] = texture("textures/grass.jpg");
+	terrainTex[2] = texture("textures/stone.jpg");
+	terrainTex[3] = texture("textures/snow.jpg");
+	//////////////////////////////////////////////////////
 	// Create 2 frame buffers - use screen width and height
 	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
@@ -138,8 +163,8 @@ bool load_content() {
 
 	// Set default camera properties 
 	/*FREE CAMERA*/
-	cams[1]->set_position(vec3(40.0f, 10.0f, 50.0f));
-	cams[1]->set_target(vec3(0.0f, 0.0f, -100.0f));
+	cams[1]->set_position(vec3(60.0f, 45.0f, 50.0f));
+	cams[1]->set_target(vec3(40.0f, 40.0f, -100.0f));
 	cams[1]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
 	
 	return true;
@@ -215,6 +240,8 @@ bool render() {
 	// Render hierarchical meshes
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
+
+	renderTerrain();
 
 	if (edgeDetection == 1)
 	{

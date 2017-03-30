@@ -15,20 +15,20 @@ using namespace glm;
 void setTargetCamera(float delta_time)
 {
 	if (targetCamera == 1) {
-		cams[0]->set_position(vec3(50.0f, 50.0f, 50.0f));
-		cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+		cams[0]->set_position(vec3(60.0f, 45.0f, 50.0f));
+		cams[0]->set_target(vec3(40.0f, 50.0f, 10.0f));
 	}
 	else if (targetCamera == 2) {
-		cams[0]->set_position(vec3(-50.0f, 50.0f, 50.0f));
-		cams[0]->set_target(vec3(10.0f, 0.0f, 10.0f));
+		cams[0]->set_position(vec3(-40.0f, 45.0f, 50.0f));
+		cams[0]->set_target(vec3(40.0f, 40.0f, 10.0f));
 	}
 	else if (targetCamera == 3) {
-		cams[0]->set_position(vec3(-10.0f, 100.0f, 0.0f));
+		cams[0]->set_position(vec3(10.0f, 500.0f, 0.0f));
 		cams[0]->set_target(vec3(0.0f, 0.0f, 0.0f));
 	}
 	else if (targetCamera == 4) {
-		cams[0]->set_position(vec3(10.0f, 10.0f, 0.0f));
-		cams[0]->set_target(vec3(-100.0f, 0.0f, 0.0f));
+		cams[0]->set_position(vec3(10.0f, 100.0f, 20.0f));
+		cams[0]->set_target(vec3(-100.0f, 0.0f, 10.0f));
 	}
 	if (screenMode == 1)
 	{
