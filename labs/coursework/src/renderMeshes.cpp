@@ -299,6 +299,76 @@ void renderHierarchicalMeshes()
 		renderer::render(hierarchicalMesh[i]);
 	}
 }
+// Renders a piece of geometry
+void renderModified(const geometry &geom) throw(...) {
+	assert(geom.get_array_object() != 0);
+	// Check renderer is running
+	//assert(renderer::_instance->_running);
+	// Bind the vertex array object for the
+	glBindVertexArray(geom.get_array_object());
+	// Check for any OpenGL errors
+	if (CHECK_GL_ERROR) {
+		// Display error
+		std::cerr << "ERROR - rendering geometry" << std::endl;
+		std::cerr << "Could not bind vertex array object" << std::endl;
+		// Throw exception
+		throw std::runtime_error("Error rendering geometry");
+	}
+	// If there is an index buffer then use to render
+	if (geom.get_idx_buffer() != 0) {
+		// Bind index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.get_idx_buffer());
+		// Check for error
+		if (CHECK_GL_ERROR) {
+			std::cerr << "ERROR - rendering geometry" << std::endl;
+			std::cerr << "Could not bind index buffer" << std::endl;
+			// Throw exception
+			throw std::runtime_error("Error rendering geometry");
+		}
+		// Draw elements
+		glDrawElementsInstanced(geom.get_type(), geom.get_index_count(), GL_UNSIGNED_INT, nullptr, 500);
+		// Check for error
+		if (CHECK_GL_ERROR) {
+			// Display error
+			std::cerr << "ERROR - rendering geometry" << std::endl;
+			std::cerr << "Could not draw elements from indices" << std::endl;
+			// Throw exception
+			throw std::runtime_error("Error rendering geometry");
+		}
+	}
+	else {
+		// Draw arrays
+		glDrawArraysInstanced(geom.get_type(), 0, geom.get_vertex_count(), 500);
+		// Check for error
+		if (CHECK_GL_ERROR) {
+			std::cerr << "ERROR - rendering geometry" << std::endl;
+			std::cerr << "Could not draw arrays" << std::endl;
+			// Throw exception
+			throw std::runtime_error("Error rendering geometry");
+		}
+	}
+}
+
+void renderGrass() 
+{
+	// Bind effect
+	renderer::bind(grass_eff);
+		// Normal matrix
+		auto N = grassMesh.get_transform().get_normal_matrix();
+		// Create MVP matrix
+		auto M = grassMesh.get_transform().get_transform_matrix();
+		auto V = cams[cameraIndex]->get_view();
+		auto P = cams[cameraIndex]->get_projection();
+		auto MVP = P * V * M;
+
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(grass_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+		glUniform3fv(grass_eff.get_uniform_location("offsets"),500 , value_ptr(offsetArray[0]));
+
+		// Render geometry
+		renderModified(grassMesh.get_geometry());
+}
+
 
 void renderTerrain()
 {

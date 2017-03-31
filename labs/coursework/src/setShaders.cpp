@@ -37,7 +37,7 @@ void setShaders()
 	mask_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	mask_eff.add_shader("shaders/mask.frag", GL_FRAGMENT_SHADER);
 
-	/*EDGE DETECTION*/
+	/*EDGE DETECTION*/ 
 	edge_eff.add_shader("shaders/simple_texture.vert", GL_VERTEX_SHADER);
 	edge_eff.add_shader("shaders/edge.frag", GL_FRAGMENT_SHADER);
 
@@ -55,6 +55,12 @@ void setShaders()
 	terrain_eff.add_shader("shaders/part_direction.frag", GL_FRAGMENT_SHADER);
 	terrain_eff.add_shader("shaders/part_weighted_texture_4.frag", GL_FRAGMENT_SHADER);
 
+	/*GRASS*/
+	// Load in shaders
+	grass_eff.add_shader("shaders/grassVertex.vert", GL_VERTEX_SHADER);
+	grass_eff.add_shader("shaders/grassFrag.frag", GL_FRAGMENT_SHADER);
+	grass_eff.add_shader("shaders/grassGeom.geom", GL_GEOMETRY_SHADER);
+
 	// Build effect
 	basicEff.build();
 	normalMappingEff.build();
@@ -65,4 +71,5 @@ void setShaders()
 	sepia_eff.build();
 	motion_blur_eff.build();
 	terrain_eff.build();
+	grass_eff.build();
 }

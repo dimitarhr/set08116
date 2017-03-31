@@ -24,7 +24,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 /*GLOBAL VARIABLES*/
-effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff;
+effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff;
 
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
@@ -65,7 +65,11 @@ int motionBlur = 0;
 texture terrainTex[4];
 
 mesh terrainMesh;
- 
+mesh grassMesh;
+
+// Vector we will use to store randomly generated points
+std::array<vec3,500>offsetArray;
+
 // Create camera objects and sets the cursor settings
 bool initialise() {
 	cams[0] = new target_camera();
@@ -80,12 +84,33 @@ bool initialise() {
 	return true;
 }
 
-// Load content
-bool load_content() { 
+// Load content 
+bool load_content() {  
+	     
+	/*GRASS*/  
+	geometry grassGeom;
+	grassGeom.set_type(GL_TRIANGLE_STRIP); 
+	// Positions
+	vector<vec3> grassPositions{ vec3(0.0f, -1.0f, 0.0f), vec3(0.05f, -1.0f, 0.0f), vec3(0.2f, 1.0f, 0.0f) , vec3(0.21f, 1.0f, 0.0f) };
+	// Colours
+	vector<vec4> grassColours{ vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f) };
+	// Add to the geometry
+	grassGeom.add_buffer(grassPositions, BUFFER_INDEXES::POSITION_BUFFER);
+	grassGeom.add_buffer(grassColours, BUFFER_INDEXES::COLOUR_BUFFER);
+	grassMesh = mesh(grassGeom);
+	grassMesh.get_transform().translate(vec3(0,40,10));
+	// Allows creation of random points.  Note range
+	default_random_engine e;
+	uniform_real_distribution<float> dist(0,50); 
+
+	// Randomly generate points
+	for (auto i = 0; i < 500; ++i)
+		offsetArray[i] = (vec3(dist(e), 0, dist(e)));
+
 	//////////////////////////////////////////////////////
 	// Geometry to load into
 	geometry geom;
-
+	 
 	// Load height map 
 	texture height_map("textures/mountain_map.png");
 
@@ -240,6 +265,8 @@ bool render() {
 	// Render hierarchical meshes
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
+
+	renderGrass(); 
 
 	renderTerrain();
 
