@@ -11,3 +11,4 @@ void createNormalMapMeshes();
 void createBasicMeshes();
 void createShadowMeshes();
 void createHierarchicalMeshes();
+void createGrass(const texture &height_map, float height_scale);

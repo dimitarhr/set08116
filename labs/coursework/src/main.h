@@ -59,4 +59,5 @@ extern texture terrainTex[4];
 extern mesh terrainMesh;
 
 extern mesh grassMesh;
-extern std::array<vec3, 500>offsetArray;
+extern const int maxGrass;
+extern std::array<vec3, 800>offsetArray;

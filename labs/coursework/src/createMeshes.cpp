@@ -12,6 +12,49 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+void createGrass(const texture &height_map, float height_scale)
+{
+
+	// Extract the texture data from the image
+	glBindTexture(GL_TEXTURE_2D, height_map.get_id());
+	auto data = new vec4[height_map.get_width() * height_map.get_height()];
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, (void *)data);
+
+	geometry grassGeom; 
+	grassGeom.set_type(GL_TRIANGLE_STRIP);
+	// Positions
+	vector<vec3> grassPositions{ vec3(0.0f, -1.0f, 0.0f), vec3(0.05f, -1.0f, 0.0f), vec3(0.2f, 1.0f, 0.0f) , vec3(0.21f, 1.0f, 0.0f) };
+	// Colours
+	vector<vec4> grassColours{ vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f) };
+	// Add to the geometry
+	grassGeom.add_buffer(grassPositions, BUFFER_INDEXES::POSITION_BUFFER);
+	grassGeom.add_buffer(grassColours, BUFFER_INDEXES::COLOUR_BUFFER);
+	grassMesh = mesh(grassGeom);
+	grassMesh.get_transform().position = vec3(0);
+	//grassMesh.get_transform().translate(vec3(0, 40, 10));
+	// Allows creation of random points.  Note range
+	default_random_engine e;
+	uniform_real_distribution<float> dist(0, 128);
+
+	// INSTANCED ARRAY
+	// Randomly generate points
+	/*for (auto i = 0; i < maxGrass; ++i)
+		offsetArray[i] = (vec3(dist(e), getHeight(dist(e), dist(e)), dist(e)));*/
+	int randomNumberX; 
+	int randomNumberZ;
+	for (auto i = 0; i < maxGrass; ++i) { 
+		randomNumberX = dist(e);  
+		randomNumberZ = dist(e);
+		//randomNumber = 1;
+		float yPos = data[(randomNumberZ * height_map.get_width()) + randomNumberX].y * height_scale;
+		offsetArray[i] = (vec3((randomNumberX-64)*6.2, yPos, (randomNumberZ-64)*6.2));
+	}
+	// Delete data
+	delete[] data;
+}
+
+
+
 void createNormalMapMeshes()
 {
 	// Create meshes
@@ -33,7 +76,8 @@ void createNormalMapMeshes()
 	normalMapMeshes["smallStickBoxRight"].get_transform().translate(vec3(50.0f, 34.0f, 5.0f));
 	normalMapMeshes["smallStickBoxBack"].get_transform().translate(vec3(31.0f, 34.0f, 0.0f));
 	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(27.0f, 36.5f, 25.0f));
-	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(25.0f, 36.0f, 17.0f));
+	//normalMapMeshes["sphereLeft"].get_transform().translate(vec3(25.0f, 36.0f, 17.0f));
+	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
 	normalMapMeshes["dragonEgg"].get_transform().translate(vec3(35.0f, 47.0f, -30.0f));
 }
 
@@ -137,6 +181,8 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 
 	// Create all the points and scale them properly
 	// Part 1 - Iterate through each point, calculate vertex and add to vector
+	cout << "Width: " << height_map.get_width() << endl;
+	cout << "Height: " << height_map.get_height()<<endl;
 	for (int x = 0; x < height_map.get_width(); ++x) {
 		// Calculate x position of point
 		point.x = -(width / 2.0f) + (width_point * static_cast<float>(x));
@@ -183,6 +229,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 	// Take the three sides of every triangle and calculate the sides
 	// Then with the cross product get the normal for this triangle (sides)
 	// Part 2 - Calculate normals for the height map
+	cout << "Indices: " << indices.size() << endl;
 	for (unsigned int i = 0; i < indices.size() / 3; ++i) {
 		// Get indices for the triangle
 		auto idx1 = indices[i * 3];

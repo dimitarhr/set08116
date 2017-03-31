@@ -3,6 +3,10 @@
 // Model view projection matrix
 uniform mat4 MVP;
 
+// Model view projection matrix
+uniform float m;
+
+
 // Offset position
 //uniform vec3 offset;
 
@@ -29,14 +33,16 @@ void main() {
 		// *********************************
 	}
 	EndPrimitive();
-
+	
+	/*float addX = sin((gl_in[0].gl_Position).x);
+	float addZ = sin((M * gl_in[0].gl_Position).z);*/
 
   // *********************************
   // Emit a copy of the triangle moved by negative offset
   // Offset triangle needs to be blue
 	for (int i = 0; i < 3; ++i) 
 	{
-		gl_Position = MVP * (gl_in[i].gl_Position + vec4(6,0,6, 0));
+		gl_Position = MVP * (gl_in[i].gl_Position + vec4(m,0.05,m, 0));
 		// *********************************
 		colour_out = vec4(1.0, 0.0, 0.0, 1.0);
 		EmitVertex();
@@ -46,7 +52,7 @@ void main() {
 
 	for (int i = 0; i < 3; ++i) 
 	{
-		gl_Position = MVP * (gl_in[i].gl_Position + vec4(2,0,2, 0));
+		gl_Position = MVP * (gl_in[i].gl_Position + vec4(m+0.7,0.05,m+0.7, 0));
 		// *********************************
 		colour_out = vec4(0.0, 0.0, 1.0, 1.0);
 		EmitVertex();
@@ -57,7 +63,7 @@ void main() {
 	for (int j = 1;j<40;j++){
 		for (int i = 0; i < 3; ++i) 
 		{
-			gl_Position = MVP * (gl_in[i].gl_Position + vec4(8*j,0,8*j, 0));
+			gl_Position = MVP * (gl_in[i].gl_Position + vec4(m+0.5,0.05,m+0.5, 0));
 			// *********************************
 			colour_out = vec4(0.0, 0.0, 0.0, 1.0);
 			EmitVertex();

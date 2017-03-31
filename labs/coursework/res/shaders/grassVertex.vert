@@ -10,7 +10,7 @@ layout (location = 0) out vec4 out_colour;
 uniform mat4 MVP;
 
 // Offset position
-uniform vec3 offsets[500];
+uniform vec3 offsets[800];
 
 void main() 
 {

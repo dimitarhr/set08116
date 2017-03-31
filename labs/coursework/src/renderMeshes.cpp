@@ -299,6 +299,7 @@ void renderHierarchicalMeshes()
 		renderer::render(hierarchicalMesh[i]);
 	}
 }
+
 // Renders a piece of geometry
 void renderModified(const geometry &geom) throw(...) {
 	assert(geom.get_array_object() != 0);
@@ -326,7 +327,7 @@ void renderModified(const geometry &geom) throw(...) {
 			throw std::runtime_error("Error rendering geometry");
 		}
 		// Draw elements
-		glDrawElementsInstanced(geom.get_type(), geom.get_index_count(), GL_UNSIGNED_INT, nullptr, 500);
+		glDrawElementsInstanced(geom.get_type(), geom.get_index_count(), GL_UNSIGNED_INT, nullptr, maxGrass);
 		// Check for error
 		if (CHECK_GL_ERROR) {
 			// Display error
@@ -338,7 +339,7 @@ void renderModified(const geometry &geom) throw(...) {
 	}
 	else {
 		// Draw arrays
-		glDrawArraysInstanced(geom.get_type(), 0, geom.get_vertex_count(), 500);
+		glDrawArraysInstanced(geom.get_type(), 0, geom.get_vertex_count(), maxGrass);
 		// Check for error
 		if (CHECK_GL_ERROR) {
 			std::cerr << "ERROR - rendering geometry" << std::endl;
@@ -351,7 +352,12 @@ void renderModified(const geometry &geom) throw(...) {
 
 void renderGrass() 
 {
-	// Bind effect
+	default_random_engine e;
+	uniform_real_distribution<float> dist(-1, 1);
+	float m = dist(e);
+
+	glDisable(GL_CULL_FACE);
+	// Bind effect 
 	renderer::bind(grass_eff);
 		// Normal matrix
 		auto N = grassMesh.get_transform().get_normal_matrix();
@@ -363,10 +369,13 @@ void renderGrass()
 
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(grass_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-		glUniform3fv(grass_eff.get_uniform_location("offsets"),500 , value_ptr(offsetArray[0]));
+		glUniform1f(grass_eff.get_uniform_location("m"), m);
+		glUniform3fv(grass_eff.get_uniform_location("offsets"), maxGrass, value_ptr(offsetArray[0]));
 
 		// Render geometry
 		renderModified(grassMesh.get_geometry());
+		//renderer::render(grassMesh);
+		glEnable(GL_CULL_FACE);
 }
 
 

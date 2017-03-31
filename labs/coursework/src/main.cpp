@@ -67,8 +67,10 @@ texture terrainTex[4];
 mesh terrainMesh;
 mesh grassMesh;
 
+const int maxGrass = 800;  
+
 // Vector we will use to store randomly generated points
-std::array<vec3,500>offsetArray;
+std::array<vec3, 800>offsetArray;
 
 // Create camera objects and sets the cursor settings
 bool initialise() {
@@ -87,26 +89,6 @@ bool initialise() {
 // Load content 
 bool load_content() {  
 	     
-	/*GRASS*/  
-	geometry grassGeom;
-	grassGeom.set_type(GL_TRIANGLE_STRIP); 
-	// Positions
-	vector<vec3> grassPositions{ vec3(0.0f, -1.0f, 0.0f), vec3(0.05f, -1.0f, 0.0f), vec3(0.2f, 1.0f, 0.0f) , vec3(0.21f, 1.0f, 0.0f) };
-	// Colours
-	vector<vec4> grassColours{ vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f) };
-	// Add to the geometry
-	grassGeom.add_buffer(grassPositions, BUFFER_INDEXES::POSITION_BUFFER);
-	grassGeom.add_buffer(grassColours, BUFFER_INDEXES::COLOUR_BUFFER);
-	grassMesh = mesh(grassGeom);
-	grassMesh.get_transform().translate(vec3(0,40,10));
-	// Allows creation of random points.  Note range
-	default_random_engine e;
-	uniform_real_distribution<float> dist(0,50); 
-
-	// Randomly generate points
-	for (auto i = 0; i < 500; ++i)
-		offsetArray[i] = (vec3(dist(e), 0, dist(e)));
-
 	//////////////////////////////////////////////////////
 	// Geometry to load into
 	geometry geom;
@@ -129,6 +111,9 @@ bool load_content() {
 	terrainTex[2] = texture("textures/stone.jpg");
 	terrainTex[3] = texture("textures/snow.jpg");
 	//////////////////////////////////////////////////////
+	/*GRASS*/
+	createGrass(height_map, 100);
+
 	// Create 2 frame buffers - use screen width and height
 	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
