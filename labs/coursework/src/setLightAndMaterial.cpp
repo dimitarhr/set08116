@@ -127,4 +127,5 @@ void setMeshesMaterial()
 	normalMapMeshes["smallStickBoxBack"].set_material(objectMaterial);
 	normalMapMeshes["smallStickBoxFront"].set_material(objectMaterial);
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
+	waterMesh.set_material(objectMaterial);
 }

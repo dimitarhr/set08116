@@ -24,7 +24,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 /*GLOBAL VARIABLES*/
-effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff;
+effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff, water_eff;
 
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
@@ -66,6 +66,10 @@ texture terrainTex[4];
 
 mesh terrainMesh;
 mesh grassMesh;
+mesh waterMesh;
+
+vec2 uv_scroll;
+vec2 uv_scroll_Two;
 
 const int maxGrass = 800;  
 
@@ -145,7 +149,10 @@ bool load_content() {
 	// Transform hierarchy meshes - Defined in 'createMeshes.cpp'
 	createHierarchicalMeshes();
 
-	// Skybox
+	//Water
+	createWater();
+
+	// Skybox  
 	skybox = mesh(geometry_builder::create_box());
 	skybox.get_transform().scale = vec3(100);
 	// All sides of the skybox
@@ -182,8 +189,11 @@ bool load_content() {
 
 // Update every frame
 bool update(float delta_time) {
+	
+	uv_scroll += vec2(0, delta_time);
+	uv_scroll_Two += vec2(delta_time*2.0, delta_time); 
 
-	// Flip frame
+	// Flip frame 
 	current_frame = (current_frame + 1) % 2;
 
 	// Set the correct camera index depending on the pressed button
@@ -191,13 +201,13 @@ bool update(float delta_time) {
 	// Defined in 'updateFunctions.cpp' 
 	checkPressedButton();
 
-	/*TARGET CAMERAS*/
+	/*TARGET CAMERAS*/ 
 	if (cameraIndex == 0)
 	{
 		// Defined in 'setCamera.cpp' 
 		setTargetCamera(delta_time);
 	}
-	/*FREE CAMERA*/
+	/*FREE CAMERA*/ 
 	else if (cameraIndex == 1)
 	{
 		// Defined in 'setCamera.cpp' 
@@ -231,14 +241,13 @@ bool render() {
 	// Clear frame
 	renderer::clear();
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Render skybox
 	// Defined in 'renderMeshes.cpp' 
 	renderSkyBox();
-
 	// Render meshes with normal maps
 	// Defined in 'renderMeshes.cpp' 
 	renderNormalMapMesh();
-
 	// Render meshes without normal maps
 	// Defined in 'renderMeshes.cpp' 
 	renderBasicMesh();
@@ -250,11 +259,12 @@ bool render() {
 	// Render hierarchical meshes
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
-
-	renderGrass(); 
-
+  
+	renderWater(uv_scroll, uv_scroll_Two);
+	//renderGrass(); 
+	 
 	renderTerrain();
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	if (edgeDetection == 1)
 	{
 		//sepia = 0;

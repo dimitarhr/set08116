@@ -61,6 +61,13 @@ void setShaders()
 	grass_eff.add_shader("shaders/grassFrag.frag", GL_FRAGMENT_SHADER);
 	grass_eff.add_shader("shaders/grassGeom.geom", GL_GEOMETRY_SHADER);
 
+	/*WATER*/
+	// Load in shaders
+	water_eff.add_shader("shaders/waterVertex.vert", GL_VERTEX_SHADER);
+	vector<string> frag_water{ "shaders/waterFrag.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag", "shaders/part_normal_map.frag" };
+	water_eff.add_shader(frag_water, GL_FRAGMENT_SHADER);
+	//water_eff.add_shader("shaders/grassGeom.geom", GL_GEOMETRY_SHADER);
+
 	// Build effect
 	basicEff.build();
 	normalMappingEff.build();
@@ -72,4 +79,5 @@ void setShaders()
 	motion_blur_eff.build();
 	terrain_eff.build();
 	grass_eff.build();
+	water_eff.build();
 }

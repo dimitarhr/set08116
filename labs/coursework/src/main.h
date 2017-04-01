@@ -9,7 +9,7 @@ using namespace glm;
 
 /*GLOBAL VARIABLES*/
 // Effects
-extern effect basicEff, normalMappingEff, shadows_eff, sky_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff;
+extern effect basicEff, normalMappingEff, shadows_eff, sky_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff, water_eff;
 
 // Meshes
 extern map<string, mesh> normalMapMeshes, basicMeshes, shadow_geom;
@@ -61,3 +61,4 @@ extern mesh terrainMesh;
 extern mesh grassMesh;
 extern const int maxGrass;
 extern std::array<vec3, 800>offsetArray;
+extern mesh waterMesh;

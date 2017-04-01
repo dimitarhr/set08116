@@ -19,3 +19,4 @@ void renderMotionBlur();
 void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale);
 void renderTerrain(); 
 void renderGrass();
+void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two);

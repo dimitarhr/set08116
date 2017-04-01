@@ -378,6 +378,66 @@ void renderGrass()
 		glEnable(GL_CULL_FACE);
 }
 
+void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two)
+{
+	// Bing effect
+	renderer::bind(water_eff);
+
+	// Bind lights
+	renderer::bind(dirLight, "light");
+	renderer::bind(pointLight, "pointLight");
+	renderer::bind(spots, "spots");
+
+	// Normal matrix
+	auto N = waterMesh.get_transform().get_normal_matrix();
+	// Create MVP matrix
+	auto M = waterMesh.get_transform().get_transform_matrix();
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto MVP = P * V * M;
+	 
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(water_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+
+	// Set M matrix uniform
+	glUniformMatrix4fv(water_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+
+	// Set N matrix uniform
+	glUniformMatrix3fv(water_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+
+	// Bind material
+	renderer::bind(waterMesh.get_material(), "mat");
+
+	// Bind texture
+	renderer::bind(textures["water"], 0);
+
+	// Bind normal map
+	renderer::bind(normal_maps["water"], 1);
+
+	// Bind normal map
+	renderer::bind(normal_maps["waterTwo"], 2);
+
+	// Set the texture uniform value
+	glUniform1i(water_eff.get_uniform_location("tex"), 0);
+
+	// Set the normal_map uniform value
+	glUniform1i(water_eff.get_uniform_location("normal_map"), 1);
+
+	// Set the normal_map uniform value
+	glUniform1i(water_eff.get_uniform_location("normal_map_Two"), 2); 
+		
+	// Set the viewer position uniform value
+	glUniform3fv(water_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+
+	// Set UV_scroll uniform, adds cool movent (Protip: This is a super easy way to do fire effects;))
+	glUniform2fv(water_eff.get_uniform_location("UV_SCROLL"), 1, value_ptr(uv_scroll));
+	  
+	// Set UV_scroll uniform, adds cool movent (Protip: This is a super easy way to do fire effects;))
+	glUniform2fv(water_eff.get_uniform_location("UV_SCROLL_TWO"), 1, value_ptr(uv_scroll_Two));  
+
+	// Render geometry
+	renderer::render(waterMesh);
+}
 
 void renderTerrain()
 {

@@ -34,7 +34,7 @@ void createGrass(const texture &height_map, float height_scale)
 	//grassMesh.get_transform().translate(vec3(0, 40, 10));
 	// Allows creation of random points.  Note range
 	default_random_engine e;
-	uniform_real_distribution<float> dist(0, 128);
+	uniform_real_distribution<float> dist(60, 90);
 
 	// INSTANCED ARRAY
 	// Randomly generate points
@@ -49,16 +49,20 @@ void createGrass(const texture &height_map, float height_scale)
 		float yPos = data[(randomNumberZ * height_map.get_width()) + randomNumberX].y * height_scale;
 		offsetArray[i] = (vec3((randomNumberX-64)*6.2, yPos, (randomNumberZ-64)*6.2));
 	}
-	// Delete data
+	// Delete data 
 	delete[] data;
 }
 
-
+void createWater()
+{
+	waterMesh = mesh(geometry_builder::create_plane(1000,1000));
+	//waterMesh.get_transform().scale = vec3(500);  
+	waterMesh.get_transform().translate(vec3(0.0f, 10.0f, 0.0f));
+}
 
 void createNormalMapMeshes()
 {
 	// Create meshes
-	//normalMapMeshes["floorPlane"] = mesh(geometry_builder::create_plane(100,100,true));
 	normalMapMeshes["earth"] = mesh(geometry_builder::create_sphere(60, 60));
 	normalMapMeshes["smallStickBoxLeft"] = mesh(geometry_builder::create_box(vec3(5.0f, 5.0f, 5.0f)));
 	normalMapMeshes["smallStickBoxRight"] = mesh(geometry_builder::create_box(vec3(4.0f, 4.0f, 4.0f)));
@@ -68,7 +72,6 @@ void createNormalMapMeshes()
 	normalMapMeshes["dragonEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
 
 	// Transform meshes
-	//normalMapMeshes["floorPlane"].get_transform().translate(vec3(-15.0f, 35.0f, 25.0f));
 	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
 	normalMapMeshes["earth"].get_transform().translate(vec3(35.0f, 43.5f, 10.0f));
 	normalMapMeshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
@@ -76,8 +79,8 @@ void createNormalMapMeshes()
 	normalMapMeshes["smallStickBoxRight"].get_transform().translate(vec3(50.0f, 34.0f, 5.0f));
 	normalMapMeshes["smallStickBoxBack"].get_transform().translate(vec3(31.0f, 34.0f, 0.0f));
 	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(27.0f, 36.5f, 25.0f));
-	//normalMapMeshes["sphereLeft"].get_transform().translate(vec3(25.0f, 36.0f, 17.0f));
-	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
+	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(25.0f, 36.0f, 17.0f));
+	//normalMapMeshes["sphereLeft"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
 	normalMapMeshes["dragonEgg"].get_transform().translate(vec3(35.0f, 47.0f, -30.0f));
 }
 
