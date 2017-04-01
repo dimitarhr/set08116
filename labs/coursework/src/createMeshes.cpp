@@ -55,7 +55,7 @@ void createGrass(const texture &height_map, float height_scale)
 
 void createWater()
 {
-	waterMesh = mesh(geometry_builder::create_plane(1000,1000));
+	waterMesh = mesh(geometry_builder::create_plane(1000,1000)); 
 	//waterMesh.get_transform().scale = vec3(500);  
 	waterMesh.get_transform().translate(vec3(0.0f, 10.0f, 0.0f));
 }

@@ -52,6 +52,7 @@ extern int screenMode;
 extern int edgeDetection;
 extern int sepia;
 extern int motionBlur;
+extern int wireFrame;
 
 extern frame_buffer frames[2];
 extern unsigned int current_frame;

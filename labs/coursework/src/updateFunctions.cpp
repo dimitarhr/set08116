@@ -144,4 +144,16 @@ void checkPressedButton()
 	{
 		motionBlur = 0;
 	}
+
+	// Wireframe ON
+	if (glfwGetKey(renderer::get_window(), 'F'))
+	{
+		wireFrame = 1;
+	}
+
+	// Wireframe OFF
+	if (glfwGetKey(renderer::get_window(), 'G'))
+	{
+		wireFrame = 0;
+	}
 }

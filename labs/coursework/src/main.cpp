@@ -62,6 +62,7 @@ int screenMode = 0;
 int edgeDetection = 0; 
 int sepia = 0;
 int motionBlur = 0;
+int wireFrame = 0;
 texture terrainTex[4];
 
 mesh terrainMesh;
@@ -115,6 +116,7 @@ bool load_content() {
 	terrainTex[2] = texture("textures/stone.jpg");
 	terrainTex[3] = texture("textures/snow.jpg");
 	//////////////////////////////////////////////////////
+
 	/*GRASS*/
 	createGrass(height_map, 100);
 
@@ -241,7 +243,10 @@ bool render() {
 	// Clear frame
 	renderer::clear();
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (wireFrame == 1)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
 	// Render skybox
 	// Defined in 'renderMeshes.cpp' 
 	renderSkyBox();
@@ -264,7 +269,11 @@ bool render() {
 	//renderGrass(); 
 	 
 	renderTerrain();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	if (wireFrame == 1) 
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 	if (edgeDetection == 1)
 	{
 		//sepia = 0;

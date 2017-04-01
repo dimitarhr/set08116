@@ -20,3 +20,4 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 void renderTerrain(); 
 void renderGrass();
 void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two);
+void renderMinimap();
