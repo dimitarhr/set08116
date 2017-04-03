@@ -15,7 +15,7 @@ using namespace glm;
 void setSpotLights()
 {
 	// Spot light in the torrus, below the earth
-	spots[0].set_position(vec3(25.0f, 0.0f, 10.0f));
+	spots[0].set_position(vec3(25.0f, 36.0f, 10.0f));
 	spots[0].set_light_colour(vec4(1.0f, 0.3f, 0.0f, 1.0f));
 	spots[0].set_direction(normalize(vec3(0, 1, -1)));
 	spots[0].set_range(80);
@@ -53,7 +53,7 @@ void setSpotLights()
 void setDirectLight()
 {
 	dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
-	dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	dirLight.set_light_colour(vec4(0.99f, 0.37f, 0.33f, 1.0f));
 	dirLight.set_direction(vec3(1.0f, 1.0f, 1.0f));
 }
 
