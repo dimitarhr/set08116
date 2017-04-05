@@ -29,21 +29,21 @@ void setSpotLights()
 	spots[1].set_power(0.1f);
 
 	// The green spot light, behind the earth
-	spots[2].set_position(vec3(10, 0, -8));
+	spots[2].set_position(vec3(10, 36, -8));
 	spots[2].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	spots[2].set_direction(normalize(vec3(1, 1, -1)));
 	spots[2].set_range(50);
 	spots[2].set_power(0.1f);
 
 	// In front of the earth - left
-	spots[3].set_position(vec3(0, 0, 40));
+	spots[3].set_position(vec3(0, 36, 40));
 	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spots[3].set_direction(normalize(vec3(1, 0, -1)));
 	spots[3].set_range(200.0f);
 	spots[3].set_power(10.0f);
 
 	// In front of the earth - right
-	spots[4].set_position(vec3(40, 0, 40));
+	spots[4].set_position(vec3(40, 36, 40));
 	spots[4].set_light_colour(vec4(0.53f, 0.45f, 0.37f, 1.0f));
 	spots[4].set_direction(normalize(vec3(-1, 0, -1)));
 	spots[4].set_range(500.0f);
@@ -59,7 +59,7 @@ void setDirectLight()
 
 void setPointLight()
 {
-	pointLight.set_position(vec3(30, 10, -5));
+	pointLight.set_position(vec3(30, 46, -5));
 	pointLight.set_light_colour(vec4(0.0f, 1.0f, 1.0f, 1.0f));
 	pointLight.set_range(20.0f);
 }
@@ -128,4 +128,10 @@ void setMeshesMaterial()
 	normalMapMeshes["smallStickBoxFront"].set_material(objectMaterial);
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
 	waterMesh.set_material(objectMaterial);
+
+	// Terrain
+	terrainMesh.get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	terrainMesh.get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	terrainMesh.get_material().set_shininess(20.0f);
+	terrainMesh.get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }

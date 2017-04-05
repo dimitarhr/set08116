@@ -60,6 +60,6 @@ extern texture terrainTex[4];
 extern mesh terrainMesh;
 
 extern mesh grassMesh;
-extern const int maxGrass;
+extern const int eggsNumber;
 extern std::array<vec3, 800>offsetArray;
 extern mesh waterMesh;

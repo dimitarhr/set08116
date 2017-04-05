@@ -59,7 +59,6 @@ void setShaders()
 	// Load in shaders
 	grass_eff.add_shader("shaders/grassVertex.vert", GL_VERTEX_SHADER);
 	grass_eff.add_shader("shaders/grassFrag.frag", GL_FRAGMENT_SHADER);
-	grass_eff.add_shader("shaders/grassGeom.geom", GL_GEOMETRY_SHADER);
 
 	/*WATER*/
 	// Load in shaders

@@ -77,13 +77,13 @@ void checkPressedButton()
 	{
 		// Directional light OFF
 		dirLight.set_ambient_intensity(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		dirLight.set_light_colour(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		dirLight.set_light_colour(vec4(0.4f, 0.2f, 0.2f, 1.0f));
 	}
 	else if (glfwGetKey(renderer::get_window(), 'K'))
 	{
 		// Directional light ON
 		dirLight.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
-		dirLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		dirLight.set_light_colour(vec4(0.99f, 0.37f, 0.33f, 1.0f));
 	}
 
 	int state = glfwGetMouseButton(renderer::get_window(), GLFW_MOUSE_BUTTON_RIGHT);

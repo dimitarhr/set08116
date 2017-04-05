@@ -35,4 +35,8 @@ void loadTexturesAndNormalMaps()
 	originalMap = texture("textures/whitescreen.jpg");
 	normal_maps["water"] = texture("textures/water_normal.png", true, true);
 	normal_maps["waterTwo"] = texture("textures/water_normal_Two.jpg", true, true);
+	terrainTex[0] = texture("textures/sand.jpg");
+	terrainTex[1] = texture("textures/grass.jpg");
+	terrainTex[2] = texture("textures/stone.jpg");
+	terrainTex[3] = texture("textures/snow.jpg");
 }

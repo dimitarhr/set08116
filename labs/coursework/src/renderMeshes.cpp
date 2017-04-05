@@ -301,14 +301,16 @@ void renderHierarchicalMeshes()
 }
 
 // Renders a piece of geometry
-void renderModified(const geometry &geom) throw(...) {
+void renderModified(const geometry &geom, int eggsNumber) throw(...) 
+{
 	assert(geom.get_array_object() != 0);
 	// Check renderer is running
 	//assert(renderer::_instance->_running);
 	// Bind the vertex array object for the
 	glBindVertexArray(geom.get_array_object());
 	// Check for any OpenGL errors
-	if (CHECK_GL_ERROR) {
+	if (CHECK_GL_ERROR) 
+	{
 		// Display error
 		std::cerr << "ERROR - rendering geometry" << std::endl;
 		std::cerr << "Could not bind vertex array object" << std::endl;
@@ -316,18 +318,20 @@ void renderModified(const geometry &geom) throw(...) {
 		throw std::runtime_error("Error rendering geometry");
 	}
 	// If there is an index buffer then use to render
-	if (geom.get_idx_buffer() != 0) {
+	if (geom.get_idx_buffer() != 0) 
+	{
 		// Bind index buffer
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geom.get_idx_buffer());
 		// Check for error
-		if (CHECK_GL_ERROR) {
+		if (CHECK_GL_ERROR) 
+		{
 			std::cerr << "ERROR - rendering geometry" << std::endl;
 			std::cerr << "Could not bind index buffer" << std::endl;
 			// Throw exception
 			throw std::runtime_error("Error rendering geometry");
 		}
 		// Draw elements
-		glDrawElementsInstanced(geom.get_type(), geom.get_index_count(), GL_UNSIGNED_INT, nullptr, maxGrass);
+		glDrawElementsInstanced(geom.get_type(), geom.get_index_count(), GL_UNSIGNED_INT, nullptr, eggsNumber);
 		// Check for error
 		if (CHECK_GL_ERROR) {
 			// Display error
@@ -337,9 +341,10 @@ void renderModified(const geometry &geom) throw(...) {
 			throw std::runtime_error("Error rendering geometry");
 		}
 	}
-	else {
+	else 
+	{
 		// Draw arrays
-		glDrawArraysInstanced(geom.get_type(), 0, geom.get_vertex_count(), maxGrass);
+		glDrawArraysInstanced(geom.get_type(), 0, geom.get_vertex_count(), eggsNumber);
 		// Check for error
 		if (CHECK_GL_ERROR) {
 			std::cerr << "ERROR - rendering geometry" << std::endl;
@@ -370,10 +375,10 @@ void renderGrass()
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(grass_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 		glUniform1f(grass_eff.get_uniform_location("m"), m);
-		glUniform3fv(grass_eff.get_uniform_location("offsets"), maxGrass, value_ptr(offsetArray[0]));
+		glUniform3fv(grass_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
 
 		// Render geometry
-		renderModified(grassMesh.get_geometry());
+		renderModified(grassMesh.get_geometry(), eggsNumber);
 		//renderer::render(grassMesh);
 		glEnable(GL_CULL_FACE);
 }

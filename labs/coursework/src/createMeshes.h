@@ -13,3 +13,5 @@ void createShadowMeshes();
 void createHierarchicalMeshes();
 void createGrass(const texture &height_map, float height_scale);
 void createWater();
+void createTerrain();
+void setFrameBuffers();

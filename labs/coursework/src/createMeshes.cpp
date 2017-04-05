@@ -12,6 +12,23 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+void setFrameBuffers()
+{
+	// Create 2 frame buffers - use screen width and height
+	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	// Create frame buffer - use screen width and height
+	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	// Create screen quad
+	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f) };
+	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
+	// *********************************
+	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad.set_type(GL_TRIANGLE_STRIP);
+}
+
 void createGrass(const texture &height_map, float height_scale)
 {
 
@@ -42,7 +59,7 @@ void createGrass(const texture &height_map, float height_scale)
 		offsetArray[i] = (vec3(dist(e), getHeight(dist(e), dist(e)), dist(e)));*/
 	int randomNumberX; 
 	int randomNumberZ;
-	for (auto i = 0; i < maxGrass; ++i) { 
+	for (auto i = 0; i < eggsNumber; ++i) {
 		randomNumberX = dist(e);  
 		randomNumberZ = dist(e);
 		//randomNumber = 1;
@@ -300,4 +317,19 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 
 	// Delete data
 	delete[] data;
+}
+
+void createTerrain()
+{
+	// Geometry to load into
+	geometry geom;
+
+	// Load height map 
+	texture height_map("textures/mountain_map.png");
+
+	// Generate terrain
+	generate_terrain(geom, height_map, 800, 800, 100.0f);
+
+	// Use geometry to create terrain mesh
+	terrainMesh = mesh(geom);
 }

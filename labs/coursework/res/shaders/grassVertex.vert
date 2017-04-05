@@ -16,6 +16,6 @@ void main()
 {
 	vec3 offset = offsets[gl_InstanceID];
   // Calculate screen position
-  gl_Position = vec4(position+offset, 1.0);
+  gl_Position = MVP * vec4(position+offset, 1.0);
   out_colour = in_colour;
 }

@@ -72,7 +72,7 @@ mesh waterMesh;
 vec2 uv_scroll;
 vec2 uv_scroll_Two;
 
-const int maxGrass = 800;  
+const int eggsNumber = 800;
 
 // Vector we will use to store randomly generated points
 std::array<vec3, 800>offsetArray;
@@ -94,49 +94,10 @@ bool initialise() {
 // Load content 
 bool load_content() {  
 	     
-	//////////////////////////////////////////////////////
-	// Geometry to load into
-	geometry geom;
-	 
-	// Load height map 
-	texture height_map("textures/mountain_map.png");
-
-	// Generate terrain
-	generate_terrain(geom, height_map, 800, 800, 100.0f);
-
-	// Use geometry to create terrain mesh
-	terrainMesh = mesh(geom);
-
-	terrainMesh.get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	terrainMesh.get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	terrainMesh.get_material().set_shininess(20.0f);
-	terrainMesh.get_material().set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	terrainTex[0] = texture("textures/sand.jpg");
-	terrainTex[1] = texture("textures/grass.jpg");
-	terrainTex[2] = texture("textures/stone.jpg");
-	terrainTex[3] = texture("textures/snow.jpg");
-	//////////////////////////////////////////////////////
-
 	/*GRASS*/
-	createGrass(height_map, 100);
+	//createGrass(height_map, 100);
 
-	// Create 2 frame buffers - use screen width and height
-	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	// Create frame buffer - use screen width and height
-	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	// Create screen quad
-	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f) };
-	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
-	// *********************************
-	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
-	screen_quad.set_type(GL_TRIANGLE_STRIP);
-
-	screen_quad_edge.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-	screen_quad_edge.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
-	screen_quad_edge.set_type(GL_TRIANGLE_STRIP);
+	setFrameBuffers();
 
 	/*CREATE MESHES*/
 	// Meshes with normal maps - Defined in 'createMeshes.cpp'
@@ -161,6 +122,9 @@ bool load_content() {
 	array<string, 6> filenames = { "textures/sky_right.png", "textures/sky_left.png", "textures/sky_top.png", 
 								   "textures/sky_botton.png", "textures/sky_front.png" ,  "textures/sky_back.png" };
 	cube_map = cubemap(filenames);	
+
+	// Terrain
+	createTerrain();
 	
 	/*SET MATERIAL - Defined in 'setLightAndMaterial.cpp'*/ 
 	setMeshesMaterial();
@@ -222,6 +186,7 @@ bool update(float delta_time) {
 
 	// Set skybox position to camera position (camera in centre of skybox)
 	skybox.get_transform().position = cams[cameraIndex]->get_position();
+	skybox.get_transform().rotate(vec3(0.0f, quarter_pi<float>()/40, 0.0f) * delta_time);
 
 	// Transform hierarchy meshes
 	// Defined in 'updateFunctions.cpp' 
