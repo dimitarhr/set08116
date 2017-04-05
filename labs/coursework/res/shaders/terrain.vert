@@ -6,6 +6,8 @@ uniform mat4 MVP;
 uniform mat4 M;
 // N transformation matrix
 uniform mat3 N;
+// Clipping plane
+uniform vec4 plane;
 
 // Incoming position
 layout(location = 0) in vec3 position;
@@ -25,15 +27,20 @@ layout(location = 2) out vec2 vertex_tex_coord;
 // Outgoing tex_weight
 layout(location = 3) out vec4 vertex_tex_weight;
 
-void main() {
-  // Calculate screen position
-  gl_Position = MVP * vec4(position, 1.0);
-  // Calculate vertex world position
-  vertex_position = (M * vec4(position, 1.0)).xyz;
-  // Transform normal
-  transformed_normal = N * normal;
-  // Pass through tex_coord
-  vertex_tex_coord = tex_coord;
-  // Pass through tex_weight
-  vertex_tex_weight = tex_weight;
+void main() 
+{	
+	// Calculate screen position
+	gl_Position = MVP * vec4(position, 1.0);
+	// Calculate vertex world position
+	vertex_position = (M * vec4(position, 1.0)).xyz;
+	
+	// Transform normal
+	transformed_normal = N * normal;
+	// Pass through tex_coord
+	vertex_tex_coord = tex_coord;
+	// Pass through tex_weight
+	vertex_tex_weight = tex_weight;
+
+	// Clipping
+	gl_ClipDistance[0] = dot(vec4(vertex_position,1.0), plane);
 }

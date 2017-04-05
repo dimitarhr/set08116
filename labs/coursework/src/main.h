@@ -55,6 +55,7 @@ extern int motionBlur;
 extern int wireFrame;
 
 extern frame_buffer frames[2];
+extern frame_buffer refractionBuffer;
 extern unsigned int current_frame;
 extern texture terrainTex[4];
 extern mesh terrainMesh;

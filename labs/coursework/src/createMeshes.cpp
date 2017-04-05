@@ -17,6 +17,10 @@ void setFrameBuffers()
 	// Create 2 frame buffers - use screen width and height
 	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	
+	// Refraction buffer used for the water
+	refractionBuffer = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	
 	// Create frame buffer - use screen width and height
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
@@ -55,11 +59,11 @@ void createGrass()
 	}
 }
 
-void createWater()
+void createWater(int waterLevel)
 {
-	waterMesh = mesh(geometry_builder::create_plane(1000,1000)); 
+	waterMesh = mesh(geometry_builder::create_plane(800,800)); 
 	//waterMesh.get_transform().scale = vec3(500);  
-	waterMesh.get_transform().translate(vec3(0.0f, 10.0f, 0.0f));
+	waterMesh.get_transform().translate(vec3(0.0f, waterLevel, 0.0f));
 }
 
 void createNormalMapMeshes()

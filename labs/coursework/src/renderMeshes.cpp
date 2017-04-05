@@ -355,7 +355,7 @@ void renderModified(const geometry &geom, int eggsNumber) throw(...)
 	}
 }
 
-void renderWaterEggs() 
+void renderWaterEggs(vec4 plane) 
 {
 	// Bing effect
 	renderer::bind(grass_eff);
@@ -401,12 +401,14 @@ void renderWaterEggs()
 	glUniform3fv(grass_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
 	
 	glUniform3fv(grass_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
+
+	glUniform4fv(grass_eff.get_uniform_location("plane"), 1, value_ptr(plane));
 	
 	// Render geometry
 	renderModified(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
 }
 
-void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two)
+void renderWater(texture refractionTexture, texture depthTexture)
 {
 	// Bing effect
 	renderer::bind(water_eff);
@@ -443,7 +445,7 @@ void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two)
 	renderer::bind(normal_maps["water"], 1);
 
 	// Bind normal map
-	renderer::bind(normal_maps["waterTwo"], 2);
+	renderer::bind(normal_maps["waterTwo"], 2); 
 
 	// Set the texture uniform value
 	glUniform1i(water_eff.get_uniform_location("tex"), 0);
@@ -457,17 +459,15 @@ void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two)
 	// Set the viewer position uniform value
 	glUniform3fv(water_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
 
-	// Set UV_scroll uniform, adds cool movent (Protip: This is a super easy way to do fire effects;))
-	glUniform2fv(water_eff.get_uniform_location("UV_SCROLL"), 1, value_ptr(uv_scroll));
-	  
-	// Set UV_scroll uniform, adds cool movent (Protip: This is a super easy way to do fire effects;))
-	glUniform2fv(water_eff.get_uniform_location("UV_SCROLL_TWO"), 1, value_ptr(uv_scroll_Two));  
+	/*REFRACTION TEXTURE*/
+	renderer::bind(refractionTexture, 3);
+	glUniform1i(water_eff.get_uniform_location("refractionTexture"), 3);
 
 	// Render geometry
 	renderer::render(waterMesh);
 }
 
-void renderTerrain()
+void renderTerrain(vec4 plane)
 {
 	renderer::bind(terrain_eff);
 	auto M = terrainMesh.get_transform().get_transform_matrix();
@@ -488,19 +488,20 @@ void renderTerrain()
 	renderer::bind(terrainMesh.get_material(), "mat");
 	// Bind Light
 	renderer::bind(dirLight, "light");
-		// Bind Tex[0] to TU 0, set uniform
-		renderer::bind(terrainTex[0], 0);
-		glUniform1i(terrain_eff.get_uniform_location("tex[0]"), 0);
-		// *********************************
-		//Bind Tex[1] to TU 1, set uniform
-		renderer::bind(terrainTex[1], 1);
-		glUniform1i(terrain_eff.get_uniform_location("tex[1]"), 1);
-		// Bind Tex[2] to TU 2, set uniform
-		renderer::bind(terrainTex[2], 2);
-		glUniform1i(terrain_eff.get_uniform_location("tex[2]"), 2);
-		// Bind Tex[3] to TU 3, set uniform
-		renderer::bind(terrainTex[3], 3);
-		glUniform1i(terrain_eff.get_uniform_location("tex[3]"), 3);
+	// Bind Tex[0] to TU 0, set uniform
+	renderer::bind(terrainTex[0], 0);
+	glUniform1i(terrain_eff.get_uniform_location("tex[0]"), 0);
+	// *********************************
+	//Bind Tex[1] to TU 1, set uniform
+	renderer::bind(terrainTex[1], 1);
+	glUniform1i(terrain_eff.get_uniform_location("tex[1]"), 1);
+	// Bind Tex[2] to TU 2, set uniform
+	renderer::bind(terrainTex[2], 2);
+	glUniform1i(terrain_eff.get_uniform_location("tex[2]"), 2);
+	// Bind Tex[3] to TU 3, set uniform
+	renderer::bind(terrainTex[3], 3);
+	glUniform1i(terrain_eff.get_uniform_location("tex[3]"), 3);
+	glUniform4fv(terrain_eff.get_uniform_location("plane"), 1, value_ptr(plane));
 	// *********************************
 	// Render terrain
 	renderer::render(terrainMesh);

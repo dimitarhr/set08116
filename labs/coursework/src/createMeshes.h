@@ -12,6 +12,6 @@ void createBasicMeshes();
 void createShadowMeshes();
 void createHierarchicalMeshes();
 void createGrass();
-void createWater();
+void createWater(int waterLevel);
 void createTerrain();
 void setFrameBuffers();

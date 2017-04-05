@@ -18,16 +18,20 @@ layout(location = 10) in vec2 tex_coord_in;
 
 // Outgoing texture coordinate
 layout(location = 2) out vec2 tex_coord_out;
+layout(location = 3) out vec3 toCameraVector;
+layout(location = 5) out vec4 clipSpace;
 
 
 void main()
 {
   // Calculate screen position
-  gl_Position = MVP * vec4(position, 1.0);
-  cl
+  clipSpace = MVP * vec4(position, 1.0); // The clip space coordinates of the vertex
+  gl_Position = clipSpace;
   
   // Output other values to fragment shader
   vec4 worldPosition = (M*vec4(position,1.0f));
   
-  tex_coord_out = tex_coord_in;
+  tex_coord_out = tex_coord_in * 0.1;
+
+  toCameraVector = cameraPostion - worldPosition.xyz;
 }

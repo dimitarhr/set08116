@@ -49,15 +49,6 @@ struct material {
 };
 #endif
 
-// Forward declarations of used functions
-vec4 calculate_direction(in directional_light light, in material mat, in vec3 normal, in vec3 view_dir,
-                         in vec4 tex_colour);
-vec4 calculate_point(in point_light point, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
-                     in vec4 tex_colour);
-vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir,
-                    in vec4 tex_colour);
-vec3 calc_normal(in vec3 normal, in vec3 tangent, in vec3 binormal, in sampler2D normal_map, in vec2 tex_coord);
-
 // Directional light information
 uniform directional_light light;
 // Point lights being used in the scene
@@ -71,47 +62,38 @@ uniform vec3 eye_pos;
 // Texture to sample from
 uniform sampler2D tex;
 // Normal map to sample from
+uniform sampler2D refractionTexture;
+uniform sampler2D dudvMap;
+uniform sampler2D depthMap;
 uniform sampler2D normal_map;
-uniform sampler2D normal_map_Two;
-// Incoming position
-layout(location = 0) in vec3 vertex_position;
-// Incoming normal
-layout(location = 1) in vec3 transformed_normal;
-// Incoming tangent
-layout(location = 3) in vec3 tangent;
-// Incoming binormal
-layout(location = 4) in vec3 binormal;
+uniform float moveFacotr;
+uniform vec3 lightColour;
+
 // Incoming texture coordinate
-layout(location = 5) in vec2 tex_coord;
+layout(location = 2) in vec2 tex_coord;
+layout(location = 3) in vec3 toCameraVecor;
 // Incoming texture coordinate
-layout(location = 6) in vec2 tex_coord_Two;
+layout(location = 5) in vec4 clipSpace;
 
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
 
-void main() {
-  // *********************************
-  // Calculate view direction
-  vec3 view_dir = normalize(eye_pos-vertex_position);
-  // Sample texture
-  vec4 tex_colour = texture(tex, tex_coord*0.1);
+void main() 
+{	
 
-  // Using normal mapping
-   vec3 pNormal = calc_normal(transformed_normal, tangent, binormal, normal_map, tex_coord*0.1)*0.7;
-   pNormal += calc_normal(transformed_normal, tangent, binormal, normal_map_Two, tex_coord_Two*0.1)*0.3;
+	// Get the screen space by diving by w. Divide by 2 and add 0.5 to move the origin of the texture down in the left corner
+	vec2 ndc = (clipSpace.xy/clipSpace.w)/2.0 + 0.5;
+	
+	// Refraction texture coordinates
+	vec2 refractionTexCoords = vec2(ndc.x, ndc.y);
 
-  // Calculate directional light colour
-  colour = calculate_direction(light, mat, pNormal, view_dir, tex_colour);
-  
-  // Sum point light
-  colour += calculate_point(pointLight, mat, vertex_position, pNormal, view_dir, tex_colour);
-  
-  // Sum spot lights
-  for(int i=0;i<5;i++)
-  {
-	colour += calculate_spot(spots[i], mat, vertex_position, pNormal, view_dir, tex_colour);
-  }
-  colour.a = 0.7;
-  // *********************************
+	// Sample the refraction texture
+	vec4 refractionColour = texture(refractionTexture, refractionTexCoords);
+	
+	// The reflection is just water colour
+	vec4 reflectionColour = vec4(0.25, 0.64, 0.87, 1.0);
+	
+	// Mix the two colours
+	colour = mix(reflectionColour, refractionColour, 0.5);
 }

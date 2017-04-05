@@ -55,6 +55,7 @@ double velocity = 0;
 frame_buffer frame;
 frame_buffer temp_frame;
 frame_buffer frames[2];
+frame_buffer refractionBuffer;
 unsigned int current_frame = 0;
 geometry screen_quad; 
 geometry screen_quad_edge;
@@ -71,6 +72,8 @@ mesh waterMesh;
 
 vec2 uv_scroll;
 vec2 uv_scroll_Two;
+
+int waterLevel = 10;
 
 const int eggsNumber = 800;
 
@@ -113,7 +116,7 @@ bool load_content() {
 	createHierarchicalMeshes();
 
 	//Water
-	createWater();
+	createWater(waterLevel);
 
 	// Skybox  
 	skybox = mesh(geometry_builder::create_box());
@@ -155,7 +158,7 @@ bool load_content() {
 
 // Update every frame
 bool update(float delta_time) {
-	
+	cout << 1.0 / delta_time << endl;
 	uv_scroll += vec2(0, delta_time);
 	uv_scroll_Two += vec2(delta_time*2.0, delta_time); 
 
@@ -229,11 +232,24 @@ bool render() {
 	// Render hierarchical meshes
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
-  
-	//renderWater(uv_scroll, uv_scroll_Two);
-	renderWaterEggs();
-	 
-	renderTerrain();
+  	
+	// Enable clippping plane
+	glEnable(GL_CLIP_DISTANCE0);
+	// Render to the refraction frame buffer
+	renderer::set_render_target(refractionBuffer);
+	renderer::clear();
+
+	renderWaterEggs(vec4(0, -1, 0, waterLevel)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is poiting downwards)
+	renderTerrain(vec4(0, -1, 0, waterLevel)); // Clip everything above the water
+
+	// Disable the clipping plane
+	glDisable(GL_CLIP_DISTANCE0);
+
+	// Render the whole scene to the usual frame buffer
+	renderer::set_render_target(frame);
+	renderWaterEggs(vec4(0, -1, 0, 1000000)); // Don't clip anything in the range of the scene
+	renderTerrain(vec4(0, -1, 0, 1000000)); // Don't clip anything in the range of the scene
+	renderWater(refractionBuffer.get_frame(), refractionBuffer.get_depth());
 
 	if (wireFrame == 1) 
 	{

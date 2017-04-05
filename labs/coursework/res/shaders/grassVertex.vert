@@ -6,6 +6,8 @@ uniform mat4 M;
 uniform mat4 MVP;
 // Normal matrix
 uniform mat3 N;
+// Clipping plane
+uniform vec4 plane;
 
 // Incoming position
 layout(location = 0) in vec3 position;
@@ -33,17 +35,20 @@ layout(location = 5) out vec2 tex_coord_out;
 uniform vec3 offsets[800];
 
 void main() 
-{
+{	
 	vec3 offset = offsets[gl_InstanceID];
-  // Calculate screen position
-  gl_Position = MVP * vec4(position+offset, 1.0);
+	// Calculate screen position
+	gl_Position = MVP * vec4(position+offset, 1.0);
   
-  // Output other values to fragment shader
-  vertex_position = (M*vec4(position+offset,1.0f)).xyz;
-  transformed_normal = N * normal;
-  // Transform tangent
-  tangent_out = N * tangent;
-  // Transform binormal
-  binormal_out = N * binormal;  
-  tex_coord_out = tex_coord_in;
+	// Output other values to fragment shader
+	vertex_position = (M*vec4(position+offset,1.0f)).xyz;
+	transformed_normal = N * normal;
+	// Transform tangent
+	tangent_out = N * tangent;
+	// Transform binormal
+	binormal_out = N * binormal;  
+	tex_coord_out = tex_coord_in;
+
+	// Clipping
+	gl_ClipDistance[0] = dot(vec4(vertex_position,1.0), plane);
 }
