@@ -355,32 +355,55 @@ void renderModified(const geometry &geom, int eggsNumber) throw(...)
 	}
 }
 
-void renderGrass() 
+void renderWaterEggs() 
 {
-	default_random_engine e;
-	uniform_real_distribution<float> dist(-1, 1);
-	float m = dist(e);
-
-	glDisable(GL_CULL_FACE);
-	// Bind effect 
+	// Bing effect
 	renderer::bind(grass_eff);
-		// Normal matrix
-		auto N = grassMesh.get_transform().get_normal_matrix();
-		// Create MVP matrix
-		auto M = grassMesh.get_transform().get_transform_matrix();
-		auto V = cams[cameraIndex]->get_view();
-		auto P = cams[cameraIndex]->get_projection();
-		auto MVP = P * V * M;
 
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(grass_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-		glUniform1f(grass_eff.get_uniform_location("m"), m);
-		glUniform3fv(grass_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
+	// Bind lights
+	renderer::bind(dirLight, "light");
+	renderer::bind(pointLight, "pointLight");
+	renderer::bind(spots, "spots");
 
-		// Render geometry
-		renderModified(grassMesh.get_geometry(), eggsNumber);
-		//renderer::render(grassMesh);
-		glEnable(GL_CULL_FACE);
+	// Normal matrix
+	auto N = normalMapMeshes["sphereLeft"].get_transform().get_normal_matrix();
+	// Create MVP matrix
+	auto M = normalMapMeshes["sphereLeft"].get_transform().get_transform_matrix();
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto MVP = P * V * M;
+
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(grass_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+
+	// Set M matrix uniform
+	glUniformMatrix4fv(grass_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+
+	// Set N matrix uniform
+	glUniformMatrix3fv(grass_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+
+	// Bind material
+	renderer::bind(normalMapMeshes["sphereLeft"].get_material(), "mat");
+	
+	// Bind texture
+	renderer::bind(textures["dragonEgg"], 0);
+	
+	// Bind normal map
+	renderer::bind(normal_maps["sphereLeft"], 1);
+	
+	// Set the texture uniform value
+	glUniform1i(grass_eff.get_uniform_location("tex"), 0);
+	
+	// Set the normal_map uniform value
+	glUniform1i(grass_eff.get_uniform_location("normal_map"), 1);
+	
+	// Set the viewer position uniform value
+	glUniform3fv(grass_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+	
+	glUniform3fv(grass_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
+	
+	// Render geometry
+	renderModified(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
 }
 
 void renderWater(vec2 uv_scroll, vec2 uv_scroll_Two)

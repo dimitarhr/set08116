@@ -58,7 +58,9 @@ void setShaders()
 	/*GRASS*/
 	// Load in shaders
 	grass_eff.add_shader("shaders/grassVertex.vert", GL_VERTEX_SHADER);
-	grass_eff.add_shader("shaders/grassFrag.frag", GL_FRAGMENT_SHADER);
+	//grass_eff.add_shader("shaders/grassFrag.frag", GL_FRAGMENT_SHADER);
+	vector<string> frag_shaders_instrances{ "shaders/shaderNormalMapping.frag", "shaders/part_direction.frag", "shaders/part_spot.frag", "shaders/part_point.frag", "shaders/part_normal_map.frag" };
+	grass_eff.add_shader(frag_shaders_instrances, GL_FRAGMENT_SHADER);
 
 	/*WATER*/
 	// Load in shaders

@@ -29,45 +29,30 @@ void setFrameBuffers()
 	screen_quad.set_type(GL_TRIANGLE_STRIP);
 }
 
-void createGrass(const texture &height_map, float height_scale)
+void createGrass()
 {
-
-	// Extract the texture data from the image
-	glBindTexture(GL_TEXTURE_2D, height_map.get_id());
-	auto data = new vec4[height_map.get_width() * height_map.get_height()];
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, (void *)data);
-
-	geometry grassGeom; 
-	grassGeom.set_type(GL_TRIANGLE_STRIP);
-	// Positions
-	vector<vec3> grassPositions{ vec3(0.0f, -1.0f, 0.0f), vec3(0.05f, -1.0f, 0.0f), vec3(0.2f, 1.0f, 0.0f) , vec3(0.21f, 1.0f, 0.0f) };
-	// Colours
-	vector<vec4> grassColours{ vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f) };
-	// Add to the geometry
-	grassGeom.add_buffer(grassPositions, BUFFER_INDEXES::POSITION_BUFFER);
-	grassGeom.add_buffer(grassColours, BUFFER_INDEXES::COLOUR_BUFFER);
-	grassMesh = mesh(grassGeom);
-	grassMesh.get_transform().position = vec3(0);
+	float minXZ = -400;
+	float maxXZ = 400;
+	float minY = 0;
+	float maxY = 3;
 	//grassMesh.get_transform().translate(vec3(0, 40, 10));
 	// Allows creation of random points.  Note range
-	default_random_engine e;
-	uniform_real_distribution<float> dist(60, 90);
+	default_random_engine randomNumber;
+	uniform_real_distribution<float> distXZ(minXZ, maxXZ);
+	uniform_real_distribution<float> distY(minY, maxY);
 
 	// INSTANCED ARRAY
 	// Randomly generate points
-	/*for (auto i = 0; i < maxGrass; ++i)
-		offsetArray[i] = (vec3(dist(e), getHeight(dist(e), dist(e)), dist(e)));*/
-	int randomNumberX; 
-	int randomNumberZ;
+	float randomNumberX;
+	float randomNumberY;
+	float randomNumberZ;
 	for (auto i = 0; i < eggsNumber; ++i) {
-		randomNumberX = dist(e);  
-		randomNumberZ = dist(e);
-		//randomNumber = 1;
-		float yPos = data[(randomNumberZ * height_map.get_width()) + randomNumberX].y * height_scale;
-		offsetArray[i] = (vec3((randomNumberX-64)*6.2, yPos, (randomNumberZ-64)*6.2));
+		randomNumberX = distXZ(randomNumber);
+		randomNumberY = distY(randomNumber);
+		randomNumberZ = distXZ(randomNumber);
+
+		offsetArray[i] = (vec3(randomNumberX, randomNumberY-30, randomNumberZ));
 	}
-	// Delete data 
-	delete[] data;
 }
 
 void createWater()

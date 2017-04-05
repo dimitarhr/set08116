@@ -95,7 +95,7 @@ bool initialise() {
 bool load_content() {  
 	     
 	/*GRASS*/
-	//createGrass(height_map, 100);
+	createGrass();
 
 	setFrameBuffers();
 
@@ -231,7 +231,7 @@ bool render() {
 	renderHierarchicalMeshes();
   
 	renderWater(uv_scroll, uv_scroll_Two);
-	//renderGrass(); 
+	renderWaterEggs();
 	 
 	renderTerrain();
 
