@@ -230,7 +230,7 @@ bool render() {
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
   
-	renderWater(uv_scroll, uv_scroll_Two);
+	//renderWater(uv_scroll, uv_scroll_Two);
 	renderWaterEggs();
 	 
 	renderTerrain();
