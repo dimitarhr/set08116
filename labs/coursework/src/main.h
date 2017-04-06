@@ -64,3 +64,4 @@ extern mesh grassMesh;
 extern const int eggsNumber;
 extern std::array<vec3, 800>offsetArray;
 extern mesh waterMesh;
+extern float moveFactor;

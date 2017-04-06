@@ -68,16 +68,16 @@ void setFreeCamera(float delta_time)
 
 	// Use keyboard to move the camera
 	if (glfwGetKey(renderer::get_window(), 'W')) {
-		pos += vec3(0.0f, 0.0f, 20.0f) * delta_time;
+		pos += vec3(0.0f, 0.0f, 40.0f) * delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'S')) {
-		pos -= vec3(0.0f, 0.0f, 20.0f) * delta_time;
+		pos -= vec3(0.0f, 0.0f, 40.0f) * delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'A')) {
-		pos -= vec3(20.0f, 0.0f, 0.0f) * delta_time;
+		pos -= vec3(40.0f, 0.0f, 0.0f) * delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'D')) {
-		pos += vec3(20.0f, 0.0f, 0.0f) * delta_time;
+		pos += vec3(40.0f, 0.0f, 0.0f) * delta_time;
 	}
 
 	// Move camera

@@ -441,8 +441,7 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	// Bind texture
 	renderer::bind(textures["water"], 0);
 
-	// Bind normal map
-	renderer::bind(normal_maps["water"], 1);
+
 
 	// Bind normal map
 	renderer::bind(normal_maps["waterTwo"], 2); 
@@ -451,7 +450,7 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	glUniform1i(water_eff.get_uniform_location("tex"), 0);
 
 	// Set the normal_map uniform value
-	glUniform1i(water_eff.get_uniform_location("normal_map"), 1);
+
 
 	// Set the normal_map uniform value
 	glUniform1i(water_eff.get_uniform_location("normal_map_Two"), 2); 
@@ -462,6 +461,16 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	/*REFRACTION TEXTURE*/
 	renderer::bind(refractionTexture, 3);
 	glUniform1i(water_eff.get_uniform_location("refractionTexture"), 3);
+	//DuDv Map
+	renderer::bind(textures["waterDuDvMap"], 4); 
+	glUniform1i(water_eff.get_uniform_location("dudvMap"), 4);
+	//Move factor
+	glUniform1f(water_eff.get_uniform_location("moveFactor"), moveFactor);
+	// Camera position
+	glUniform3fv(water_eff.get_uniform_location("cameraPostion"), 1, value_ptr(cams[cameraIndex]->get_position()));
+	// Bind normal map
+	renderer::bind(normal_maps["water"], 1);
+	glUniform1i(water_eff.get_uniform_location("normal_map"), 1);
 
 	// Render geometry
 	renderer::render(waterMesh);

@@ -72,8 +72,9 @@ mesh waterMesh;
 
 vec2 uv_scroll;
 vec2 uv_scroll_Two;
-
+ 
 int waterLevel = 10;
+float moveFactor = 0.0;
 
 const int eggsNumber = 800;
 
@@ -233,13 +234,14 @@ bool render() {
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
   	
+	/*REFRACTION*/
 	// Enable clippping plane
 	glEnable(GL_CLIP_DISTANCE0);
 	// Render to the refraction frame buffer
 	renderer::set_render_target(refractionBuffer);
 	renderer::clear();
 
-	renderWaterEggs(vec4(0, -1, 0, waterLevel)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is poiting downwards)
+	renderWaterEggs(vec4(0, -1, 0, waterLevel)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is pointing downwards)
 	renderTerrain(vec4(0, -1, 0, waterLevel)); // Clip everything above the water
 
 	// Disable the clipping plane

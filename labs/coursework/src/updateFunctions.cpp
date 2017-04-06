@@ -40,6 +40,9 @@ void updateMeshesTransformations(float delta_time)
 	// Levitating egg and protectors
 	normalMapMeshes["dragonEgg"].get_transform().position = vec3(35.0f, 67.0f, -30.0f) + levitatingRange;
 	hierarchicalMesh[0].get_transform().position = vec3(35.0f, 67.0f, -30.0f) + levitatingRange;
+
+	// Move the water
+	moveFactor += delta_time/15.0;
 }
 
 void checkPressedButton()

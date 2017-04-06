@@ -17,7 +17,7 @@ layout(location = 10) in vec2 tex_coord_in;
 
 
 // Outgoing texture coordinate
-layout(location = 2) out vec2 tex_coord_out;
+layout(location = 2) out vec2 tex_coord;
 layout(location = 3) out vec3 toCameraVector;
 layout(location = 5) out vec4 clipSpace;
 
@@ -31,7 +31,8 @@ void main()
   // Output other values to fragment shader
   vec4 worldPosition = (M*vec4(position,1.0f));
   
-  tex_coord_out = tex_coord_in * 0.1;
+  tex_coord = tex_coord_in * 0.06;
 
+  // Vector pointing towards the camera
   toCameraVector = cameraPostion - worldPosition.xyz;
 }

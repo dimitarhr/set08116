@@ -63,10 +63,12 @@ uniform vec3 eye_pos;
 uniform sampler2D tex;
 // Normal map to sample from
 uniform sampler2D refractionTexture;
+// DuDv map used for distortion of the water
+// Every pixel is red or green which can be represented as a 2D vector. It is used to add distortion to the water
 uniform sampler2D dudvMap;
 uniform sampler2D depthMap;
 uniform sampler2D normal_map;
-uniform float moveFacotr;
+uniform float moveFactor;
 uniform vec3 lightColour;
 
 // Incoming texture coordinate
@@ -79,6 +81,11 @@ layout(location = 5) in vec4 clipSpace;
 // Outgoing colour
 layout(location = 0) out vec4 colour;
 
+// Strength of the distortion
+const float waveStrength = 0.02;
+const float shineDamper = 20.0;
+const float reflectivity = 0.1;
+
 void main() 
 {	
 
@@ -88,12 +95,45 @@ void main()
 	// Refraction texture coordinates
 	vec2 refractionTexCoords = vec2(ndc.x, ndc.y);
 
+	// Distortion
+	// The distortion is stored in the Red and Green values
+	// * 2.0 - 1.0 -> Convert them to be between -1 and 1 to be more realistic
+	vec2 distortedTexCoords = texture(dudvMap, vec2(tex_coord.x + moveFactor, tex_coord.y)).rg*0.5;
+	distortedTexCoords = tex_coord + vec2(distortedTexCoords.x, distortedTexCoords.y+moveFactor);
+	vec2 totalDistortion = (texture(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * waveStrength;
+
+	// Add the distortion to the Refraction texture coordinates
+	refractionTexCoords += totalDistortion;
+	refractionTexCoords = clamp(refractionTexCoords, 0.001, 0.999); // The texture coordinates shouldn't go neither too high or too low
+
 	// Sample the refraction texture
 	vec4 refractionColour = texture(refractionTexture, refractionTexCoords);
+
+	// View vector
+	vec3 viewVector = normalize(toCameraVecor);
+
+	// Fresnel effect
+	// We assume that the water normal is pointing straight upwards
+	float refractiveFactor = dot(viewVector, vec3(0.0, 1.0, 0.0));
+	// Makes the water a bit less transparent
+	refractiveFactor = pow(refractiveFactor, 0.5);
 	
 	// The reflection is just water colour
 	vec4 reflectionColour = vec4(0.25, 0.64, 0.87, 1.0);
+
+	// Sampling the normal map
+	vec4 normalMapColour = texture(normal_map, distortedTexCoords);
+	vec3 normal = vec3(normalMapColour.r * 2.0 - 1.0, normalMapColour.b, normalMapColour.g * 2.0 - 1.0);
+	normal = normalize(normal);
+
+	// Light calculations
+	vec3 reflectedLight = reflect(normalize(light.light_dir), normal);
+	float specular = max(dot(reflectedLight, viewVector), 0.0);
+	specular = pow(specular, shineDamper);
+	vec3 specularHighlights = lightColour * specular * reflectivity;
 	
 	// Mix the two colours
-	colour = mix(reflectionColour, refractionColour, 0.5);
+	colour = mix(reflectionColour, refractionColour, refractiveFactor);
+	colour = mix(colour, vec4(0.6f, 0.37f, 0.33f, 1.0f), 0.5) + vec4(specularHighlights, 0.0); // Add the light effect to the final colour
+	colour.a = 1.0;
 }
