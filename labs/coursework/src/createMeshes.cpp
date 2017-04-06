@@ -42,8 +42,8 @@ void setFrameBuffers()
 void RandomEggsPostions()
 {
 	// Range for the eggs positions
-	float minXZ = -400;
-	float maxXZ = 400;
+	float minXZ = -350;
+	float maxXZ = 350;
 	float minY = 0;
 	float maxY = 3;
 	// Allows creation of random points.  Note range
