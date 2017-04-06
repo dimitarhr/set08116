@@ -94,69 +94,69 @@ void checkPressedButton()
 	if (state == GLFW_PRESS)
 	{
 		cams[cameraIndex]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
-		screenMode = 1;
+		effects["screenMode"] = 1;
 	}
 
 	// Zoom out
 	else
 	{
 		cams[cameraIndex]->set_projection(quarter_pi<float>(), renderer::get_screen_aspect(), 0.1f, 1000.0f);
-		screenMode = 0;
+		effects["screenMode"] = 0;
 	}
 
 	// Edge detection ON
 	if (glfwGetKey(renderer::get_window(), 'E'))
 	{
-		if (sepia != 1 && motionBlur != 1)
+		if (effects["sepia"] != 1 && effects["motionBlur"] != 1)
 		{
-			edgeDetection = 1;
+			effects["edgeDetection"] = 1;
 		}
 	}
 
 	// Edge detection OFF
 	if (glfwGetKey(renderer::get_window(), 'R'))
 	{
-		edgeDetection = 0;
+		effects["edgeDetection"] = 0;
 	}
 
 	// Sepia ON
 	if (glfwGetKey(renderer::get_window(), 'Z'))
 	{
-		if (edgeDetection != 1 && motionBlur != 1)
+		if (effects["edgeDetection"] != 1 && effects["motionBlur"] != 1)
 		{
-			sepia = 1;
+			effects["sepia"] = 1;
 		}
 	}
 
 	// Sepia OFF
 	if (glfwGetKey(renderer::get_window(), 'X'))
 	{
-		sepia = 0;
+		effects["sepia"] = 0;
 	}
 	// Motion Blur ON
 	if (glfwGetKey(renderer::get_window(), 'M'))
 	{
-		if (edgeDetection != 1 && sepia != 1)
+		if (effects["edgeDetection"] != 1 && effects["sepia"] != 1)
 		{
-			motionBlur = 1;
+			effects["motionBlur"] = 1;
 		}
 	}
 
 	// Motion Blur OFF
 	if (glfwGetKey(renderer::get_window(), 'N'))
 	{
-		motionBlur = 0;
+		effects["motionBlur"] = 0;
 	}
 
 	// Wireframe ON
 	if (glfwGetKey(renderer::get_window(), 'H'))
 	{
-		wireFrame = 1;
+		effects["wireFrame"] = 1;
 	}
 
 	// Wireframe OFF
 	if (glfwGetKey(renderer::get_window(), 'G'))
 	{
-		wireFrame = 0;
+		effects["wireFrame"] = 0;
 	}
 }

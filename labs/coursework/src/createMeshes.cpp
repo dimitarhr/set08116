@@ -14,32 +14,38 @@ using namespace glm;
 
 void setFrameBuffers()
 {
+	// Set post-processing effects
+	effects["screenMode"] = 0;
+	effects["edgeDetection"] = 0;
+	effects["sepia"] = 0;
+	effects["motionBlur"] = 0;
+	effects["wireFrame"] = 0;
+
 	// Create 2 frame buffers - use screen width and height
-	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	blurFrames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	blurFrames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	
 	// Refraction buffer used for the water
-	refractionBuffer = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frameBuffers["refractionBuffer"] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	
-	// Create frame buffer - use screen width and height
-	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-	temp_frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frameBuffers["mainFrame"] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frameBuffers["temp_frame"] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	
 	// Create screen quad
 	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f) };
 	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
-	// *********************************
 	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 	screen_quad.set_type(GL_TRIANGLE_STRIP);
 }
 
-void createGrass()
+void RandomEggsPostions()
 {
+	// Range for the eggs positions
 	float minXZ = -400;
 	float maxXZ = 400;
 	float minY = 0;
 	float maxY = 3;
-	//grassMesh.get_transform().translate(vec3(0, 40, 10));
 	// Allows creation of random points.  Note range
 	default_random_engine randomNumber;
 	uniform_real_distribution<float> distXZ(minXZ, maxXZ);
@@ -50,7 +56,8 @@ void createGrass()
 	float randomNumberX;
 	float randomNumberY;
 	float randomNumberZ;
-	for (auto i = 0; i < eggsNumber; ++i) {
+	for (auto i = 0; i < eggsNumber; ++i)
+	{
 		randomNumberX = distXZ(randomNumber);
 		randomNumberY = distY(randomNumber);
 		randomNumberZ = distXZ(randomNumber);
@@ -61,8 +68,7 @@ void createGrass()
 
 void createWater(int waterLevel)
 {
-	waterMesh = mesh(geometry_builder::create_plane(800,800)); 
-	//waterMesh.get_transform().scale = vec3(500);  
+	waterMesh = mesh(geometry_builder::create_plane(800,800));  
 	waterMesh.get_transform().translate(vec3(0.0f, waterLevel, 0.0f));
 }
 
@@ -86,7 +92,6 @@ void createNormalMapMeshes()
 	normalMapMeshes["smallStickBoxBack"].get_transform().translate(vec3(31.0f, 34.0f, 0.0f));
 	normalMapMeshes["smallStickBoxFront"].get_transform().translate(vec3(27.0f, 36.5f, 25.0f));
 	normalMapMeshes["sphereLeft"].get_transform().translate(vec3(25.0f, 36.0f, 17.0f));
-	//normalMapMeshes["sphereLeft"].get_transform().translate(vec3(0.0f, 0.0f, 0.0f));
 	normalMapMeshes["dragonEgg"].get_transform().translate(vec3(35.0f, 47.0f, -30.0f));
 }
 
@@ -127,7 +132,6 @@ void createShadowMeshes()
 	// Create meshes
 	shadow_geom["shadowWall"] = mesh(geometry_builder::create_box(vec3(3, 15, 96)));
 	shadow_geom["miniWall"] = mesh(geometry_builder::create_box(vec3(1, 7, 10)));
-	//shadow_geom["floorPlane"] = mesh(geometry_builder::create_plane(8,100,true));
 	shadow_geom["floorPlane"] = mesh(geometry_builder::create_box(vec3(8, 2, 100)));
 	shadow_geom["stickBoxFront"] = mesh(geometry_builder::create_box(vec3(1.0f, 10.0f, 1.0f)));
 	shadow_geom["bigEgg"] = mesh(geometry_builder::create_sphere(50, 50, vec3(3, 2, 2)));
@@ -137,7 +141,6 @@ void createShadowMeshes()
 	shadow_geom["shadowWall"].get_transform().translate(vec3(-46.5f, 50.5f, 15.0f));
 	shadow_geom["miniWall"].get_transform().translate(vec3(-40.5f, 46.5f, 15.0f));
 	shadow_geom["stickBoxFront"].get_transform().translate(vec3(-40.5f, 48.0f, 35.0f));
-	//shadow_geom["floorPlane"].get_transform().translate(vec3(-46.0f, 43.0f, 65.0f));
 	shadow_geom["floorPlane"].get_transform().translate(vec3(-44.0f, 42.0f, 17.0f));
 	shadow_geom["bigEgg"].get_transform().translate(vec3(-40.5f, 44.5f, 0.0f));
 	shadow_geom["bigEgg"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f));

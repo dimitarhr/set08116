@@ -2,7 +2,6 @@
 
 // Incoming frame data
 uniform sampler2D tex;
-
 // screen width
 uniform float screen_width;
 // screen height
@@ -14,58 +13,58 @@ layout(location = 0) in vec2 tex_coord;
 // Outgoing colour
 layout(location = 0) out vec4 colour;
 
-float threshold(in float thr1, in float thr2 , in float val)
+float checker(in float limitOne, in float limitTwo , in float val)
 {
-	if (val < thr1)
+	if (val < limitOne)
 	{
-		return 0.0;
+		return 0.0; // Set the color component to black
 	}
-	if (val > thr2)
+	if (val > limitTwo)
 	{
-		return 1.0;
+		return 1.0; // Set the colour component to white
 	}
 	return val;
 }
 
-// averaged pixel intensity from 3 color channels
-float avg_intensity(in vec4 pix) 
+// Averaged pixel intensity from 3 colour channels
+float average_intensity(in vec4 fragment) 
 {
-	return (pix.r + pix.g + pix.b)/3.0;
+	return (fragment.r + fragment.g + fragment.b)/3.0;
 }
 
-vec4 get_pixel(in vec2 coords, in float dx, in float dy)
+vec4 get_fragment(in vec2 coords, in float dx, in float dy)
 {
 	return texture2D(tex,coords + vec2(dx, dy));
 }
 
-// returns pixel color
-float IsEdge(in vec2 coords)
+// returns fragment color
+float detectEdge(in vec2 coords)
 {
-	float dxtex = 1.0 / screen_width /*image width*/;
-	float dytex = 1.0 / screen_height /*image height*/;
-	float pix[9];
+	float dxtex = 1.0 / screen_width /*inverted image width*/;
+	float dytex = 1.0 / screen_height /*inverted image height*/;
+	float fragment[9];
 	int k = 0;
 	float delta;
 
-	// read neighboring pixel intensities
+	// read neighboring fragment intensities
 	for (int i=-1; i<2; i++) 
 	{
 		for(int j=-1; j<2; j++) 
 		{
-			pix[k] = avg_intensity(get_pixel(coords,float(i)*dxtex, float(j)*dytex));
+			fragment[k] = average_intensity(get_fragment(coords,float(i)*dxtex, float(j)*dytex));
 			k++;
 		}
 	}
 
-	// average color differences around neighboring pixels
-	delta = (abs(pix[1]-pix[7]) + abs(pix[5]-pix[3]) + abs(pix[0]-pix[8]) + abs(pix[2]-pix[6])) / 4.0;
+	// average color differences around neighboring fragment
+	delta = (abs(fragment[1]-fragment[7]) + abs(fragment[5]-fragment[3]) + abs(fragment[0]-fragment[8]) + abs(fragment[2]-fragment[6])) / 4.0;
 
-	return threshold(0.1,0.4,clamp(1.8*delta,0.0,1.0));
+	return checker(0.1,0.4,clamp(1.8*delta,0.0,1.0));
 }
 
 void main()
 {
 	vec4 color = vec4(0.0,0.0,0.0,1.0);
-	color.b = IsEdge(tex_coord);
+	color.b = detectEdge(tex_coord);
 	colour = color;
 }

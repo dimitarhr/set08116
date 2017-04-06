@@ -14,20 +14,23 @@ struct directional_light {
 
 // Directional light information
 uniform directional_light light;
+
 // Normal map to sample from
 uniform sampler2D refractionTexture;
+
 // DuDv map used for distortion of the water
 // Every pixel is red or green which can be represented as a 2D vector. It is used to add distortion to the water
 uniform sampler2D dudvMap;
-uniform sampler2D depthMap;
-uniform sampler2D normal_map;
-uniform float moveFactor;
-uniform vec3 lightColour;
 
-// Incoming texture coordinate
+uniform sampler2D depthMap;
+
+uniform sampler2D normal_map;
+
+uniform float moveFactor;
+
+// Incoming data
 layout(location = 2) in vec2 tex_coord;
 layout(location = 3) in vec3 toCameraVecor;
-// Incoming texture coordinate
 layout(location = 5) in vec4 clipSpace;
 
 
@@ -36,6 +39,7 @@ layout(location = 0) out vec4 colour;
 
 // Strength of the distortion
 const float waveStrength = 0.02;
+// Light characteristics
 const float shineDamper = 20.0;
 const float reflectivity = 0.3;
 

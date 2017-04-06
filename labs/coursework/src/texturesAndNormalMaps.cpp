@@ -27,13 +27,13 @@ void loadTexturesAndNormalMaps()
 	textures["stickBoxSupport"] = texture("textures/mossy_rock.jpg", true, true);
 	textures["water"] = texture("textures/water.jpg", true, true);
 	textures["waterDuDvMap"] = texture("textures/waterDUDV.png", true, true);
+	textures["binocularMask"] = texture("textures/happymask.png", true, true);
+	textures["whiteScreen"] = texture("textures/whitescreen.jpg", true, true);
 	normal_maps["earth"] = texture("textures/earth_normalmap.jpg", true, true);
 	normal_maps["floorPlane"] = texture("textures/sand_normal-map.jpg", true, true);
 	normal_maps["surroundings"] = texture("textures/brick_normalmap.jpg", true, true);
 	normal_maps["sphereLeft"] = texture("textures/buble_normal_map.jpg", true, true);
 	normal_maps["dragonEgg"] = texture("textures/buble_normal_map.jpg", true, true);
-	alpha_map = texture("textures/happymask.png");
-	originalMap = texture("textures/whitescreen.jpg");
 	normal_maps["water"] = texture("textures/water_normal_map.png", true, true);
 	normal_maps["waterTwo"] = texture("textures/water_normal_Two.jpg", true, true);
 	terrainTex[0] = texture("textures/sand.jpg");

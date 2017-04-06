@@ -12,7 +12,8 @@ layout(location = 0) in vec2 tex_coord;
 // Outgoing colour
 layout(location = 0) out vec4 colour;
 
-void main() {
+void main() 
+{
   // *********************************
   // Sample texture colour
   vec4 tex_color = texture(tex, tex_coord);

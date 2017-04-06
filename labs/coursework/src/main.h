@@ -9,7 +9,7 @@ using namespace glm;
 
 /*GLOBAL VARIABLES*/
 // Effects
-extern effect basicEff, normalMappingEff, shadows_eff, sky_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff, water_eff;
+extern effect basicEff, normalMappingEff, shadows_eff, sky_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, waterEggs_eff, water_eff;
 
 // Meshes
 extern map<string, mesh> normalMapMeshes, basicMeshes, shadow_geom;
@@ -36,31 +36,24 @@ extern double velocity;
 // Textures and Normal maps
 extern map<string, texture> textures, normal_maps;
 
-extern texture alpha_map;
-extern texture originalMap;
-
 // Shadow map
 extern shadow_map shadowMap;
 
 // Cube map
 extern cubemap cube_map;
 
-extern frame_buffer frame;
-extern frame_buffer temp_frame;
-extern geometry screen_quad;
-extern int screenMode;
-extern int edgeDetection;
-extern int sepia;
-extern int motionBlur;
-extern int wireFrame;
+// Frame buffers
+extern map<string, frame_buffer> frameBuffers;
 
-extern frame_buffer frames[2];
-extern frame_buffer refractionBuffer;
+// Post processing effects
+extern map<string, int> effects;
+
+extern geometry screen_quad;
+extern frame_buffer blurFrames[2];
 extern unsigned int current_frame;
 extern texture terrainTex[4];
 extern mesh terrainMesh;
 
-extern mesh grassMesh;
 extern const int eggsNumber;
 extern std::array<vec3, 800>offsetArray;
 extern mesh waterMesh;

@@ -2,21 +2,18 @@
 
 // Model transformation matrix
 uniform mat4 M;
+
 // Transformation matrix
 uniform mat4 MVP;
-// Normal matrix
-uniform vec2 UV_SCROLL;
-uniform vec2 UV_SCROLL_TWO;
-uniform vec3 cameraPostion;
-uniform vec3 lightPosition;
 
-// Incoming position
+uniform vec3 cameraPostion;
+
+// Incoming data
 layout(location = 0) in vec3 position;
-// Incoming texture coordinate
 layout(location = 10) in vec2 tex_coord_in;
 
 
-// Outgoing texture coordinate
+// Outgoing data
 layout(location = 2) out vec2 tex_coord;
 layout(location = 3) out vec3 toCameraVector;
 layout(location = 5) out vec4 clipSpace;

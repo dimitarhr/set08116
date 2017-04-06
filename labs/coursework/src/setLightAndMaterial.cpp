@@ -86,7 +86,6 @@ void setMeshesMaterial()
 	// Floor
 	objectMaterial.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	objectMaterial.set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	//normalMapMeshes["floorPlane"].set_material(objectMaterial);
 	shadow_geom["floorPlane"].set_material(objectMaterial);
 
 	// Earth and Moon
@@ -128,7 +127,7 @@ void setMeshesMaterial()
 	normalMapMeshes["smallStickBoxFront"].set_material(objectMaterial);
 	normalMapMeshes["sphereLeft"].set_material(objectMaterial);
 	waterMesh.set_material(objectMaterial);
-
+	 
 	// Terrain
 	terrainMesh.get_material().set_diffuse(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	terrainMesh.get_material().set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));

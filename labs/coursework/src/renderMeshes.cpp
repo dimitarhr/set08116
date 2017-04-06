@@ -168,7 +168,7 @@ void renderShadowMesh()
 	}
 
 	// Set render target to frame buffer
-	renderer::set_render_target(frame);
+	renderer::set_render_target(frameBuffers["mainFrame"]);
 
 	// Set cull face to back
 	glCullFace(GL_BACK);
@@ -300,12 +300,10 @@ void renderHierarchicalMeshes()
 	}
 }
 
-// Renders a piece of geometry
-void renderModified(const geometry &geom, int eggsNumber) throw(...) 
+// Renders a piece of geometry using instancing
+void renderInstances(const geometry &geom, int eggsNumber) throw(...) 
 {
 	assert(geom.get_array_object() != 0);
-	// Check renderer is running
-	//assert(renderer::_instance->_running);
 	// Bind the vertex array object for the
 	glBindVertexArray(geom.get_array_object());
 	// Check for any OpenGL errors
@@ -358,7 +356,7 @@ void renderModified(const geometry &geom, int eggsNumber) throw(...)
 void renderWaterEggs(vec4 plane) 
 {
 	// Bing effect
-	renderer::bind(grass_eff);
+	renderer::bind(waterEggs_eff);
 
 	// Bind lights
 	renderer::bind(dirLight, "light");
@@ -374,13 +372,13 @@ void renderWaterEggs(vec4 plane)
 	auto MVP = P * V * M;
 
 	// Set MVP matrix uniform
-	glUniformMatrix4fv(grass_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+	glUniformMatrix4fv(waterEggs_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 
 	// Set M matrix uniform
-	glUniformMatrix4fv(grass_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+	glUniformMatrix4fv(waterEggs_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
 
 	// Set N matrix uniform
-	glUniformMatrix3fv(grass_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+	glUniformMatrix3fv(waterEggs_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 	// Bind material
 	renderer::bind(normalMapMeshes["sphereLeft"].get_material(), "mat");
@@ -392,37 +390,34 @@ void renderWaterEggs(vec4 plane)
 	renderer::bind(normal_maps["sphereLeft"], 1);
 	
 	// Set the texture uniform value
-	glUniform1i(grass_eff.get_uniform_location("tex"), 0);
+	glUniform1i(waterEggs_eff.get_uniform_location("tex"), 0);
 	
 	// Set the normal_map uniform value
-	glUniform1i(grass_eff.get_uniform_location("normal_map"), 1);
+	glUniform1i(waterEggs_eff.get_uniform_location("normal_map"), 1);
 	
 	// Set the viewer position uniform value
-	glUniform3fv(grass_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+	glUniform3fv(waterEggs_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
 	
-	glUniform3fv(grass_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
+	glUniform3fv(waterEggs_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
 
-	glUniform4fv(grass_eff.get_uniform_location("plane"), 1, value_ptr(plane));
+	glUniform4fv(waterEggs_eff.get_uniform_location("plane"), 1, value_ptr(plane));
 	
 	// Render geometry
-	renderModified(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
+	renderInstances(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
 }
 
 void renderWater(texture refractionTexture, texture depthTexture)
 {
+	// Enable Alpha blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Bing effect
 	renderer::bind(water_eff);
 
-	// Bind lights
+	// Bind light
 	renderer::bind(dirLight, "light");
-	renderer::bind(pointLight, "pointLight");
-	renderer::bind(spots, "spots");
 
-	// Normal matrix
-	auto N = waterMesh.get_transform().get_normal_matrix();
 	// Create MVP matrix
 	auto M = waterMesh.get_transform().get_transform_matrix();
 	auto V = cams[cameraIndex]->get_view();
@@ -435,35 +430,32 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	// Set M matrix uniform
 	glUniformMatrix4fv(water_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
 
-	// Set N matrix uniform
-	glUniformMatrix3fv(water_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
-
-	// Bind material
-	renderer::bind(waterMesh.get_material(), "mat");
-		
-	// Set the viewer position uniform value
-	glUniform3fv(water_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
-
 	/*REFRACTION TEXTURE*/
-	renderer::bind(refractionTexture, 3);
-	glUniform1i(water_eff.get_uniform_location("refractionTexture"), 3);
+	renderer::bind(refractionTexture, 1);
+	glUniform1i(water_eff.get_uniform_location("refractionTexture"), 1);
+	
 	//DuDv Map
-	renderer::bind(textures["waterDuDvMap"], 4); 
-	glUniform1i(water_eff.get_uniform_location("dudvMap"), 4);
+	renderer::bind(textures["waterDuDvMap"], 2); 
+	glUniform1i(water_eff.get_uniform_location("dudvMap"), 2);
+	
+	// Bind normal map
+	renderer::bind(normal_maps["water"], 3);
+	glUniform1i(water_eff.get_uniform_location("normal_map"), 3);
+
+	// Bind depth map
+	renderer::bind(depthTexture, 4);
+	glUniform1i(water_eff.get_uniform_location("depthMap"), 4);
+
 	//Move factor
 	glUniform1f(water_eff.get_uniform_location("moveFactor"), moveFactor);
+	
 	// Camera position
 	glUniform3fv(water_eff.get_uniform_location("cameraPostion"), 1, value_ptr(cams[cameraIndex]->get_position()));
-	// Bind normal map
-	renderer::bind(normal_maps["water"], 8); 
-	glUniform1i(water_eff.get_uniform_location("normal_map"), 8);
-	// Bind depth map
-	renderer::bind(depthTexture, 9);
-	glUniform1i(water_eff.get_uniform_location("depthMap"), 9);
-
+	
 	// Render geometry
 	renderer::render(waterMesh);
 
+	// Disable Alpha blending
 	glDisable(GL_BLEND);
 }
 
@@ -501,6 +493,7 @@ void renderTerrain(vec4 plane)
 	// Bind Tex[3] to TU 3, set uniform
 	renderer::bind(terrainTex[3], 3);
 	glUniform1i(terrain_eff.get_uniform_location("tex[3]"), 3);
+	// Clipping plane
 	glUniform4fv(terrain_eff.get_uniform_location("plane"), 1, value_ptr(plane));
 	// *********************************
 	// Render terrain
@@ -510,7 +503,7 @@ void renderTerrain(vec4 plane)
 void renderEdges()
 {
 	// Set render target to the edge frame
-	renderer::set_render_target(temp_frame);
+	renderer::set_render_target(frameBuffers["temp_frame"]);
 	// Clear frame
 	renderer::clear();
 	// Bind Tex effect
@@ -519,7 +512,7 @@ void renderEdges()
 	auto MVP = mat4(1);
 	glUniformMatrix4fv(edge_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 	// Bind texture from frame buffer
-	renderer::bind(frame.get_frame(), 1);
+	renderer::bind(frameBuffers["mainFrame"].get_frame(), 1);
 	// Set the tex uniform
 	glUniform1i(edge_eff.get_uniform_location("tex"), 1);
 	// Set inverse width Uniform
@@ -533,7 +526,7 @@ void renderEdges()
 void renderSepia()
 {
 	// Set render target to the edge frame
-	renderer::set_render_target(temp_frame);
+	renderer::set_render_target(frameBuffers["temp_frame"]);
 	// Clear frame
 	renderer::clear();
 	// Bind Tex effect
@@ -543,7 +536,7 @@ void renderSepia()
 	// Set MVP matrix uniform
 	glUniformMatrix4fv(sepia_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 	// Bind texture from frame buffer
-	renderer::bind(frame.get_frame(), 1);
+	renderer::bind(frameBuffers["mainFrame"].get_frame(), 1);
 	// Set the tex uniform
 	glUniform1i(sepia_eff.get_uniform_location("tex"), 1);
 	// Render the screen quad
@@ -553,7 +546,7 @@ void renderSepia()
 void renderMotionBlur()
 {
 	// Set render target to current frame
-	renderer::set_render_target(frames[current_frame]);
+	renderer::set_render_target(blurFrames[current_frame]);
 	// Clear frame
 	renderer::clear();
 	// Bind motion blur effect
@@ -563,9 +556,9 @@ void renderMotionBlur()
 	// Set MVP matrix uniform
 	glUniformMatrix4fv(motion_blur_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 	// Bind tempframe to TU 0.
-	renderer::bind(frame.get_frame(), 0);
+	renderer::bind(frameBuffers["mainFrame"].get_frame(), 0);
 	// Bind frames[(current_frame + 1) % 2] to TU 1.
-	renderer::bind(frames[(current_frame + 1) % 2].get_frame(), 1);
+	renderer::bind(blurFrames[(current_frame + 1) % 2].get_frame(), 1);
 	// Set tex uniforms
 	glUniform1i(motion_blur_eff.get_uniform_location("tex"), 0);
 	glUniform1i(motion_blur_eff.get_uniform_location("previous_frame"), 1);
@@ -585,36 +578,36 @@ void renderMask()
 	auto MVP = mat4(1);
 	// Set MVP matrix uniform
 	glUniformMatrix4fv(mask_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-	if (edgeDetection == 1 || sepia == 1)
+	if (effects["edgeDetection"] == 1 || effects["sepia"] == 1)
 	{
 		// Bind texture from frame buffer to TU 0
-		renderer::bind(temp_frame.get_frame(), 0);
+		renderer::bind(frameBuffers["temp_frame"].get_frame(), 0);
 	}
 	else
 	{
 		// Bind texture from frame buffer to TU 0
-		if (motionBlur == 1)
+		if (effects["motionBlur"] == 1)
 		{
-			renderer::bind(frames[current_frame].get_frame(), 0);
+			renderer::bind(blurFrames[current_frame].get_frame(), 0);
 		}
 		else
 		{
-			renderer::bind(frame.get_frame(), 0);
+			renderer::bind(frameBuffers["mainFrame"].get_frame(), 0);
 		}
 	}
 	// Set the tex uniform, 0
 	glUniform1i(mask_eff.get_uniform_location("tex"), 0);
-	if (screenMode == 0)
+	if (effects["screenMode"] == 0)
 	{
 		// Bind alpha texture to TU, 1
-		renderer::bind(originalMap, 1);
+		renderer::bind(textures["whiteScreen"], 1);
 		// Set the tex uniform, 1
 		glUniform1i(mask_eff.get_uniform_location("alpha_map"), 1);
 	}
 	else
 	{
 		// Bind alpha texture to TU, 1
-		renderer::bind(alpha_map, 1);
+		renderer::bind(textures["binocularMask"], 1);
 		// Set the tex uniform, 1
 		glUniform1i(mask_eff.get_uniform_location("alpha_map"), 1);
 	}

@@ -11,7 +11,7 @@ void createNormalMapMeshes();
 void createBasicMeshes();
 void createShadowMeshes();
 void createHierarchicalMeshes();
-void createGrass();
+void RandomEggsPostions();
 void createWater(int waterLevel);
 void createTerrain();
 void setFrameBuffers();

@@ -24,7 +24,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 /*GLOBAL VARIABLES*/
-effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, grass_eff, water_eff;
+effect basicEff, normalMappingEff, shadows_eff, mask_eff, edge_eff, sepia_eff, motion_blur_eff, terrain_eff, waterEggs_eff, water_eff;
 
 std::array<camera*, 2> cams;
 int cameraIndex = 1;
@@ -36,9 +36,6 @@ map<string, mesh> normalMapMeshes, basicMeshes, shadow_geom;
 std::array<mesh, 5> hierarchicalMesh;
 
 map<string, texture> textures, normal_maps;
-
-texture alpha_map;
-texture originalMap;
 
 directional_light dirLight;
 vector<spot_light> spots(5); 
@@ -52,26 +49,15 @@ double cursor_x = 0.0;
 double cursor_y = 0.0;
 double velocity = 0;
 
-frame_buffer frame;
-frame_buffer temp_frame;
-frame_buffer frames[2];
-frame_buffer refractionBuffer;
+map<string, frame_buffer> frameBuffers;
+frame_buffer blurFrames[2];
 unsigned int current_frame = 0;
 geometry screen_quad; 
-geometry screen_quad_edge;
-int screenMode = 0;
-int edgeDetection = 0; 
-int sepia = 0;
-int motionBlur = 0;
-int wireFrame = 0;
+map<string, int> effects;
 texture terrainTex[4];
 
 mesh terrainMesh;
-mesh grassMesh;
 mesh waterMesh;
-
-vec2 uv_scroll;
-vec2 uv_scroll_Two;
  
 int waterLevel = 10;
 float moveFactor = 0.0;
@@ -82,7 +68,8 @@ const int eggsNumber = 800;
 std::array<vec3, 800>offsetArray;
 
 // Create camera objects and sets the cursor settings
-bool initialise() {
+bool initialise() 
+{
 	cams[0] = new target_camera();
 	cams[1] = new free_camera();
 	// Create shadow map
@@ -98,9 +85,6 @@ bool initialise() {
 // Load content 
 bool load_content() {  
 	     
-	/*GRASS*/
-	createGrass();
-
 	setFrameBuffers();
 
 	/*CREATE MESHES*/
@@ -129,6 +113,9 @@ bool load_content() {
 
 	// Terrain
 	createTerrain();
+
+	// Water eggs postions
+	RandomEggsPostions();
 	
 	/*SET MATERIAL - Defined in 'setLightAndMaterial.cpp'*/ 
 	setMeshesMaterial();
@@ -158,12 +145,11 @@ bool load_content() {
 }
 
 // Update every frame
-bool update(float delta_time) {
+bool update(float delta_time) 
+{
 	cout << 1.0 / delta_time << endl;
-	uv_scroll += vec2(0, delta_time);
-	uv_scroll_Two += vec2(delta_time*2.0, delta_time); 
 
-	// Flip frame 
+	// Flip frame - used for the motion blur
 	current_frame = (current_frame + 1) % 2;
 
 	// Set the correct camera index depending on the pressed button
@@ -208,11 +194,11 @@ bool update(float delta_time) {
 bool render() {
 	
 	// Set render target to frame buffer
-	renderer::set_render_target(frame);
+	renderer::set_render_target(frameBuffers["mainFrame"]);
 	// Clear frame
 	renderer::clear();
 	
-	if (wireFrame == 1)
+	if (effects["wireFrame"] == 1)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
@@ -238,7 +224,7 @@ bool render() {
 	// Enable clippping plane
 	glEnable(GL_CLIP_DISTANCE0);
 	// Render to the refraction frame buffer
-	renderer::set_render_target(refractionBuffer);
+	renderer::set_render_target(frameBuffers["refractionBuffer"]);
 	renderer::clear();
 
 	renderWaterEggs(vec4(0, -1, 0, waterLevel + 1.0f)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is pointing downwards)
@@ -248,28 +234,25 @@ bool render() {
 	glDisable(GL_CLIP_DISTANCE0); 
 
 	// Render the whole scene to the usual frame buffer
-	renderer::set_render_target(frame);
+	renderer::set_render_target(frameBuffers["mainFrame"]);
 	renderWaterEggs(vec4(0, -1, 0, 1000000)); // Don't clip anything in the range of the scene
 	renderTerrain(vec4(0, -1, 0, 1000000)); // Don't clip anything in the range of the scene
-	renderWater(refractionBuffer.get_frame(), refractionBuffer.get_depth());
+	renderWater(frameBuffers["refractionBuffer"].get_frame(), frameBuffers["refractionBuffer"].get_depth());
 
-	if (wireFrame == 1) 
+	if (effects["wireFrame"] == 1)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-	if (edgeDetection == 1)
+	if (effects["edgeDetection"] == 1)
 	{
-		//sepia = 0;
-		//motionBlur = 0;
 		renderEdges();  
 	}
-	if (sepia == 1)
+	if (effects["sepia"] == 1)
 	{
-		//edgeDetection = 0;
 		renderSepia();
 	} 
 
-	if (motionBlur == 1) 
+	if (effects["motionBlur"] == 1)
 	{
 		renderMotionBlur();
 	}
