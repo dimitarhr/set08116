@@ -32,7 +32,7 @@ void setTargetCamera(float delta_time)
 	}
 	if (screenMode == 1)
 	{
-		cams[0]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 2.414f, 1000.0f);
+		cams[0]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
 	}
 	else
 	{
@@ -89,7 +89,7 @@ void setFreeCamera(float delta_time)
 
 	if (screenMode == 1)
 	{
-		cams[1]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 2.414f, 1000.0f);
+		cams[1]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
 	}
 	else
 	{

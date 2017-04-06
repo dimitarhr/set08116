@@ -149,7 +149,7 @@ void checkPressedButton()
 	}
 
 	// Wireframe ON
-	if (glfwGetKey(renderer::get_window(), 'F'))
+	if (glfwGetKey(renderer::get_window(), 'H'))
 	{
 		wireFrame = 1;
 	}

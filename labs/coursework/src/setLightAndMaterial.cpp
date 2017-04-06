@@ -57,7 +57,7 @@ void setDirectLight()
 	dirLight.set_direction(vec3(1.0f, 1.0f, 1.0f));
 }
 
-void setPointLight()
+void setPointLight() 
 {
 	pointLight.set_position(vec3(30, 46, -5));
 	pointLight.set_light_colour(vec4(0.0f, 1.0f, 1.0f, 1.0f));

@@ -410,6 +410,9 @@ void renderWaterEggs(vec4 plane)
 
 void renderWater(texture refractionTexture, texture depthTexture)
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Bing effect
 	renderer::bind(water_eff);
 
@@ -437,23 +440,6 @@ void renderWater(texture refractionTexture, texture depthTexture)
 
 	// Bind material
 	renderer::bind(waterMesh.get_material(), "mat");
-
-	// Bind texture
-	renderer::bind(textures["water"], 0);
-
-
-
-	// Bind normal map
-	renderer::bind(normal_maps["waterTwo"], 2); 
-
-	// Set the texture uniform value
-	glUniform1i(water_eff.get_uniform_location("tex"), 0);
-
-	// Set the normal_map uniform value
-
-
-	// Set the normal_map uniform value
-	glUniform1i(water_eff.get_uniform_location("normal_map_Two"), 2); 
 		
 	// Set the viewer position uniform value
 	glUniform3fv(water_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
@@ -469,11 +455,16 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	// Camera position
 	glUniform3fv(water_eff.get_uniform_location("cameraPostion"), 1, value_ptr(cams[cameraIndex]->get_position()));
 	// Bind normal map
-	renderer::bind(normal_maps["water"], 1);
-	glUniform1i(water_eff.get_uniform_location("normal_map"), 1);
+	renderer::bind(normal_maps["water"], 8); 
+	glUniform1i(water_eff.get_uniform_location("normal_map"), 8);
+	// Bind depth map
+	renderer::bind(depthTexture, 9);
+	glUniform1i(water_eff.get_uniform_location("depthMap"), 9);
 
 	// Render geometry
 	renderer::render(waterMesh);
+
+	glDisable(GL_BLEND);
 }
 
 void renderTerrain(vec4 plane)

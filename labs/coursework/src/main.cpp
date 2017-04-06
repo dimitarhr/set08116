@@ -211,7 +211,7 @@ bool render() {
 	renderer::set_render_target(frame);
 	// Clear frame
 	renderer::clear();
-
+	
 	if (wireFrame == 1)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -234,18 +234,18 @@ bool render() {
 	// Defined in 'renderMeshes.cpp' 
 	renderHierarchicalMeshes();
   	
-	/*REFRACTION*/
+	/*REFRACTION*/ 
 	// Enable clippping plane
 	glEnable(GL_CLIP_DISTANCE0);
 	// Render to the refraction frame buffer
 	renderer::set_render_target(refractionBuffer);
 	renderer::clear();
 
-	renderWaterEggs(vec4(0, -1, 0, waterLevel)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is pointing downwards)
-	renderTerrain(vec4(0, -1, 0, waterLevel)); // Clip everything above the water
+	renderWaterEggs(vec4(0, -1, 0, waterLevel + 1.0f)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is pointing downwards)
+	renderTerrain(vec4(0, -1, 0, waterLevel + 1.0f)); // Clip everything above the water
 
 	// Disable the clipping plane
-	glDisable(GL_CLIP_DISTANCE0);
+	glDisable(GL_CLIP_DISTANCE0); 
 
 	// Render the whole scene to the usual frame buffer
 	renderer::set_render_target(frame);

@@ -12,55 +12,8 @@ struct directional_light {
 };
 #endif
 
-// Point light information
-#ifndef POINT_LIGHT
-#define POINT_LIGHT
-struct point_light {
-  vec4 light_colour;
-  vec3 position;
-  float constant;
-  float linear;
-  float quadratic;
-};
-#endif
-
-// Spot light data
-#ifndef SPOT_LIGHT
-#define SPOT_LIGHT
-struct spot_light {
-  vec4 light_colour;
-  vec3 position;
-  vec3 direction;
-  float constant;
-  float linear;
-  float quadratic;
-  float power;
-};
-#endif
-
-// A material structure
-#ifndef MATERIAL
-#define MATERIAL
-struct material {
-  vec4 emissive;
-  vec4 diffuse_reflection;
-  vec4 specular_reflection;
-  float shininess;
-};
-#endif
-
 // Directional light information
 uniform directional_light light;
-// Point lights being used in the scene
-uniform point_light pointLight;
-// Spot lights being used in the scene
-uniform spot_light spots[5];
-// Material of the object being rendered
-uniform material mat;
-// Position of the eye
-uniform vec3 eye_pos;
-// Texture to sample from
-uniform sampler2D tex;
 // Normal map to sample from
 uniform sampler2D refractionTexture;
 // DuDv map used for distortion of the water
@@ -84,7 +37,7 @@ layout(location = 0) out vec4 colour;
 // Strength of the distortion
 const float waveStrength = 0.02;
 const float shineDamper = 20.0;
-const float reflectivity = 0.1;
+const float reflectivity = 0.3;
 
 void main() 
 {	
@@ -94,6 +47,19 @@ void main()
 	
 	// Refraction texture coordinates
 	vec2 refractionTexCoords = vec2(ndc.x, ndc.y);
+
+	float near = 0.1;
+	float far = 1000.0;
+
+	// Sampling the depth map
+	float depth = texture(depthMap, refractionTexCoords).r; // The depth information is stored in the red component
+
+	float floorDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+	
+	depth = gl_FragCoord.z;
+	float waterDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+
+	float waterDepth = floorDistance - waterDistance;
 
 	// Distortion
 	// The distortion is stored in the Red and Green values
@@ -119,7 +85,7 @@ void main()
 	refractiveFactor = pow(refractiveFactor, 0.5);
 	
 	// The reflection is just water colour
-	vec4 reflectionColour = vec4(0.25, 0.64, 0.87, 1.0);
+	vec4 reflectionColour = vec4(0.25, 0.64, 0.97, 1.0);
 
 	// Sampling the normal map
 	vec4 normalMapColour = texture(normal_map, distortedTexCoords);
@@ -127,13 +93,14 @@ void main()
 	normal = normalize(normal);
 
 	// Light calculations
-	vec3 reflectedLight = reflect(normalize(light.light_dir), normal);
+	vec3 reflectedLight = reflect(normalize(-light.light_dir), normal);
 	float specular = max(dot(reflectedLight, viewVector), 0.0);
 	specular = pow(specular, shineDamper);
-	vec3 specularHighlights = lightColour * specular * reflectivity;
+	vec3 specularHighlights = light.light_colour.rgb * specular * reflectivity * clamp(waterDepth/2.0, 0.5, 1.0);
 	
 	// Mix the two colours
 	colour = mix(reflectionColour, refractionColour, refractiveFactor);
 	colour = mix(colour, vec4(0.6f, 0.37f, 0.33f, 1.0f), 0.5) + vec4(specularHighlights, 0.0); // Add the light effect to the final colour
-	colour.a = 1.0;
+	// The depth value shows how transparent the water is
+	colour.a = clamp(waterDepth/2.0, 0.5, 1.0);
 }
