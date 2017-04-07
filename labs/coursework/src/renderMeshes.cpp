@@ -353,7 +353,7 @@ void renderInstances(const geometry &geom, int eggsNumber) throw(...)
 	}
 }
 
-void renderWaterEggs(vec4 plane) 
+void renderWaterEggs(vec4 plane)
 {
 	// Bing effect
 	renderer::bind(waterEggs_eff);
@@ -382,29 +382,29 @@ void renderWaterEggs(vec4 plane)
 
 	// Bind material
 	renderer::bind(normalMapMeshes["sphereLeft"].get_material(), "mat");
-	
+
 	// Bind texture
 	renderer::bind(textures["dragonEgg"], 0);
-	
+
 	// Bind normal map
 	renderer::bind(normal_maps["sphereLeft"], 1);
-	
+
 	// Set the texture uniform value
 	glUniform1i(waterEggs_eff.get_uniform_location("tex"), 0);
-	
+
 	// Set the normal_map uniform value
 	glUniform1i(waterEggs_eff.get_uniform_location("normal_map"), 1);
-	
+
 	// Set the viewer position uniform value
 	glUniform3fv(waterEggs_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
-	
+
 	glUniform3fv(waterEggs_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
 
 	glUniform4fv(waterEggs_eff.get_uniform_location("plane"), 1, value_ptr(plane));
-	
+
 	// Render geometry
 	renderInstances(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
-} 
+}
 
 void renderWater(texture refractionTexture, texture depthTexture)
 {

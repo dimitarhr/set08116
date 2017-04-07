@@ -111,7 +111,7 @@ void main()
 	
 	// Mix the two colours
 	colour = mix(reflectionColour, refractionColour, refractiveFactor);
-	colour = mix(colour, vec4(0.6f, 0.37f, 0.33f, 1.0f), 0.5) + vec4(specularHighlights, 0.0); // Add the light effect to the final colour
+	colour = mix(colour, vec4(0.6f, 0.37f, 0.33f, 1.0f), 0.2) + vec4(specularHighlights, 0.0); // Add the light effect to the final colour
 	// The depth value shows how transparent the water is
-	colour.a = clamp(waterDepth/20.0, 0.5, 1.0);
+	colour.a = clamp(waterDepth, 0.5, 1.0);
 }
