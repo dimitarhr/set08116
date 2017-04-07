@@ -42,8 +42,8 @@ void setFrameBuffers()
 void RandomEggsPostions()
 {
 	// Range for the eggs positions
-	float minXZ = -350;
-	float maxXZ = 350;
+	float minXZ = -300;
+	float maxXZ = 300;
 	float minY = 0;
 	float maxY = 3;
 	// Allows creation of random points.  Note range
@@ -62,10 +62,18 @@ void RandomEggsPostions()
 		randomNumberY = distY(randomNumber);
 		randomNumberZ = distXZ(randomNumber);
 
-		if (!(randomNumberX < 260 && randomNumberX > -260 && randomNumberZ > -260 && randomNumberZ < 260))
+		if ((randomNumberX < 260 && randomNumberX > -260 && randomNumberZ > -260 && randomNumberZ < 260))
 		{
-			offsetArray[i] = (vec3(randomNumberX, randomNumberY - 30, randomNumberZ));
+			if (randomNumberX < 0)
+			{
+				randomNumberX -= 150.0;
+			}
+			else if (randomNumberX > 0)
+			{
+				randomNumberX += 150.0;
+			}
 		}
+		offsetArray[i] = vec3(randomNumberX, randomNumberY - 30, randomNumberZ);
 	}
 }
 
@@ -88,8 +96,7 @@ void createNormalMapMeshes()
 
 	// Transform meshes
 	normalMapMeshes["earth"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
-	//normalMapMeshes["earth"].get_transform().translate(vec3(35.0f, 43.5f, 10.0f));
-	normalMapMeshes["earth"].get_transform().translate(vec3(-260.0f, 0.0f, 260.0f));
+	normalMapMeshes["earth"].get_transform().translate(vec3(35.0f, 43.5f, 10.0f));
 	normalMapMeshes["earth"].get_transform().rotate(vec3(-half_pi<float>(), 0.0f, quarter_pi<float>() / 2.0f));
 	normalMapMeshes["smallStickBoxLeft"].get_transform().translate(vec3(23.0f, 35.5f, 5.0f));
 	normalMapMeshes["smallStickBoxRight"].get_transform().translate(vec3(50.0f, 34.0f, 5.0f));

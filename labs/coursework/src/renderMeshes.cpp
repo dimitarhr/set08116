@@ -404,7 +404,7 @@ void renderWaterEggs(vec4 plane)
 	
 	// Render geometry
 	renderInstances(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
-}
+} 
 
 void renderWater(texture refractionTexture, texture depthTexture)
 {
