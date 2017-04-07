@@ -44,7 +44,7 @@ point_light pointLight;
 mesh skybox;
 effect sky_eff;
 cubemap cube_map;
-
+ 
 double cursor_x = 0.0;
 double cursor_y = 0.0;
 double velocity = 0;
@@ -61,7 +61,7 @@ mesh waterMesh;
  
 int waterLevel = 10;
 float moveFactor = 0.0;
-
+ 
 const int eggsNumber = 800;
 
 // Vector we will use to store randomly generated points
@@ -83,7 +83,8 @@ bool initialise()
 }
 
 // Load content 
-bool load_content() {  
+bool load_content() 
+{  
 	     
 	setFrameBuffers();
 
@@ -176,7 +177,6 @@ bool update(float delta_time)
 
 	// Set skybox position to camera position (camera in centre of skybox)
 	skybox.get_transform().position = cams[cameraIndex]->get_position();
-	skybox.get_transform().rotate(vec3(0.0f, quarter_pi<float>()/40, 0.0f) * delta_time);
 
 	// Transform hierarchy meshes
 	// Defined in 'updateFunctions.cpp' 
@@ -191,8 +191,10 @@ bool update(float delta_time)
 	return true;
 }
 
-bool render() {
-	
+bool render() 
+{
+	renderer::setClearColour(0.99f, 0.37f, 0.33f);
+
 	// Set render target to frame buffer
 	renderer::set_render_target(frameBuffers["mainFrame"]);
 	// Clear frame

@@ -28,9 +28,13 @@ uniform sampler2D normal_map;
 
 uniform float moveFactor;
 
+// Cubemap texture
+uniform samplerCube cubemap;
+
 // Incoming data
 layout(location = 2) in vec2 tex_coord;
 layout(location = 3) in vec3 toCameraVecor;
+layout(location = 4) in vec3 reflectionVector;
 layout(location = 5) in vec4 clipSpace;
 
 
@@ -41,7 +45,7 @@ layout(location = 0) out vec4 colour;
 const float waveStrength = 0.02;
 // Light characteristics
 const float shineDamper = 20.0;
-const float reflectivity = 0.3;
+const float reflectivity = 0.1;
 
 void main() 
 {	
@@ -51,6 +55,7 @@ void main()
 	
 	// Refraction texture coordinates
 	vec2 refractionTexCoords = vec2(ndc.x, ndc.y);
+	vec3 reflectionTexCoords = reflectionVector;
 
 	float near = 0.1;
 	float far = 1000.0;
@@ -74,6 +79,7 @@ void main()
 
 	// Add the distortion to the Refraction texture coordinates
 	refractionTexCoords += totalDistortion;
+	reflectionTexCoords += vec3(totalDistortion * 50.0, 0.0);
 	refractionTexCoords = clamp(refractionTexCoords, 0.001, 0.999); // The texture coordinates shouldn't go neither too high or too low
 
 	// Sample the refraction texture
@@ -89,7 +95,8 @@ void main()
 	refractiveFactor = pow(refractiveFactor, 0.5);
 	
 	// The reflection is just water colour
-	vec4 reflectionColour = vec4(0.25, 0.64, 0.97, 1.0);
+	//vec4 reflectionColour = vec4(0.25, 0.64, 0.97, 1.0);
+	vec4 reflectionColour = texture(cubemap, reflectionTexCoords);
 
 	// Sampling the normal map
 	vec4 normalMapColour = texture(normal_map, distortedTexCoords);
@@ -106,5 +113,5 @@ void main()
 	colour = mix(reflectionColour, refractionColour, refractiveFactor);
 	colour = mix(colour, vec4(0.6f, 0.37f, 0.33f, 1.0f), 0.5) + vec4(specularHighlights, 0.0); // Add the light effect to the final colour
 	// The depth value shows how transparent the water is
-	colour.a = clamp(waterDepth/2.0, 0.5, 1.0);
+	colour.a = clamp(waterDepth/20.0, 0.5, 1.0);
 }

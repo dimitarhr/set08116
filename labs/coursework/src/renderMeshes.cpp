@@ -438,7 +438,7 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	renderer::bind(textures["waterDuDvMap"], 2); 
 	glUniform1i(water_eff.get_uniform_location("dudvMap"), 2);
 	
-	// Bind normal map
+	// Bind normal map  
 	renderer::bind(normal_maps["water"], 3);
 	glUniform1i(water_eff.get_uniform_location("normal_map"), 3);
 
@@ -452,6 +452,11 @@ void renderWater(texture refractionTexture, texture depthTexture)
 	// Camera position
 	glUniform3fv(water_eff.get_uniform_location("cameraPostion"), 1, value_ptr(cams[cameraIndex]->get_position()));
 	
+	renderer::bind(cube_map, 5);
+
+	// Set cubemap uniform
+	glUniform1i(water_eff.get_uniform_location("cubemap"), 5);
+
 	// Render geometry
 	renderer::render(waterMesh);
 

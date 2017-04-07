@@ -42,7 +42,7 @@ void updateMeshesTransformations(float delta_time)
 	hierarchicalMesh[0].get_transform().position = vec3(35.0f, 67.0f, -30.0f) + levitatingRange;
 
 	// Move the water
-	moveFactor += delta_time/15.0;
+	moveFactor += delta_time/60.0;
 }
 
 void checkPressedButton()
@@ -77,7 +77,7 @@ void checkPressedButton()
 
 	// Turn on/off the direct light
 	if (glfwGetKey(renderer::get_window(), 'L'))
-	{
+	{ 
 		// Directional light OFF
 		dirLight.set_ambient_intensity(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 		dirLight.set_light_colour(vec4(0.4f, 0.2f, 0.2f, 1.0f));
@@ -93,6 +93,7 @@ void checkPressedButton()
 	// Zoom in
 	if (state == GLFW_PRESS)
 	{
+		//if ()
 		cams[cameraIndex]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
 		effects["screenMode"] = 1;
 	}
