@@ -74,7 +74,7 @@ void renderNormalMapMesh()
 		glUniform1i(normalMappingEff.get_uniform_location("normal_map"), 1);
 
 		// Set the viewer position uniform value
-		glUniform3fv(normalMappingEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+		glUniform3fv(normalMappingEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization?
 
 		// Render geometry
 		renderer::render(geometryItem);
@@ -130,7 +130,7 @@ void renderBasicMesh()
 		glUniform1i(basicEff.get_uniform_location("tex"), 0);
 
 		// Set the viewer position uniform value
-		glUniform3fv(basicEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+		glUniform3fv(basicEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization?
 
 		// Render geometry
 		renderer::render(geometryItem);
@@ -175,7 +175,10 @@ void renderShadowMesh()
 
 	// Bind shader
 	renderer::bind(shadows_eff);
-
+	
+	// Bind spot light
+	renderer::bind(shadowLight, "spot"); //Optimization?
+	
 	// Render meshes
 	for (auto &e : shadow_geom) {
 		// Gets every mesh
@@ -202,8 +205,6 @@ void renderShadowMesh()
 		glUniformMatrix4fv(shadows_eff.get_uniform_location("lightMVP"), 1, GL_FALSE, value_ptr(lightMVP));
 		// Bind material
 		renderer::bind(m.get_material(), "mat");
-		// Bind spot light
-		renderer::bind(spots[1], "spot");
 		// Bind texture
 		if (textures.find(geometryName) != textures.end())
 		{
@@ -216,7 +217,7 @@ void renderShadowMesh()
 		// Set tex uniform
 		glUniform1i(shadows_eff.get_uniform_location("tex"), 0);
 		// Set eye position
-		glUniform3fv(shadows_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
+		glUniform3fv(shadows_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization?
 		// Bind shadow map texture
 		renderer::bind(shadowMap.buffer->get_depth(), 1);
 		glUniform1i(shadows_eff.get_uniform_location("shadow_map"), 1);
@@ -269,6 +270,8 @@ void renderHierarchicalMeshes()
 
 	// Get PV
 	const auto PV = cams[cameraIndex]->get_projection() * cams[cameraIndex]->get_view();
+	// Bind texture to renderer
+	renderer::bind(textures["ring"], 0);
 	// Set the texture value for the shader here
 	glUniform1i(basicEff.get_uniform_location("tex"), 0);
 	// Find the lcoation for the MVP uniform
@@ -293,8 +296,6 @@ void renderHierarchicalMeshes()
 		renderer::bind(hierarchicalMesh[i].get_material(), "mat");
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(loc, 1, GL_FALSE, value_ptr(PV * M));
-		// Bind texture to renderer
-		renderer::bind(textures["ring"], 0);
 		// Render mesh
 		renderer::render(hierarchicalMesh[i]);
 	}
@@ -361,7 +362,7 @@ void renderWaterEggs(vec4 plane)
 	// Bind lights
 	renderer::bind(dirLight, "light");
 	renderer::bind(pointLight, "pointLight");
-	renderer::bind(spots, "spots");
+	renderer::bind(spots, "spots"); 
 
 	// Normal matrix
 	auto N = normalMapMeshes["sphereLeft"].get_transform().get_normal_matrix();

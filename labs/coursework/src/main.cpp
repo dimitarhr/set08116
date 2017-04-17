@@ -38,7 +38,8 @@ std::array<mesh, 5> hierarchicalMesh;
 map<string, texture> textures, normal_maps;
 
 directional_light dirLight;
-vector<spot_light> spots(5); 
+vector<spot_light> spots(4); 
+spot_light shadowLight;
 point_light pointLight;
 
 mesh skybox;
@@ -172,8 +173,8 @@ bool update(float delta_time)
 	}
 
 	// Update the shadow map properties from the spot light
-	shadowMap.light_position = spots[1].get_position();
-	shadowMap.light_dir = spots[1].get_direction();
+	shadowMap.light_position = shadowLight.get_position();
+	shadowMap.light_dir = shadowLight.get_direction();
 
 	// Transform hierarchy meshes
 	// Defined in 'updateFunctions.cpp' 

@@ -96,7 +96,7 @@ void main() {
 	colour += calculate_point(pointLight, mat, vertex_position, transformed_normal, view_dir, tex_colour);
   
   // Sum spot lights
-  for(int i=0;i<5;i++)
+  for(int i=0;i<4;i++)
   {
 	colour += calculate_spot(spots[i], mat, vertex_position, transformed_normal, view_dir, tex_colour);
   }

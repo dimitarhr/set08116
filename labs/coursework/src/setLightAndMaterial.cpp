@@ -21,33 +21,33 @@ void setSpotLights()
 	spots[0].set_range(80);
 	spots[0].set_power(0.5f);
 
-	// Spot light in front of the wall
-	spots[1].set_position(vec3(-15.5f, 10.5f, 15));
-	spots[1].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[1].set_direction(normalize(vec3(-1, -1, 0)));
-	spots[1].set_range(2000);
+	// The green spot light, behind the earth
+	spots[1].set_position(vec3(10, 36, -8));
+	spots[1].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	spots[1].set_direction(normalize(vec3(1, 1, -1)));
+	spots[1].set_range(50);
 	spots[1].set_power(0.1f);
 
-	// The green spot light, behind the earth
-	spots[2].set_position(vec3(10, 36, -8));
-	spots[2].set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	spots[2].set_direction(normalize(vec3(1, 1, -1)));
-	spots[2].set_range(50);
-	spots[2].set_power(0.1f);
-
 	// In front of the earth - left
-	spots[3].set_position(vec3(0, 36, 40));
-	spots[3].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	spots[3].set_direction(normalize(vec3(1, 0, -1)));
-	spots[3].set_range(200.0f);
-	spots[3].set_power(10.0f);
+	spots[2].set_position(vec3(0, 36, 40));
+	spots[2].set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	spots[2].set_direction(normalize(vec3(1, 0, -1)));
+	spots[2].set_range(200.0f);
+	spots[2].set_power(10.0f);
 
 	// In front of the earth - right
-	spots[4].set_position(vec3(40, 36, 40));
-	spots[4].set_light_colour(vec4(0.53f, 0.45f, 0.37f, 1.0f));
-	spots[4].set_direction(normalize(vec3(-1, 0, -1)));
-	spots[4].set_range(500.0f);
-	spots[4].set_power(10.0f);
+	spots[3].set_position(vec3(40, 36, 40));
+	spots[3].set_light_colour(vec4(0.53f, 0.45f, 0.37f, 1.0f));
+	spots[3].set_direction(normalize(vec3(-1, 0, -1)));
+	spots[3].set_range(500.0f);
+	spots[3].set_power(10.0f);
+
+	// Spot light in front of the wall
+	shadowLight.set_position(vec3(-15.5f, 10.5f, 15));
+	shadowLight.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	shadowLight.set_direction(normalize(vec3(-1, -1, 0)));
+	shadowLight.set_range(2000);
+	shadowLight.set_power(0.1f);
 }
 
 void setDirectLight()

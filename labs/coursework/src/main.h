@@ -19,6 +19,7 @@ extern mesh skybox;
 // Lights
 extern directional_light dirLight;
 extern vector<spot_light> spots;
+extern spot_light shadowLight;
 extern point_light pointLight;
 
 // Cameras

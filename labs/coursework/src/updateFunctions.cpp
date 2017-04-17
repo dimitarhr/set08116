@@ -34,7 +34,7 @@ void updateMeshesTransformations(float delta_time)
 	basicMeshes["moon"].get_transform().position = moonPos + normalMapMeshes["earth"].get_transform().position;
 
 	// Move the spot light in front of the wall
-	spots[1].set_position(vec3(-32.9f, 48.5f, sin(velocity) * -38+20));
+	shadowLight.set_position(vec3(-32.9f, 48.5f, sin(velocity) * -38+20));
 	basicMeshes["torch"].get_transform().position = vec3(-38.0f, 48.5f, sin(velocity) * -38+20);
 
 	// Levitating egg and protectors
