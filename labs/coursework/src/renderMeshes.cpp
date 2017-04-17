@@ -408,10 +408,6 @@ void renderWaterEggs(vec4 plane)
 
 void renderWater(texture refractionTexture, texture depthTexture)
 {
-	// Enable Alpha blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	// Bing effect
 	renderer::bind(water_eff);
 
@@ -459,9 +455,6 @@ void renderWater(texture refractionTexture, texture depthTexture)
 
 	// Render geometry
 	renderer::render(waterMesh);
-
-	// Disable Alpha blending
-	glDisable(GL_BLEND);
 }
 
 void renderTerrain(vec4 plane)
