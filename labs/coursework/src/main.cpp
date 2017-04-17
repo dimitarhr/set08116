@@ -175,9 +175,6 @@ bool update(float delta_time)
 	shadowMap.light_position = spots[1].get_position();
 	shadowMap.light_dir = spots[1].get_direction();
 
-	// Set skybox position to camera position (camera in centre of skybox)
-	skybox.get_transform().position = cams[cameraIndex]->get_position();
-
 	// Transform hierarchy meshes
 	// Defined in 'updateFunctions.cpp' 
 	updateMeshesTransformations(delta_time);
@@ -187,6 +184,9 @@ bool update(float delta_time)
 
 	// Update camera
 	cams[cameraIndex]->update(delta_time);
+
+	// Set skybox position to camera position (camera in centre of skybox)
+	skybox.get_transform().position = cams[cameraIndex]->get_position();
 
 	return true;
 }
