@@ -52,7 +52,6 @@ void setShaders()
 	/*TERRAIN*/
 	terrain_eff.add_shader("shaders/terrain.vert", GL_VERTEX_SHADER);
 	terrain_eff.add_shader("shaders/terrain.frag", GL_FRAGMENT_SHADER);
-	//terrain_eff.add_shader("shaders/part_direction.frag", GL_FRAGMENT_SHADER);
 	terrain_eff.add_shader("shaders/part_weighted_texture_4.frag", GL_FRAGMENT_SHADER);
 	
 	/*WATER EGGS*/

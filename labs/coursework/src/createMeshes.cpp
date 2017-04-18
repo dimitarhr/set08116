@@ -46,7 +46,7 @@ void RandomEggsPostions()
 	float maxXZ = 300;
 	float minY = 0;
 	float maxY = 3;
-	// Allows creation of random points.  Note range
+	// Allows creation of random points
 	default_random_engine randomNumber;
 	uniform_real_distribution<float> distXZ(minXZ, maxXZ);
 	uniform_real_distribution<float> distY(minY, maxY);
@@ -62,6 +62,7 @@ void RandomEggsPostions()
 		randomNumberY = distY(randomNumber);
 		randomNumberZ = distXZ(randomNumber);
 
+		// Move the numbers to be around the terrain
 		if ((randomNumberX < 260 && randomNumberX > -260 && randomNumberZ > -260 && randomNumberZ < 260))
 		{
 			if (randomNumberX < 0)
@@ -70,7 +71,7 @@ void RandomEggsPostions()
 			}
 			else if (randomNumberX > 0)
 			{
-				randomNumberX += 150.0;
+				randomNumberX += 120.0;
 			}
 		}
 		offsetArray[i] = vec3(randomNumberX, randomNumberY - 30, randomNumberZ);
@@ -79,6 +80,7 @@ void RandomEggsPostions()
 
 void createWater(int waterLevel)
 {
+	// Plane used as the water with correct water level
 	waterMesh = mesh(geometry_builder::create_plane(800,800));  
 	waterMesh.get_transform().translate(vec3(0.0f, waterLevel, 0.0f));
 }

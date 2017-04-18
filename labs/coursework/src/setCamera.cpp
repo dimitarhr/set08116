@@ -33,7 +33,7 @@ void setTargetCamera(float delta_time)
 	// Checks for binocular On/Off
 	if (effects["screenMode"] == 1)
 	{
-		cams[0]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
+		cams[0]->set_projection(half_pi<float>() / 15.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
 	}
 	else
 	{
@@ -91,7 +91,7 @@ void setFreeCamera(float delta_time)
 	// Checks for binocular On/Off
 	if (effects["screenMode"] == 1)
 	{
-		cams[1]->set_projection(half_pi<float>() / 8.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
+		cams[1]->set_projection(half_pi<float>() / 15.0, renderer::get_screen_aspect(), 0.1f, 1000.0f);
 	}
 	else
 	{

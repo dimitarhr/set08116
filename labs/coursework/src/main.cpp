@@ -65,7 +65,7 @@ float moveFactor = 0.0;
  
 const int eggsNumber = 800;
 
-// Vector we will use to store randomly generated points
+// Array to store randomly generated points
 std::array<vec3, 800>offsetArray;
 
 // Create camera objects and sets the cursor settings
@@ -86,7 +86,7 @@ bool initialise()
 // Load content 
 bool load_content() 
 {  
-	     
+	// Set the required frame buffers - Defined in 'createMeshes.cpp'
 	setFrameBuffers();
 
 	/*CREATE MESHES*/
@@ -102,7 +102,7 @@ bool load_content()
 	// Transform hierarchy meshes - Defined in 'createMeshes.cpp'
 	createHierarchicalMeshes();
 
-	//Water
+	//Water  - Defined in 'createMeshes.cpp'
 	createWater(waterLevel);
 
 	// Skybox  
@@ -113,10 +113,10 @@ bool load_content()
 								   "textures/sky_botton.png", "textures/sky_front.png" ,  "textures/sky_back.png" };
 	cube_map = cubemap(filenames);	
 
-	// Terrain
+	// Terrain - Defined in 'createMeshes.cpp'
 	createTerrain();
 
-	// Water eggs postions
+	// Water eggs postions - Defined in 'createMeshes.cpp'
 	RandomEggsPostions();
 	
 	/*SET MATERIAL - Defined in 'setLightAndMaterial.cpp'*/ 
@@ -194,6 +194,7 @@ bool update(float delta_time)
 
 bool render() 
 {
+	// Setting the default colour of the scene
 	renderer::setClearColour(0.99f, 0.37f, 0.33f);
 
 	// Set render target to frame buffer
@@ -203,6 +204,7 @@ bool render()
 	
 	if (effects["wireFrame"] == 1)
 	{
+		// Setting the Polygon mode for the Wire Framing effect
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	// Render skybox
@@ -230,7 +232,8 @@ bool render()
 	renderer::set_render_target(frameBuffers["refractionBuffer"]);
 	renderer::clear();
 
-	renderWaterEggs(vec4(0, -1, 0, waterLevel + 1.0f)); // Clip everything above the water (-1 shows the positiove side of the clipping, the normal is pointing downwards)
+	// Render the eggs and terrain with the correct clipping plane
+	renderWaterEggs(vec4(0, -1, 0, waterLevel + 1.0f)); // Clip everything above the water (-1 shows the positive side of the clipping, the normal is pointing downwards)
 	renderTerrain(vec4(0, -1, 0, waterLevel + 1.0f)); // Clip everything above the water
 
 	// Disable the clipping plane
@@ -244,19 +247,26 @@ bool render()
 
 	if (effects["wireFrame"] == 1)
 	{
+		// Setting the Polygon mode back from the Wire Framing effect
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	if (effects["edgeDetection"] == 1)
 	{
+		// Render the post-processing effect - EDGE DETECTION
+		// Defined in 'renderMeshes.cpp'
 		renderEdges();  
 	}
 	if (effects["sepia"] == 1)
 	{
+		// Render the post-processing effect - SEPIA
+		// Defined in 'renderMeshes.cpp'
 		renderSepia();
 	} 
 
 	if (effects["motionBlur"] == 1)
 	{
+		// Render the post-processing effect - MOTION BLUR
+		// Defined in 'renderMeshes.cpp'
 		renderMotionBlur();
 	}
 	 	

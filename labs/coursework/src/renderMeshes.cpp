@@ -408,11 +408,13 @@ void renderWaterEggs(vec4 plane)
 	// Set the viewer position uniform value
 	glUniform3fv(waterEggs_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
 
+	// Set the offsets array
 	glUniform3fv(waterEggs_eff.get_uniform_location("offsets"), eggsNumber, value_ptr(offsetArray[0]));
 
+	// Set the clipping plane uniform
 	glUniform4fv(waterEggs_eff.get_uniform_location("plane"), 1, value_ptr(plane));
 
-	// Render geometry
+	// Render geometry with Instancing
 	renderInstances(normalMapMeshes["sphereLeft"].get_geometry(), eggsNumber);
 }
 
@@ -480,10 +482,8 @@ void renderTerrain(vec4 plane)
 	glUniformMatrix4fv(terrain_eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
 	// Set N matrix uniform
 	glUniformMatrix3fv(terrain_eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(terrainMesh.get_transform().get_normal_matrix()));
-	// *********************************
 	// Set eye_pos uniform to camera position
 	glUniform3fv(terrain_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position()));
-	// *********************************
 	//Bind Terrian Material
 	renderer::bind(terrainMesh.get_material(), "mat");
 	// Bind Light
@@ -491,7 +491,6 @@ void renderTerrain(vec4 plane)
 	// Bind Tex[0] to TU 0, set uniform
 	renderer::bind(terrainTex[0], 0);
 	glUniform1i(terrain_eff.get_uniform_location("tex[0]"), 0);
-	// *********************************
 	//Bind Tex[1] to TU 1, set uniform
 	renderer::bind(terrainTex[1], 1);
 	glUniform1i(terrain_eff.get_uniform_location("tex[1]"), 1);
@@ -503,7 +502,6 @@ void renderTerrain(vec4 plane)
 	glUniform1i(terrain_eff.get_uniform_location("tex[3]"), 3);
 	// Clipping plane
 	glUniform4fv(terrain_eff.get_uniform_location("plane"), 1, value_ptr(plane));
-	// *********************************
 	// Render terrain
 	renderer::render(terrainMesh);
 }
