@@ -22,6 +22,13 @@ void renderNormalMapMesh()
 	renderer::bind(pointLight, "pointLight");
 	renderer::bind(spots, "spots");
 
+	// Set the viewer position uniform value
+	glUniform3fv(normalMappingEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization
+	// Camera projection and view
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto PV = P * V;
+
 	for (auto &item : normalMapMeshes) {
 		// Gets the mesh
 		auto geometryItem = item.second;
@@ -31,9 +38,7 @@ void renderNormalMapMesh()
 		auto N = geometryItem.get_transform().get_normal_matrix();
 		// Create MVP matrix
 		auto M = geometryItem.get_transform().get_transform_matrix();
-		auto V = cams[cameraIndex]->get_view();
-		auto P = cams[cameraIndex]->get_projection();
-		auto MVP = P * V * M;
+		auto MVP = PV * M;
 
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(normalMappingEff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
@@ -73,9 +78,6 @@ void renderNormalMapMesh()
 		// Set the normal_map uniform value
 		glUniform1i(normalMappingEff.get_uniform_location("normal_map"), 1);
 
-		// Set the viewer position uniform value
-		glUniform3fv(normalMappingEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization?
-
 		// Render geometry
 		renderer::render(geometryItem);
 	}
@@ -91,6 +93,13 @@ void renderBasicMesh()
 	renderer::bind(pointLight, "pointLight");
 	renderer::bind(spots, "spots");
 
+	// Set the viewer position uniform value
+	glUniform3fv(basicEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization
+	// Camera projection and view
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto PV = P * V;
+
 	for (auto &item : basicMeshes) {
 		// Gets the mesh
 		auto geometryItem = item.second;
@@ -100,9 +109,7 @@ void renderBasicMesh()
 		auto N = geometryItem.get_transform().get_normal_matrix();
 		// Create MVP matrix
 		auto M = geometryItem.get_transform().get_transform_matrix();
-		auto V = cams[cameraIndex]->get_view();
-		auto P = cams[cameraIndex]->get_projection();
-		auto MVP = P * V * M;
+		auto MVP = PV * M;
 
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(basicEff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
@@ -128,9 +135,6 @@ void renderBasicMesh()
 
 		// Set the texture uniform value
 		glUniform1i(basicEff.get_uniform_location("tex"), 0);
-
-		// Set the viewer position uniform value
-		glUniform3fv(basicEff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization?
 
 		// Render geometry
 		renderer::render(geometryItem);
@@ -177,7 +181,15 @@ void renderShadowMesh()
 	renderer::bind(shadows_eff);
 	
 	// Bind spot light
-	renderer::bind(shadowLight, "spot"); //Optimization?
+	renderer::bind(shadowLight, "spot"); //Optimization
+	
+	// Set eye position
+	glUniform3fv(shadows_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization
+	
+	// Camera projection and view
+	auto V = cams[cameraIndex]->get_view();
+	auto P = cams[cameraIndex]->get_projection();
+	auto PV = P * V;
 	
 	// Render meshes
 	for (auto &e : shadow_geom) {
@@ -187,9 +199,7 @@ void renderShadowMesh()
 		string geometryName = e.first;
 		// Create MVP matrix
 		auto M = m.get_transform().get_transform_matrix();
-		auto V = cams[cameraIndex]->get_view();
-		auto P = cams[cameraIndex]->get_projection();
-		auto MVP = P * V * M;
+		auto MVP = PV * M;
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(shadows_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
 
@@ -216,8 +226,7 @@ void renderShadowMesh()
 		}
 		// Set tex uniform
 		glUniform1i(shadows_eff.get_uniform_location("tex"), 0);
-		// Set eye position
-		glUniform3fv(shadows_eff.get_uniform_location("eye_pos"), 1, value_ptr(cams[cameraIndex]->get_position())); //Optimization?
+
 		// Bind shadow map texture
 		renderer::bind(shadowMap.buffer->get_depth(), 1);
 		glUniform1i(shadows_eff.get_uniform_location("shadow_map"), 1);

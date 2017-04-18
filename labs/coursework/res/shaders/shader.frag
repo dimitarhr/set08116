@@ -63,7 +63,7 @@ uniform directional_light light;
 // Point lights being used in the scene
 uniform point_light pointLight;
 // Spot lights being used in the scene
-uniform spot_light spots[5];
+uniform spot_light spots[4];
 // Material of the object being rendered
 uniform material mat;
 // Position of the eye
