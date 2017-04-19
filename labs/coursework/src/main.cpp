@@ -149,8 +149,6 @@ bool load_content()
 // Update every frame
 bool update(float delta_time) 
 {
-	cout << 1.0 / delta_time << endl;
-
 	// Flip frame - used for the motion blur
 	current_frame = (current_frame + 1) % 2;
 

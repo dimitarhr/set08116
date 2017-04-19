@@ -63,6 +63,7 @@ void main()
 	// Sampling the depth map
 	float depth = texture(depthMap, refractionTexCoords).r; // The depth information is stored in the red component
 
+	// Get the distance
 	float floorDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
 	
 	depth = gl_FragCoord.z;
